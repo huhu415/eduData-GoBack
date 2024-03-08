@@ -70,12 +70,12 @@
 6. 查看一下[config.ini](config.ini)配置文件, 看看有没有需要修改的地方
 7. 在项目根目录下执行```go build .```, 就编译出来可执行文件了
 8. 执行```./eduData```就可以运行了
-9. (可选)如果要部署的话, 用[systemctl命令](crawler.service)这个文件来管理
+9. (可选)如果要部署的话, 用[systemctl命令](eduData.service)这个文件来管理
     - 把这个文件修改好参数, 然后放到```/etc/systemd/system/```目录下
-    - 执行```systemctl start crawler```就可以启动了
-    - 执行```systemctl stop crawler```就可以停止了
-    - 执行```systemctl status crawler```就可以查看状态和日志
-    - 执行```systemctl enable crawler```就可以开机自动启动了
+    - 执行```systemctl start eduData```就可以启动了
+    - 执行```systemctl stop eduData```就可以停止了
+    - 执行```systemctl status eduData```就可以查看状态和日志
+    - 执行```systemctl enable eduData```就可以开机自动启动了
 
 ### 部署注意事项
 1. 检查一下[config.ini](config.ini)中的配置

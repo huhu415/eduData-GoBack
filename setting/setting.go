@@ -24,7 +24,7 @@ var (
 
 func init() {
 	//初始化配置文件
-	CofigIni, err := ini.Load("config.ini")
+	CofigIni, err := ini.Load("config_copy.ini")
 	if err != nil {
 		fmt.Println("配置文件加载失败，请检查config.ini文件路径：", err)
 	}

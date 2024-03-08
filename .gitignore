@@ -14,3 +14,5 @@ ssl
 PostManTool
 config_copy.ini
 .idea
+eduData
+crawler.log

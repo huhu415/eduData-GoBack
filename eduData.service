@@ -1,0 +1,15 @@
+[Service]
+
+Type=simple
+
+ExecStart=/root/eduData-GoBack/eduData
+
+WorkingDirectory=/root/eduData-GoBack
+
+Restart=always
+
+
+
+[Install]
+
+WantedBy=multi-user.target
