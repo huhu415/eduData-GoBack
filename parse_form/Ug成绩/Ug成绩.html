@@ -1,0 +1,852 @@
+<view style="text-align: center">待定, 可能是成绩单</view>
+
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>个人成绩查询</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <!-- Mimic Internet Explorer 7 -->
+
+    <link href="/academic/styles/default/css/text.css" rel="stylesheet" type="text/css">
+    <link href="/academic/styles/default/css/main.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" language="javascript" src="/academic/styles/js/jquery.js"></script>
+    <script type="text/javascript" language="javascript" src="/academic/styles/js/function.js"></script>
+    <script type="text/javascript" language="javascript" src="/academic/styles/js/common.js"></script>
+    <script type="text/javascript" language="javascript" src="/academic/styles/js/selectDate.js"></script>
+    <script type="text/javascript" language="javascript" src="/academic/styles/js/selectTime.js"></script>
+    <script type="text/javascript" language="javascript" src="/academic/styles/default/js/page.js"></script>
+
+    <script type="text/javascript" language="javascript" src="/academic/styles/js/selectDateTime.js"></script>
+    <script type="text/javascript" language="javascript" src="/academic/styles/js/j_common.js"></script>
+    <script type="text/javascript" language="javascript" src="/academic/styles/js/depCommon.js"></script>
+
+
+
+    <!--[if lt IE 7]>
+
+    <script src="/academic/styles/js/jquery.bgiframe.min.js" type="text/javascript"></script>
+    <![endif]-->
+    <script type='text/javascript' src='/academic/dwr/engine.js'></script>
+    <script type='text/javascript' src='/academic/dwr/util.js'></script>
+    <script type='text/javascript' src='/academic/dwr/interface/pushStart.js'></script>
+    <script type="text/javascript">
+        function push() {
+            pushStart.sendMessageAuto("接收人ID", "推送内容，可在java后台更改");
+        }
+    </script>
+</head>
+
+<body>
+<center>
+
+
+
+
+
+
+
+
+
+
+
+    <script type="text/javascript" src="../../styles/js/jquery.js"></script>
+    <script type="text/javascript">
+        function changeYearTerm(year, term) {
+            $.ajax({
+                url: "/academic/calendar/showCalendarYearTerm.do?type=alias&yearId=" + year + "&termId=" + term,
+                success: function (htmlText) {
+                    $("#alias").html(htmlText);
+                }
+            });
+        }
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script type="text/javascript">
+        function sort(sortColumnValue) {
+            document.form1.sortColumn.value = sortColumnValue;
+            document.form1.submit();
+        }
+
+    </script>
+
+
+    <div class="title"><span class="left"><em>
+
+                    个人成绩查询
+
+
+                </em></span> <span class="right">&nbsp;</span></div>
+
+
+    <form name="form1" method="post" action="">
+        <table class="form" cellspacing="0" cellpadding="0">
+            <tr>
+                <td width="35%">
+                    学年学期
+                    <select name="year" onchange="changeYearTerm(this.options[this.selectedIndex].value,
+                this.form.term.options[this.form.term.selectedIndex].value)">
+                        <option value="">
+                            全部
+                        </option>
+
+                        <option value="44">2024
+                        </option>
+
+                        <option value="36">2016
+                        </option>
+
+                        <option value="37">2017
+                        </option>
+
+                        <option value="38">2018
+                        </option>
+
+                        <option value="39">2019
+                        </option>
+
+                        <option value="40">2020
+                        </option>
+
+                        <option value="41">2021
+                        </option>
+
+                        <option value="42">2022
+                        </option>
+
+                        <option value="43" selected>2023
+                        </option>
+
+                        <option value="45">2025
+                        </option>
+
+                        <option value="46">2026
+                        </option>
+
+                        <option value="47">2027
+                        </option>
+
+                        <option value="48">2028
+                        </option>
+
+                        <option value="49">2029
+                        </option>
+
+                        <option value="50">2030
+                        </option>
+
+                        <option value="51">2031
+                        </option>
+
+                        <option value="52">2032
+                        </option>
+
+                    </select>
+                    <select name="term" onchange="changeYearTerm(this.form.year.options[this.form.year.selectedIndex].value,
+                this.options[this.selectedIndex].value)">
+                        <option value="">
+                            全部
+                        </option>
+
+                        <option value="1">春
+                        </option>
+
+
+                        <option value="2" selected>秋
+                        </option>
+
+
+                    </select>
+                    <span id="alias">
+
+                        </span>
+
+                    <script type="text/javascript">
+                        changeYearTerm(document.form1.year.options[document.form1.year.selectedIndex].value,
+                            document.form1.term.options[document.form1.term.selectedIndex].value)
+                    </script>
+                </td>
+
+                <td><input type="checkbox" name="failedStatus" value="1" />
+                    未通过课程
+                </td>
+
+
+                <td><input type="checkbox" name="passedStatus" value="1" />
+                    及格课程
+                </td>
+
+                <td><input type="checkbox" name="maxStatus" value="1" />
+                    最高分
+                </td>
+
+
+                <td> 选课属性
+                    <select name="prop">
+                        <option value="">
+                            全部
+                        </option>
+
+                        <option value="0">必修</option>
+                        <option value="1">限选</option>
+                        <option value="2">任选</option>
+
+                    </select>
+
+                </td>
+
+
+
+                <td> 课组
+                    <select name="groupName">
+                        <option value="">
+                            全部
+                        </option>
+
+                        <option value="专业平台课">专业平台课</option>
+
+                        <option value="人文、社科、经管类（2019）">人文、社科、经管类（2019）</option>
+
+                        <option value="公共外语（小语种）2019">公共外语（小语种）2019</option>
+
+                        <option value="学科、专业基础">学科、专业基础</option>
+
+                        <option value="学科、专业基础任选">学科、专业基础任选</option>
+
+                        <option value="实践性教学环节（2019）">实践性教学环节（2019）</option>
+
+                        <option value="文明对话与世界视野通识任选课【2017】（简称C类）">文明对话与世界视野通识任选课【2017】（简称C类）</option>
+
+                        <option value="研究学习与实战体验通识任选课【2017】（简称D类）">研究学习与实战体验通识任选课【2017】（简称D类）</option>
+
+                        <option value="社会研究与当代中国通识任选课【2017】（简称B类）">社会研究与当代中国通识任选课【2017】（简称B类）</option>
+
+                        <option value="科学探索与技术创新通识任选课【2017】（简称A类）">科学探索与技术创新通识任选课【2017】（简称A类）</option>
+
+                        <option value="自然科学类（2019）">自然科学类（2019）</option>
+
+                        <option value="艺术创作与审美体验通识任选课【2017】（简称E类）">艺术创作与审美体验通识任选课【2017】（简称E类）</option>
+
+
+                    </select>
+
+                </td>
+
+
+                <td>
+                    <input name="para" type="hidden" id="para" value="0" />
+
+                    <input name="sortColumn" type="hidden" id="sortColumn" value="" />
+                    <input type="submit" name="Submit" class="button" value="查询">
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    <br>
+
+    <table width="100%" class="datalist">
+
+        <tr>
+
+
+
+            <th>
+
+
+                学年
+
+            </th>
+
+            <th>
+
+
+                学期
+
+            </th>
+
+            <th>
+
+
+                课程号
+
+            </th>
+
+            <th>
+
+
+                课程名
+
+            </th>
+
+            <th>
+
+
+                课序号
+
+            </th>
+
+            <th>
+
+
+                课组
+
+            </th>
+
+            <th>
+
+
+                总评
+
+            </th>
+
+            <th>
+
+
+                学分
+
+            </th>
+
+            <th>
+
+
+                学时
+
+            </th>
+
+            <th>
+
+
+                选课属性
+
+            </th>
+
+            <th>
+
+
+                备注
+
+            </th>
+
+            <th>
+
+
+                考试性质
+
+            </th>
+
+            <th>
+
+
+                及格标志
+
+            </th>
+
+
+
+        </tr>
+
+
+
+        <tr>
+
+
+
+            <td>2023
+            </td>
+
+            <td>秋
+            </td>
+
+            <td>000119NO34N0
+            </td>
+
+            <td>人工智能与信息社会（网络）（任选）
+            </td>
+
+            <td>1
+            </td>
+
+            <td>科学探索与技术创新通识任选课【2017】（简称A类）
+            </td>
+
+            <td><span style=" color:#FF0000">50</span>
+            </td>
+
+            <td>1.5
+            </td>
+
+            <td>21
+            </td>
+
+            <td>任选
+            </td>
+
+            <td>正常
+            </td>
+
+            <td>正常考试
+            </td>
+
+            <td>不及格
+            </td>
+
+
+
+        </tr>
+
+        <tr>
+
+
+
+            <td>2023
+            </td>
+
+            <td>秋
+            </td>
+
+            <td>040119HI02W1
+            </td>
+
+            <td>程序设计基础
+            </td>
+
+            <td>333
+            </td>
+
+            <td>学科、专业基础
+            </td>
+
+            <td>98
+            </td>
+
+            <td>4.5
+            </td>
+
+            <td>76
+            </td>
+
+            <td>必修
+            </td>
+
+            <td>正常
+            </td>
+
+            <td>正常考试
+            </td>
+
+            <td>及格
+            </td>
+
+
+
+        </tr>
+
+        <tr>
+
+
+
+            <td>2023
+            </td>
+
+            <td>秋
+            </td>
+
+            <td>040119HI05W3
+            </td>
+
+            <td>数据结构
+            </td>
+
+            <td>1
+            </td>
+
+            <td>学科、专业基础
+            </td>
+
+            <td>93
+            </td>
+
+            <td>4.5
+            </td>
+
+            <td>76
+            </td>
+
+            <td>必修
+            </td>
+
+            <td>正常
+            </td>
+
+            <td>正常考试
+            </td>
+
+            <td>及格
+            </td>
+
+
+
+        </tr>
+
+        <tr>
+
+
+
+            <td>2023
+            </td>
+
+            <td>秋
+            </td>
+
+            <td>040119HI06W3
+            </td>
+
+            <td>计算机组成原理
+            </td>
+
+            <td>1
+            </td>
+
+            <td>学科、专业基础
+            </td>
+
+            <td>82
+            </td>
+
+            <td>4.5
+            </td>
+
+            <td>76
+            </td>
+
+            <td>必修
+            </td>
+
+            <td>正常
+            </td>
+
+            <td>正常考试
+            </td>
+
+            <td>及格
+            </td>
+
+
+
+        </tr>
+
+        <tr>
+
+
+
+            <td>2023
+            </td>
+
+            <td>秋
+            </td>
+
+            <td>080119TO08W3
+            </td>
+
+            <td>概率论与数理统计
+            </td>
+
+            <td>46
+            </td>
+
+            <td>自然科学类（2019）
+            </td>
+
+            <td>73
+            </td>
+
+            <td>2.5
+            </td>
+
+            <td>40
+            </td>
+
+            <td>必修
+            </td>
+
+            <td>正常
+            </td>
+
+            <td>正常考试
+            </td>
+
+            <td>及格
+            </td>
+
+
+
+        </tr>
+
+        <tr>
+
+
+
+            <td>2023
+            </td>
+
+            <td>秋
+            </td>
+
+            <td>080119TO09W3
+            </td>
+
+            <td>复变函数、积分变换
+            </td>
+
+            <td>28
+            </td>
+
+            <td>自然科学类（2019）
+            </td>
+
+            <td>65
+            </td>
+
+            <td>3
+            </td>
+
+            <td>48
+            </td>
+
+            <td>必修
+            </td>
+
+            <td>正常
+            </td>
+
+            <td>正常考试
+            </td>
+
+            <td>及格
+            </td>
+
+
+
+        </tr>
+
+        <tr>
+
+
+
+            <td>2023
+            </td>
+
+            <td>秋
+            </td>
+
+            <td>090519TO01W3
+            </td>
+
+            <td>大学英语-III
+            </td>
+
+            <td>53
+            </td>
+
+            <td>人文、社科、经管类（2019）
+            </td>
+
+            <td>60
+            </td>
+
+            <td>2
+            </td>
+
+            <td>32
+            </td>
+
+            <td>必修
+            </td>
+
+            <td>正常
+            </td>
+
+            <td>正常考试
+            </td>
+
+            <td>及格
+            </td>
+
+
+
+        </tr>
+
+        <tr>
+
+
+
+            <td>2023
+            </td>
+
+            <td>秋
+            </td>
+
+            <td>180119TO02W3
+            </td>
+
+            <td>马克思主义基本原理概论
+            </td>
+
+            <td>25
+            </td>
+
+            <td>人文、社科、经管类（2019）
+            </td>
+
+            <td>83
+            </td>
+
+            <td>3
+            </td>
+
+            <td>48
+            </td>
+
+            <td>必修
+            </td>
+
+            <td>正常
+            </td>
+
+            <td>正常考试
+            </td>
+
+            <td>及格
+            </td>
+
+
+
+        </tr>
+
+        <tr>
+
+
+
+            <td>2023
+            </td>
+
+            <td>秋
+            </td>
+
+            <td>520119SO03W3
+            </td>
+
+            <td>工程训练(二周)
+            </td>
+
+            <td>2
+            </td>
+
+            <td>实践性教学环节（2019）
+            </td>
+
+            <td>90
+            </td>
+
+            <td>2
+            </td>
+
+            <td>2
+            </td>
+
+            <td>必修
+            </td>
+
+            <td>正常
+            </td>
+
+            <td>正常考试
+            </td>
+
+            <td>及格
+            </td>
+
+
+
+        </tr>
+
+        <tr>
+
+
+
+            <td>2023
+            </td>
+
+            <td>秋
+            </td>
+
+            <td>730119TO01W3
+            </td>
+
+            <td>体育-III
+            </td>
+
+            <td>93
+            </td>
+
+            <td>人文、社科、经管类（2019）
+            </td>
+
+            <td>72
+            </td>
+
+            <td>0.5
+            </td>
+
+            <td>36
+            </td>
+
+            <td>必修
+            </td>
+
+            <td>正常
+            </td>
+
+            <td>正常考试
+            </td>
+
+            <td>及格
+            </td>
+
+
+
+        </tr>
+
+
+    </table>
+
+
+
+</center>
+</body>
+</html>

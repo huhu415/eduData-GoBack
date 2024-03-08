@@ -1,0 +1,423 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><link href="../../App_Themes/Gwork/StyleSheet.css" type="text/css" rel="stylesheet" /><script src='/js/gwork.js' type='text/javascript'></script><title>
+    学期课表信息查询
+</title><link rel="stylesheet" type="text/css" href="/js/jqueryeasyui/etongui.css" />
+    <script type="text/javascript" src="/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/js/jqueryeasyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/lhgdialog/lhgdialog.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () { if (typeof (initForm) == "function") { initForm() } })
+        $(document).ready(function () { if (typeof (reload) == "function") { reload() } })
+
+    </script>
+    <meta charset="UTF-8">
+    <script type="text/javascript">
+        function initForm() {
+            $('#hykTermCalender').linkbutton({
+                plain: true
+            });
+            $('#lnkToWord').linkbutton({
+                iconCls: 'icon-word',
+                plain: true
+            });
+        }
+
+    </script>
+</head>
+<body>
+<form method="post" action="StuCourseQuery.aspx?EID=pLiWBm!3y8J!emOuKhzHa3uED3OEJzAvyCpKfhbkdg9RKe9VDAjrUw%3d%3d&amp;UID=2320410125" id="Form1">
+    <div class="aspNetHidden">
+        <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+        <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+        <input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="" />
+        <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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" />
+    </div>
+
+    <script type="text/javascript">
+        //<![CDATA[
+        var theForm = document.forms['Form1'];
+        if (!theForm) {
+            theForm = document.Form1;
+        }
+        function __doPostBack(eventTarget, eventArgument) {
+            if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+                theForm.__EVENTTARGET.value = eventTarget;
+                theForm.__EVENTARGUMENT.value = eventArgument;
+                theForm.submit();
+            }
+        }
+        //]]>
+    </script>
+
+
+    <script src="/WebResource.axd?d=5d5KGRMAyLvBqg6D0Z6Xhj3Bik0iH8Qt5h7ZqLwbqRWMcG_QNGx9uHHYTzhIEQhPxWH_P8u88WPt72kX0&amp;t=634773912100000000" type="text/javascript"></script>
+
+
+    <script src="/ScriptResource.axd?d=FQWkYsiSAHUVziwgOnpsc3O8ySbOkzC0OBs14YvwPMBOwRi-2vbJf4lFKPjhooHsdfa0xs8CTpd_miA1Td0lzXIZB7zl03Sn_skuSuYRjj81QGMGZy1oUmM7rvRug0yA6R9FTkxYy5L_6GmGv1fGWIUpRGk1&amp;t=6119e399" type="text/javascript"></script>
+    <script src="/ScriptResource.axd?d=RdziBK-BFzt2fvkdDFAhFBR29ktNBNQHONPM2UB6eYaLEJHX1gHEcG79GsTpKBigfgHn-cd8XoaekV7ALhBibs5xlax0e0KNWYG4_yHbatjvu0POArt8--VpQGah79pogl_3KMv8f9ayPMYxyJ9XaWElU7BH0sB2hRUPuQ2&amp;t=6119e399" type="text/javascript"></script>
+    <div class="aspNetHidden">
+
+        <input type="hidden" name="__VIEWSTATEENCRYPTED" id="__VIEWSTATEENCRYPTED" value="" />
+        <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="Vd6Gr6lAMERbLHNRjZr/XT4lwGbNuRo4+krSRJ5Zp4UJlj6zhamVQ/1NPQiCod/aOSzKSmOOYbq6dg9t2gSDXNm3t6pu2BaEbPSJhxCSkzf8nHoonKPojXXZWH5mOf1htMBW8D+yJwZNubOA6YQzgBghVmICHd+J1pygEp27vmJh1dXvX8IUedzOYN59OI02kHldGSHOy3n20ep7G0SHK/NBLBckolTJhbkvNS2L1OxMQi7kZoJj6EpMT+EKh0xOHGV0EVvb0Jzm2wjMebJeu7ht7OXEfa9Q548fsA+EQTvik3kCd5MjJJ4uNhXL4Na5jSMoi5omtVkqZnF6K398MCyLjM4c2XgOQdC4sdHYfTRUXGVMd2Oweb1AVwnkaTr1JSZ6YhX9no03BjX2CPCRu+wX3S6vsFwy1GS3upEW5S0yvYa508CX7JL1t49iIhb/H0dYJu0pqqkgBW5dc3tkDyOQR1NnPflihpSGU1TQOPsIz6amKDl+l7mNcMCKfqDvPBB5uKCYOjUwWsB3n55JI3hO6FkuJzK3CndIiTNJHS3mkoW0hqji76DK6zgBmxUhDYd140oKpd/AFWS8K2J5DqL/TjT+O5HNHfHJP/ippQ+EYhdO05FVsK/BqdXSb42BZ3ucnSdAbbf8YWRpShM4I78dcICR8rda7XiYujOZr8t4Z9wsN10LjkBtm5yetnsp1n9Cht6301xjTTg1EesqsVcAmDBok8xerMgrGGkk5qvRNgJuRNfEk2AeOBByZtsErP1ev8CJkna47jBgao+w+lTcxbO01obIz4X/An3pegm6AtXKpFzm4uCRo1RKLLuupzIkyaqbQjEpLrRrAFLYF0tahzTiqWcn/QUIU2yWv5jgebKMNvvlOTkEZ22y9u6d3Q4dAiufgH10SyZKhwlRqbxqt8/ZTUFFpQ2N2PtDqLwUAAah5MA4FdzuHGqdR53EDCwpCIpYAXGvH/qboc74vWLiBnABZziCYYitF8u9+inYTpqv3m1hOnpfjTJ5QloIsMp01xZTr742OFlQkE6O/SQkBwwhb0xDQrYjrLeVw702vkbAPtJp0XnMIec=" />
+    </div>
+    <script type="text/javascript">
+        //<![CDATA[
+        Sys.WebForms.PageRequestManager._initialize('ctl00$ScriptManager1', 'Form1', ['tctl00$contentParent$UpdatePanel1','contentParent_UpdatePanel1','tctl00$contentParent$UpdatePanel2','contentParent_UpdatePanel2'], ['ctl00$contentParent$lnkToWord','lnkToWord','ctl00$contentParent$drpXq','contentParent_drpXq'], [], 90, 'ctl00');
+        //]]>
+    </script>
+
+
+    <div style="font-size: 18pt; font-family: 楷体,楷体_GB2312; color: #067ab4; width: 100%; margin-top:20px; margin-bottom:0px; text-align: center;"  >
+        学期课表信息查询
+    </div>
+
+    <div  id="parId" style="padding: 20px; overflow: auto">
+
+    <span id="contentParent_UpdatePanel1">
+            <table class="formTop" style="width: 100%;">
+                <tr>
+                    <td>
+                        学期：<select name="ctl00$contentParent$drpXq" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;ctl00$contentParent$drpXq\&#39;,\&#39;\&#39;)&#39;, 0)" id="contentParent_drpXq">
+	<option value="38">2023-2024春学期</option>
+	<option selected="selected" value="37">2023-2024秋学期</option>
+	<option value="36">2022-2023春学期</option>
+	<option value="35">2022-2023秋学期</option>
+	<option value="34">2021-2022春学期</option>
+	<option value="33">2021-2022秋学期</option>
+	<option value="32">2020-2021春学期</option>
+	<option value="31">2020-2021秋学期</option>
+	<option value="30">2019-2020春学期</option>
+	<option value="29">2019-2020秋学期</option>
+	<option value="28">2018-2019春学期</option>
+	<option value="27">2018-2019秋学期</option>
+	<option value="26">2017-2018春学期</option>
+	<option value="25">2017-2018秋学期</option>
+	<option value="24">2016-2017春学期</option>
+	<option value="23">2016-2017秋学期</option>
+	<option value="22">2015-2016春学期</option>
+	<option value="21">2015-2016秋学期</option>
+	<option value="20">2014-2015春学期</option>
+	<option value="19">2014-2015秋学期</option>
+	<option value="18">2013-2014春学期</option>
+	<option value="17">2013-2014秋学期</option>
+	<option value="16">2012-2013春学期</option>
+	<option value="15">2012-2013秋学期</option>
+	<option value="14">2011-2012春学期</option>
+	<option value="13">2011-2012秋学期</option>
+	<option value="12">2010-2011春学期</option>
+	<option value="11">2010-2011秋学期</option>
+	<option value="10">2009-2010春学期</option>
+	<option value="9">2009-2010秋学期</option>
+	<option value="8">2008-2009春学期</option>
+	<option value="7">2008-2009秋学期</option>
+	<option value="6">2007-2008春学期</option>
+	<option value="5">2007-2008秋学期</option>
+	<option value="4">2006-2007春学期</option>
+	<option value="3">2006-2007秋学期</option>
+	<option value="2">2005-2006春学期</option>
+	<option value="1">2005-2006秋学期</option>
+	<option value="0">2004-2005春学期</option>
+	<option value="-1">2004-2005秋学期</option>
+	<option value="-2">2003-2004春学期</option>
+	<option value="-3">2003-2004秋学期</option>
+	<option value="-4">2002-2003春学期</option>
+	<option value="-5">2002-2003秋学期</option>
+
+</select>
+                    </td>
+                    <td align="right">
+                        <a id="hykTermCalender" title="教学日历信息" class="none" onclick="$.dialog({lock:true,content: &#39;url:/PublicPage/TermCalender.aspx?EID=bGF9Ce3Zc2uDaf!0uCi7ppHhnRo11O!RztNXGK61iu!oOHpz3WIMgw==&amp;UID=2320410125&#39;,id:&#39;ClassStudent&#39;,title:&#39;教学日历信息查询&#39;,min:false,max:true,drag:true,resize:true,width: &#39;600px&#39;,height: &#39;440px&#39;});" href="javascript:void(0)">教学日历</a>
+                        <a id="hykDownload"></a>
+                        <a onclick="$.dialog.tips(&#39;正在处理...&#39;,1000,&#39;loading.gif&#39;);" id="lnkToWord" class="none" href="javascript:__doPostBack(&#39;ctl00$contentParent$lnkToWord&#39;,&#39;&#39;)">导出</a>
+                    </td>
+                </tr>
+            </table>
+        </span>
+        <span id="contentParent_UpdatePanel2">
+        <div>
+	<table class="Grid_Line" cellspacing="0" cellpadding="5" rules="all" border="1" id="contentParent_dgData" style="width:100%;border-collapse:collapse;">
+		<tr style="height:25px;white-space:nowrap;">
+			<th align="center" scope="col" style="width:20px;">时间</th><th align="center" scope="col" style="width:30px;">节次</th><th scope="col">星期一</th><th scope="col">星期二</th><th scope="col">星期三</th><th scope="col">星期四</th><th scope="col">星期五</th><th scope="col">星期六</th><th scope="col">星期日</th>
+		</tr><tr style="height:25px;">
+			<td align="center" rowspan="4" style="width:20px;">
+                            上午
+                        </td><td align="center" style="width:30px;">一</td><td rowspan="1">
+
+                        </td><td rowspan="1">
+
+                        </td><td rowspan="1">
+
+                        </td><td rowspan="1">
+
+                        </td><td rowspan="1">
+
+                        </td><td rowspan="1">
+
+                        </td><td rowspan="1">
+
+                        </td>
+		</tr><tr style="height:25px;">
+			<td align="center" style="width:30px;">二</td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td>
+		</tr><tr style="height:25px;">
+			<td align="center" style="width:30px;">三</td><td>
+
+                        </td><td>
+
+                        </td><td rowspan="2">
+                            高级算法设计与分析1班｛12-19周[教师:孙冬璞,地点:待定]｝
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td>
+		</tr><tr style="height:25px;">
+			<td align="center" style="width:30px;">四</td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td>
+		</tr><tr style="height:25px;">
+			<td align="center" rowspan="4" style="width:20px;">
+                            下午
+                        </td><td align="center" style="width:30px;">五</td><td rowspan="2">
+                            高级算法设计与分析1班｛12-19周[教师:孙冬璞,地点:待定]｝
+                        </td><td rowspan="2">
+                            机器学习1班｛3-10周[教师:陈晨,地点:待定]｝
+                        </td><td rowspan="1">
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td>
+		</tr><tr style="height:25px;">
+			<td align="center" style="width:30px;">六</td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td>
+		</tr><tr style="height:25px;">
+			<td align="center" style="width:30px;">七</td><td rowspan="1">
+
+                        </td><td rowspan="2">
+                            组合数学1班｛4-11周[教师:高峻,地点:待定]｝
+                        </td><td>
+
+                        </td><td rowspan="2">
+                            机器学习1班｛3-10周[教师:陈晨,地点:待定]｝
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td>
+		</tr><tr style="height:25px;">
+			<td align="center" style="width:30px;">八</td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td>
+		</tr><tr style="height:25px;">
+			<td align="center" rowspan="4" style="width:20px;">
+                            晚上
+                        </td><td align="center" style="width:30px;">九</td><td>
+
+                        </td><td rowspan="1">
+
+                        </td><td>
+
+                        </td><td rowspan="2">
+                            组合数学1班｛4-11周[教师:高峻,地点:待定]｝
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td>
+		</tr><tr style="height:25px;">
+			<td align="center" style="width:30px;">十</td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td>
+		</tr><tr style="height:25px;">
+			<td align="center" style="width:30px;">十一</td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td rowspan="1">
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td>
+		</tr><tr style="height:25px;">
+			<td align="center" style="width:30px;">十二</td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td><td>
+
+                        </td>
+		</tr>
+	</table>
+</div>
+            <table id="contentParent_Roominfo" class="tbline" style="width: 100%">
+	<tr>
+		<td style=" height: 35px; text-align:center;border-left: 1px solid #7F9DB9;border-right: 1px solid #7F9DB9;">
+                        <span style="font-weight: normal; font-size: 12pt; color: #067ab4; font-family: 黑体;">
+                            未 安 排 具 体 时 间 的 课 表</span>
+                    </td>
+	</tr>
+</table>
+
+            <div>
+	<table class="Grid_Line" cellspacing="0" rules="all" border="1" id="contentParent_dgData2" style="background-color:White;width:100%;border-collapse:collapse;">
+		<tr style="height:25px;white-space:nowrap;">
+			<th align="center" scope="col">班级名称</th><th align="center" scope="col">课程名称</th><th align="center" scope="col">任课教师</th><th align="center" scope="col">选课人数</th><th align="center" scope="col">计划人数</th>
+		</tr><tr style="height:25px;">
+			<td align="center">学术英语写作18班</td><td align="center">学术英语写作</td><td align="center">徐明琦</td><td align="center">46</td><td align="center">70</td>
+		</tr><tr style="height:25px;">
+			<td align="center">中国特色社会主义理论与实践8班</td><td align="center">中国特色社会主义理论与实践</td><td align="center">叶丽</td><td align="center">122</td><td align="center">150</td>
+		</tr><tr style="height:25px;">
+			<td align="center">习近平新时代中国特色社会主义思想概论7班</td><td align="center">习近平新时代中国特色社会主义思想概论</td><td align="center">戴心睿</td><td align="center">122</td><td align="center">150</td>
+		</tr><tr style="height:25px;">
+			<td align="center">自然辩证法及其工程应用2班</td><td align="center">自然辩证法及其工程应用</td><td align="center">王宇</td><td align="center">103</td><td align="center">150</td>
+		</tr><tr style="height:25px;">
+			<td align="center">矩阵分析及其工程应用3班</td><td align="center">矩阵分析及其工程应用</td><td align="center">孟桂芝</td><td align="center">80</td><td align="center">120</td>
+		</tr>
+	</table>
+</div>
+        </span>
+        <table class="formBottom" style="width: 100%">
+            <tr>
+                <td style="height: 10px" />
+            </tr>
+            <tr>
+                <td style="text-align: left; height: 25px; color: #067ab4">
+                    上午：
+                    <span id="contentParent_dgListSw" style="font-size:12px;"><span style="color:#067AB4;">
+                        第一节：</span>8:00-8:45
+                    </span><span style="color:#067AB4;">
+                        第二节：</span>8:50-9:35
+                    </span><span style="color:#067AB4;">
+                        第三节：</span>9:50-10:35
+                    </span><span style="color:#067AB4;">
+                        第四节：</span>10:40-11:25
+                    </span></span>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: left; height: 25px; color: #067ab4">
+                    下午：
+                    <span id="contentParent_dgListXw" style="font-size:12px;"><span style="color:#067AB4;">
+                        第五节：</span>13:30-14:15
+                    </span><span style="color:#067AB4;">
+                        第六节：</span>14:20-15:05
+                    </span><span style="color:#067AB4;">
+                        第七节：</span>15:30-16:15
+                    </span><span style="color:#067AB4;">
+                        第八节：</span>16:20-17:05
+                    </span></span>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: left; height: 25px; color: #067ab4">
+                    晚上：
+                    <span id="contentParent_dgListWs" style="font-size:12px;"><span style="color:#067AB4;">
+                        第九节：</span>18:10-18:55
+                    </span><span style="color:#067AB4;">
+                        第十节：</span>19:00-19:45
+                    </span><span style="color:#067AB4;">
+                        第十一节：</span>19:50-20:35
+                    </span><span style="color:#067AB4;">
+                        第十二节：</span>20:40-21:25
+                    </span></span>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+</form>
+<script type="text/javascript">
+    function initH() {
+        $('#parId').height(getTotalHeight() - 90);
+    };
+    initH();
+    $(window).resize(function () {
+        initH();
+    });
+</script>
+</body>
+</html>
+
+--- PASS: TestRevLeftCourse (0.84s)
+PASS
+
+Process finished with the exit code 0
