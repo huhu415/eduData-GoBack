@@ -32,3 +32,10 @@ func TestCourseByWeekUsername(t *testing.T) {
 	courses := CourseByWeekUsername(1, "1234567", "hrbust")
 	t.Log(courses)
 }
+
+// 测试能否计算出来绩点
+func TestCalculateGPA(t *testing.T) {
+	NewDatabase()
+	gpa1, gpa2 := WeightedAverage("2204010417", "hrbust", "1")
+	t.Log(gpa1, gpa2)
+}

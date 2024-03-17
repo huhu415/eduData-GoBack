@@ -24,7 +24,7 @@ func InitRouter() {
 	gin.SetMode(gin.ReleaseMode)
 
 	// 日志记录
-	f, err := os.OpenFile("crawler.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	f, err := os.OpenFile("eduData.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -46,12 +46,15 @@ func InitRouter() {
 	{
 		si.POST("/signin", app.Signin)
 		si.POST("/updata", app.UpdataDB)
+		si.POST("/updataGrade", app.UpdataGrade)
 	}
-	auth := r.Group("/getweekcoure")
+
+	auth := r.Group("/")
 	auth.Use(middleware.RequireAuthJwt())
 	//auth.Use()
 	{
-		auth.POST("/:week", app.GetWeekCoure)
+		auth.POST("/getweekcoure/:week", app.GetWeekCoure)
+		auth.POST("/getgrade", app.GetGrade)
 	}
 	// todo 增加内部测试功能, 内部账号密码登录, 发送一个html, 返回解析好的课表, 可以用周数的那个函数来调用
 
@@ -60,14 +63,7 @@ func InitRouter() {
 		Handler: r,
 	}
 
-	// https模式
-	//go func() {
-	//	if err = srv.ListenAndServeTLS("ssl/zzyan.com_ssl.crt", "ssl/zzyan.com_ssl.key"); err != nil || errors.Is(http.ErrServerClosed, err) {
-	//		log.Fatalf("listen: %s\n", err)
-	//	}
-	//}()
-
-	// 普通模式
+	// http模式
 	go func() {
 		if err = srv.ListenAndServe(); err != nil || errors.Is(http.ErrServerClosed, err) {
 			log.Fatalf("listen: %s\n", err)

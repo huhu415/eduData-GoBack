@@ -128,3 +128,19 @@ func TestParse_json_ug_nd(t *testing.T) {
 		fmt.Println(v)
 	}
 }
+
+// 解析哈理工本科成绩
+func TestParseTableUgSoreHrbust(t *testing.T) {
+	table, err := os.ReadFile("Ug成绩/Ug成绩.html")
+	if err != nil {
+		t.Error(err)
+	}
+	allCoures, err := ParseTableUgSore(&table, "2023", "1")
+	if err != nil {
+		t.Error(err)
+	}
+	for _, course := range allCoures {
+		fmt.Println(course)
+	}
+	return
+}

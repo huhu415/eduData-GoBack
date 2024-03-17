@@ -2,13 +2,17 @@
 package app
 
 import (
+	"context"
 	"errors"
+	"net/http"
 	"net/http/cookiejar"
 	"strconv"
+	"sync"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"net/http"
+	"golang.org/x/sync/errgroup"
 
 	"eduData/database"
 	hget "eduData/htmlgetter"
@@ -24,7 +28,13 @@ const (
 	LEFTCORUSEALL = "Course/StuCourseQuery.aspx?EID=pLiWBm!3y8J!emOuKhzHa3uED3OEJzAvyCpKfhbkdg9RKe9VDAjrUw==&UID="
 )
 
-// 根据学校和研究生本科生判断获取html并解析
+// YearSemester 年与学期的结构体
+type YearSemester struct {
+	Year     string // 43是23年, 44是24年
+	Semester string // 1是春季-下学期, 2是秋季-上学期
+}
+
+// judgeUgOrPgGetInfo 根据学校和研究生本科生判断获取html并解析
 func judgeUgOrPgGetInfo(c *gin.Context, cookieJar *cookiejar.Jar) ([]database.Course, error) {
 	var table []database.Course
 	switch c.PostForm("school") {
@@ -70,6 +80,68 @@ func judgeUgOrPgGetInfo(c *gin.Context, cookieJar *cookiejar.Jar) ([]database.Co
 		return nil, errors.New("不支持的学校")
 	}
 	return table, nil
+}
+
+// judgeUgOrPgGetGrade 根据学校和研究生本科生判断获取成绩的html, 并解析成绩
+func judgeUgOrPgGetGrade(c *gin.Context, cookieJar *cookiejar.Jar) ([]database.CourseGrades, error) {
+	var grade []database.CourseGrades
+	switch c.PostForm("school") {
+	// 哈理工
+	case "hrbust":
+		switch c.PostForm("studentType") {
+		// 本科生
+		case "1":
+			// 3个协程获取成绩
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			errs, ctx := errgroup.WithContext(ctx)
+			msg := make(chan YearSemester, 10)
+			var mutex sync.Mutex
+			for i := 0; i < 3; i++ {
+				errs.Go(func() error {
+					for data := range msg {
+						// 获取页面
+						ugHTML, errUg := hget.RevLeftChidScoreUg(cookieJar, data.Year, data.Semester)
+						if errUg != nil {
+							return errUg
+						}
+
+						//解析页面, 获得成绩
+						table, errUg := pf.ParseTableUgSore(ugHTML, data.Year, data.Semester)
+						if errUg != nil {
+							return errUg
+						}
+
+						mutex.Lock()
+						grade = append(grade, table...)
+						mutex.Unlock()
+					}
+					return nil
+				})
+			}
+			// 添加任务
+			atoiYear, err := strconv.Atoi("20" + c.PostForm("username")[0:2])
+			if err != nil {
+				return nil, err
+			}
+			for i := atoiYear; i <= time.Now().Year(); i++ {
+				if i != atoiYear {
+					// 第一年没有春季成绩, 所以不是第一年的时候才添加春季
+					msg <- YearSemester{Year: strconv.Itoa(i%100 + 20), Semester: "1"}
+				}
+				msg <- YearSemester{Year: strconv.Itoa(i%100 + 20), Semester: "2"}
+			}
+
+			close(msg)
+			if errs.Wait() != nil {
+				return nil, errs.Wait()
+			}
+		}
+	// 其他没有适配的学校
+	default:
+		return nil, errors.New("不支持的学校")
+	}
+	return grade, nil
 }
 
 // Signin 下发jwt的cookie
@@ -120,7 +192,7 @@ func UpdataDB(c *gin.Context) {
 		_ = c.Error(errors.New("app.UpdataDB()函数中judgeUgOrPgGetInfo的错误: " + err.Error())).SetType(gin.ErrorTypePrivate)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  "fail",
-			"message": "获取课表错误, 请删除小程序后重试",
+			"message": "获取课表错误" + err.Error(),
 		})
 		return
 	}
@@ -130,6 +202,41 @@ func UpdataDB(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "success",
 		"message": "课程更新成功",
+	})
+
+}
+
+// UpdataGrade 更新数据库中的成绩
+func UpdataGrade(c *gin.Context) {
+	cookieAny, ok := c.Get("cookie")
+	if !ok {
+		_ = c.Error(errors.New("app : signin中间件没有正常设置username, cookie, studentType")).SetType(gin.ErrorTypePrivate)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "fail",
+			"message": "请重试",
+		})
+		return
+	}
+	Cookiejar := cookieAny.(*cookiejar.Jar)
+
+	//删除数据库中的所有这个用户名的课程
+	database.DeleteUserAllCourseGrades(c.PostForm("username"), c.PostForm("school"))
+
+	grade, err := judgeUgOrPgGetGrade(c, Cookiejar)
+	if err != nil {
+		_ = c.Error(errors.New("app.UpdataGrade()函数中judgeUgOrPgGetGrade的错误: " + err.Error())).SetType(gin.ErrorTypePrivate)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "fail",
+			"message": "获取成绩错误" + err.Error(),
+		})
+		return
+	}
+
+	database.AddCourseGrades(grade, c.PostForm("username"))
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "成绩更新成功",
 	})
 
 }
@@ -160,149 +267,17 @@ func GetWeekCoure(c *gin.Context) {
 	courseByWeekUsername := database.CourseByWeekUsername(weekInt, c.PostForm("username"), c.PostForm("school"))
 	c.JSON(http.StatusOK, courseByWeekUsername)
 }
+func GetGrade(c *gin.Context) {
+	// 获取数据库中所有成绩, 和有那些组
+	CourseGradesByUsername, CourseGradesPrompt := database.CourseGradesByUsername(c.PostForm("username"), c.PostForm("school"))
+	// 计算加权平均分
+	WeightedAverage, AcademicCredits := database.WeightedAverage(c.PostForm("username"), c.PostForm("school"), c.PostForm("studentType"))
 
-/*
-// UpdataDB2 理论上高性能版获取课程表, 20个协程
-func UpdataDB2(c *gin.Context) {
-	//检测表单是否合法
-	var loginForm LoginForm
-	if err := c.ShouldBind(&loginForm); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	fmt.Printf("UpdataDB()中的username: %s, password: %s\n", loginForm.Username, loginForm.Password)
-
-	//登陆
-	cookie, err := signin.SingIn(loginForm.Username, loginForm.Password)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"status":  "error",
-			"message": err.Error(),
-		})
-		return
-	}
-	fmt.Println(cookie, "登陆成功")
-
-	//删除数据库中的所有这个用户名的课程
-	database.DeleteUserAllCourse(loginForm.Username)
-
-	//获取全部课程表
-	var wg sync.WaitGroup
-	wg.Add(20)
-	resultChan := make(chan error, 25)
-	for i := 1; i <= 20; i++ {
-		go func(w int) {
-			defer wg.Done()
-			//获取课程表
-			leftChid, routineerr := hget.RevLeftChid(cookie, loginForm.Username, LEFTCORUSE, "DropDownListWeeks=DropDownListWeeks="+strconv.Itoa(w))
-			if routineerr != nil {
-				resultChan <- routineerr
-				return
-			}
-
-			//解析课程表
-			table, routineerr := pf.ParseTable1D(leftChid)
-			if routineerr != nil {
-				resultChan <- routineerr
-				return
-			}
-
-			//把解析到的课程与学号都一起添加到数据库中
-			database.AddCourse(table, loginForm.Username, loginForm.StudentType)
-		}(i)
-	}
-	wg.Wait()
-	close(resultChan)
-
-	if err = <-resultChan; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	} else {
-		c.JSON(http.StatusOK, gin.H{
-			"status":  "success",
-			"message": "课程更新成功",
-		})
-	}
-}
-
-// UpdataDB1 理论上低性能版获取课程表, 5个协程来回工作
-func UpdataDB1(c *gin.Context) {
-	//检测表单是否合法
-	var loginForm LoginForm
-	if err := c.ShouldBind(&loginForm); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	fmt.Printf("app.UpdataDB1()函数中username: %s, password: %s, studentType: %d\n", loginForm.Username, loginForm.Password, loginForm.StudentType)
-
-	// 根据本科生还是研究生判断登陆
-	cookie, err := JudgeUgOrPgSignIn(loginForm)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"status":  "error",
-			"message": err.Error(),
-		})
-		return
-	}
-	fmt.Println(cookie, "数据库登陆成功")
-
-	//删除数据库中的所有这个用户名的课程
-	database.DeleteUserAllCourse(loginForm.Username)
-
-	// 如果是研究生
-	if loginForm.StudentType == 2 {
-		//获取全部课程表
-		//创建一个channel, 5个goroutine
-		var wg sync.WaitGroup
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
-		errs, ctx := errgroup.WithContext(ctx)
-		msg := make(chan int, 20)
-		for i := 0; i < 5; i++ {
-			errs.Go(func() error {
-				for {
-					select {
-					case <-ctx.Done():
-						return nil
-					case w := <-msg:
-						wg.Add(1)
-						leftChid, routineerr := hget.RevLeftChid(cookie, loginForm.Username, LEFTCORUSE, "DropDownListWeeks=DropDownListWeeks="+strconv.Itoa(w))
-						if routineerr != nil {
-							wg.Done()
-							return routineerr
-						}
-						//解析课程表
-						table, routineerr := pf.ParseTable1D(leftChid)
-						if routineerr != nil {
-							wg.Done()
-							return routineerr
-						}
-
-						//把解析到的课程与学号都一起添加到数据库中
-						database.AddCourse(table, loginForm.Username)
-
-						wg.Done()
-					default:
-						continue
-					}
-				}
-			})
-		}
-		//从第几周开始到第几周, 一般来说是从1-20
-		for i := 1; i <= 20; i++ {
-			msg <- i
-			fmt.Print("send:", i, "\n")
-		}
-		wg.Wait()
-		cancel()
-		if errs.Wait() != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": errs.Wait().Error()})
-			return
-		}
-	}
+	// 返回给前端
 	c.JSON(http.StatusOK, gin.H{
-		"status":  "success",
-		"message": "课程更新成功",
+		"WeightedAverage":    WeightedAverage,
+		"AcademicCredits":    AcademicCredits,
+		"CourseGradesPrompt": CourseGradesPrompt,
+		"CourseGrades":       CourseGradesByUsername,
 	})
-
 }
-*/
