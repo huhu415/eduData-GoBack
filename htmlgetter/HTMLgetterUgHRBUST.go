@@ -19,7 +19,7 @@ import (
 	"eduData/setting"
 )
 
-// RevLeftChidUg 获取原始的各种侧边栏内容, moduleId=2020是成绩查询, 2000是本学期课表
+// RevLeftChidUg 获取原始的各种侧边栏内容, moduleId=2020是成绩查询, 2000是本学期课表, 但2020的成绩页面是空的, 没有成绩, 只有查询按钮
 func RevLeftChidUg(cookieJar *cookiejar.Jar, moduleId string) (*[]byte, error) {
 	// 从setting中获取UserAgent
 	var userAgent = setting.UserAgent
