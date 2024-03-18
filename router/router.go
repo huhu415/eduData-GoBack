@@ -55,6 +55,7 @@ func InitRouter() {
 	{
 		auth.POST("/getweekcoure/:week", app.GetWeekCoure)
 		auth.POST("/getgrade", app.GetGrade)
+		auth.POST("/getTimeTable", app.GetTimeTable)
 	}
 	// todo 增加内部测试功能, 内部账号密码登录, 发送一个html, 返回解析好的课表, 可以用周数的那个函数来调用
 

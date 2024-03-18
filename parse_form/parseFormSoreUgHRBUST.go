@@ -50,7 +50,7 @@ func ParseTableUgSore(table *[]byte, year, term string) ([]database.CourseGrades
 						grade = 95
 					case "良好":
 						grade = 85
-					case "中等":
+					case "中":
 						grade = 75
 					case "及格":
 						grade = 65
