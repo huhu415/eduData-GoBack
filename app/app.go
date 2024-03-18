@@ -267,6 +267,8 @@ func GetWeekCoure(c *gin.Context) {
 	courseByWeekUsername := database.CourseByWeekUsername(weekInt, c.PostForm("username"), c.PostForm("school"))
 	c.JSON(http.StatusOK, courseByWeekUsername)
 }
+
+// GetGrade 获取成绩
 func GetGrade(c *gin.Context) {
 	// 获取数据库中所有成绩, 和有那些组
 	CourseGradesByUsername, CourseGradesPrompt := database.CourseGradesByUsername(c.PostForm("username"), c.PostForm("school"))
@@ -279,5 +281,12 @@ func GetGrade(c *gin.Context) {
 		"AcademicCredits":    AcademicCredits,
 		"CourseGradesPrompt": CourseGradesPrompt,
 		"CourseGrades":       CourseGradesByUsername,
+	})
+}
+
+// GetTimeTable 获取上课时间
+func GetTimeTable(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"timeTable": database.GetTimeTable(c.PostForm("school")),
 	})
 }

@@ -23,11 +23,11 @@ type Course struct {
 	NumberOfLessons       int    `gorm:"not null"`                          // 第几节课
 	NumberOfLessonsLength int    `gorm:"not null"`                          // 课程长度
 	CourseContent         string `gorm:"not null"`                          // 课程名称或内容
+	Color                 string `gorm:"not null; default:'#c1d1e0'"`       // 课程颜色
 	CourseLocation        string
 	TeacherName           string
 	BeginWeek             int
 	EndWeek               int
-	Color                 string `gorm:"not null; default:'#c1d1e0'"` // 课程颜色
 }
 
 // CourseGrades 课程成绩, 还可以计算绩点
@@ -42,6 +42,16 @@ type CourseGrades struct {
 	CourseType   string  `gorm:"not null"`        // 选修, 任选, 限选, 还是必修
 	CourseCredit float64 `gorm:"not null"`        // 学分
 	CourseGrade  float64 `gorm:"not null"`        // 成绩
+}
+
+// TimeTable 时间表, 可以实现不同学校, 不同年级, 不同的时间表
+type TimeTable struct {
+	ID        uint   `gorm:"primarykey"`       // 主键
+	School    string `gorm:"index; not null;"` // 学校
+	Sort      uint   `gorm:" not null;"`       // 排序
+	StartTime string `gorm:"not null;"`        // 开始时间
+	EndTime   string `gorm:"not null;"`        // 结束时间
+	grade     string // 年级
 }
 
 func NewDatabase() {
@@ -60,7 +70,7 @@ func NewDatabase() {
 	}
 
 	// Migrate the schema, 创建表用的, 就用一次就完事了
-	//if err = db.AutoMigrate(&Course{}, &CourseGrades{}); err != nil {
+	//if err = db.AutoMigrate(&Course{}, &CourseGrades{}, &TimeTable{}); err != nil {
 	//	panic(err)
 	//}
 
@@ -126,8 +136,14 @@ func CourseGradesByUsername(username, school string) ([]CourseGrades, []CourseGr
 // WeightedAverage 计算加权平均分和加拿大绩点算法
 func WeightedAverage(username, school, stuType string) (float64, float64) {
 	var result1, result2 float64
-
 	db.Raw("SELECT round(SUM( course_grade * course_credit ) / SUM ( course_credit ),2) FROM course_grades WHERE course_type = '必修' AND course_grade >= 60  AND course_credit != 0 AND stu_id = ? AND school = ? and stu_type = ?", username, school, stuType).Scan(&result1)
 	db.Raw("SELECT round(sum((CASE WHEN course_grade >= 80 THEN 4.0 WHEN course_grade >= 70 THEN 3.0 WHEN course_grade >= 60 THEN 2.0 WHEN course_grade >= 50 THEN 1.0 ELSE 0.0 END)* course_credit)/ sum(course_credit),2)FROM course_grades WHERE course_credit != 0 AND course_grade!= 0 AND stu_id = ? AND school = ? and stu_type = ?", username, school, stuType).Scan(&result2)
 	return result1, result2
+}
+
+// GetTimeTable 通过学校获取时间表
+func GetTimeTable(school string) []TimeTable {
+	var timeTables []TimeTable
+	db.Where("school = ?", school).Order("sort").Find(&timeTables)
+	return timeTables
 }
