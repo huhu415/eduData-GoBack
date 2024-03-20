@@ -75,7 +75,7 @@
 使用方法如下, 还有凭证要一个月更新一次.[百度手写数字识别](https://ai.baidu.com/tech/ocr_others/numbers)
 > **识别完验证码, 就可以获取正式页面了**
 >
-> baidu识别验证码代码在[identimage](../../identimage/baidu.go)文件夹中
+> baidu识别验证码代码在[identimage](../../../identimage/baidu.go)文件夹中
 
 
 ## 访问正式页面
