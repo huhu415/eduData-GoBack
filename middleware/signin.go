@@ -7,7 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	signin "eduData/sign_in"
+	hrbustPg "eduData/School/hrbust/Pg"
+	hrbustUg "eduData/School/hrbust/Ug"
+	neauUg "eduData/School/neau/Ug"
 )
 
 // JudgeSchoolSignIn 判断是哪个学校的用户来登陆
@@ -17,15 +19,15 @@ func judgeSchoolSignIn(c *gin.Context) (*cookiejar.Jar, error) {
 	case "hrbust":
 		switch c.PostForm("studentType") {
 		case "1":
-			return signin.SingInUg(c.PostForm("username"), c.PostForm("password"))
+			return hrbustUg.Signin(c.PostForm("username"), c.PostForm("password"))
 		case "2":
-			return signin.SingInPg(c.PostForm("username"), c.PostForm("password"))
+			return hrbustPg.Signin(c.PostForm("username"), c.PostForm("password"))
 		}
 	// 东北农业大学
 	case "neau":
 		switch c.PostForm("studentType") {
 		case "1":
-			return signin.SigninUgNEAU(c.PostForm("username"), c.PostForm("password"))
+			return neauUg.Signin(c.PostForm("username"), c.PostForm("password"))
 		case "2":
 			return nil, errors.New(c.PostForm("school") + "研究生登陆功能还未开发")
 		}

@@ -3,6 +3,9 @@ package app
 
 import (
 	"context"
+	hrbustPg "eduData/School/hrbust/Pg"
+	hrbustUg "eduData/School/hrbust/Ug"
+	neauUg "eduData/School/neau/Ug"
 	"errors"
 	"net/http"
 	"net/http/cookiejar"
@@ -15,9 +18,7 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"eduData/database"
-	hget "eduData/htmlgetter"
 	"eduData/middleware"
-	pf "eduData/parse_form"
 )
 
 const (
@@ -42,20 +43,20 @@ func judgeUgOrPgGetInfo(c *gin.Context, cookieJar *cookiejar.Jar) ([]database.Co
 	case "hrbust":
 		switch c.PostForm("studentType") {
 		case "1":
-			ugHTML, errUg := hget.RevLeftChidUg(cookieJar, "2000")
+			ugHTML, errUg := hrbustUg.GetData(cookieJar, "2000")
 			if errUg != nil {
 				return nil, errUg
 			}
-			table, errUg = pf.ParseTableUgAll(ugHTML)
+			table, errUg = hrbustUg.ParseDataCrouseAll(ugHTML)
 			if errUg != nil {
 				return nil, errUg
 			}
 		case "2":
-			pgHTML, errPg := hget.RevLeftChidPg(cookieJar, c.PostForm("username"), LEFTCORUSEALL)
+			pgHTML, errPg := hrbustPg.GetData(cookieJar, c.PostForm("username"), LEFTCORUSEALL)
 			if errPg != nil {
 				return nil, errPg
 			}
-			table, errPg = pf.ParseTablePgAll(pgHTML)
+			table, errPg = hrbustPg.ParseDataCouresAll(pgHTML)
 			if errPg != nil {
 				return nil, errPg
 			}
@@ -64,11 +65,11 @@ func judgeUgOrPgGetInfo(c *gin.Context, cookieJar *cookiejar.Jar) ([]database.Co
 	case "neau":
 		switch c.PostForm("studentType") {
 		case "1":
-			GetJSONneau, errNeau := hget.GetJSONneau(cookieJar, "2023-2024-2-1") // todo 设计一下获取学期的函数
+			GetJSONneau, errNeau := neauUg.GetData(cookieJar, "2023-2024-2-1") // todo 设计一下获取学期的函数
 			if errNeau != nil {
 				return nil, errNeau
 			}
-			table, errNeau = pf.Parse_json_ug_nd(GetJSONneau)
+			table, errNeau = neauUg.ParseData(GetJSONneau)
 			if errNeau != nil {
 				return nil, errNeau
 			}
@@ -101,13 +102,13 @@ func judgeUgOrPgGetGrade(c *gin.Context, cookieJar *cookiejar.Jar) ([]database.C
 				errs.Go(func() error {
 					for data := range msg {
 						// 获取页面
-						ugHTML, errUg := hget.RevLeftChidScoreUg(cookieJar, data.Year, data.Semester)
+						ugHTML, errUg := hrbustUg.GetDataScore(cookieJar, data.Year, data.Semester)
 						if errUg != nil {
 							return errUg
 						}
 
 						//解析页面, 获得成绩
-						table, errUg := pf.ParseTableUgSore(ugHTML, data.Year, data.Semester)
+						table, errUg := hrbustUg.ParseDataSore(ugHTML, data.Year, data.Semester)
 						if errUg != nil {
 							return errUg
 						}

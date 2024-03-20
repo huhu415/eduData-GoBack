@@ -78,7 +78,7 @@
 [云码数字识别](https://www.jfbym.com/test/52.html)
 > **识别完验证码, 就可以获取正式页面了**
 >
-> 云码识别验证码代码在[identimage](../../identimage/jfbym.go)文件夹中
+> 云码识别验证码代码在[identimage](../../../identimage/jfbym.go)文件夹中
 
 ## 访问正式页面
 1. 访问首页会得到访问左侧选择拦的地址
