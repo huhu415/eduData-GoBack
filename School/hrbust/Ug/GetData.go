@@ -1,6 +1,4 @@
-// 本科生获取原始html课程
-
-package htmlgetter
+package hrbustUg
 
 import (
 	"fmt"
@@ -19,8 +17,8 @@ import (
 	"eduData/setting"
 )
 
-// RevLeftChidUg 获取原始的各种侧边栏内容, moduleId=2020是成绩查询, 2000是本学期课表, 但2020的成绩页面是空的, 没有成绩, 只有查询按钮
-func RevLeftChidUg(cookieJar *cookiejar.Jar, moduleId string) (*[]byte, error) {
+// GetData 获取原始的各种侧边栏内容, moduleId=2020是成绩查询, 2000是本学期课表, 但2020的成绩页面是空的, 没有成绩, 只有查询按钮
+func GetData(cookieJar *cookiejar.Jar, moduleId string) (*[]byte, error) {
 	// 从setting中获取UserAgent
 	var userAgent = setting.UserAgent
 
@@ -71,8 +69,8 @@ func RevLeftChidUg(cookieJar *cookiejar.Jar, moduleId string) (*[]byte, error) {
 	return &ioRead, nil
 }
 
-// RevLeftChidScoreUg 获取原始的本学期html成绩表(个人成绩查询), year, term为学年和学期, 要自己去html中查看
-func RevLeftChidScoreUg(cookieJar *cookiejar.Jar, year, term string) (*[]byte, error) {
+// GetDataScore 获取原始的本学期html成绩表(个人成绩查询), year, term为学年和学期, 要自己去html中查看
+func GetDataScore(cookieJar *cookiejar.Jar, year, term string) (*[]byte, error) {
 	//新建一个客户端
 	client := &http.Client{
 		Jar: cookieJar,

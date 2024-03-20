@@ -1,7 +1,7 @@
-package parse_form
+package hrbustUg
 
 import (
-	"container/list"
+	"eduData/School/pub"
 	"errors"
 	"fmt"
 	"regexp"
@@ -13,76 +13,8 @@ import (
 	"eduData/database"
 )
 
-func chineseToNumber(chinese rune) (int, error) {
-	switch chinese {
-	case '一':
-		return 1, nil
-	case '二':
-		return 2, nil
-	case '三':
-		return 3, nil
-	case '四':
-		return 4, nil
-	case '五':
-		return 5, nil
-	case '六':
-		return 6, nil
-	case '日':
-		return 7, nil
-	default:
-		return 0, fmt.Errorf("不支持的汉字数字: %s", string(chinese))
-	}
-}
-
-// ExtractWeekRange 提取周数范围, 返回起始周, 结束周, 单双周, 单双周默认是5, 0是双周, 1是单周, 便于运算
-func ExtractWeekRange(text string) (startWeek, endWeek, evenOrOdd int, err error) {
-	startWeek, endWeek, evenOrOdd = 0, 0, 5
-	if []rune(text)[0] == '第' {
-		// 匹配形式 : 第3周
-		// 正则表达式提取数字
-		WeekSinge := regexp.MustCompile("[0-9]+").FindAllString(text, 1)
-		var atoi int
-		atoi, err = strconv.Atoi(WeekSinge[0])
-		if err != nil {
-			err = fmt.Errorf("形式 第x周 无法解析起始周: %v", err)
-			return
-		}
-		//如果是这种形式, 那么起始周与结束周都是这个数字
-		startWeek, endWeek = atoi, atoi
-		//fmt.Println("起始周-结束周", startWeek, "-", endWeek)
-	} else {
-		// 匹配形式 : 1-15周 或 1-15单周
-		matchWeekRange := regexp.MustCompile(`(\d+)-(\d+)`).FindStringSubmatch(text)
-		if len(matchWeekRange) == 0 {
-			err = errors.New("无法匹配周数范围, x-x")
-			return
-		}
-		// 第一个数
-		startWeek, err = strconv.Atoi(matchWeekRange[1])
-		if err != nil {
-			err = fmt.Errorf("形式 x-x周 无法解析起始周: %v", err)
-			return
-		}
-		// 第二个数
-		endWeek, err = strconv.Atoi(matchWeekRange[2])
-		if err != nil {
-			err = fmt.Errorf("形式 x-x周 无法解析结束周: %v", err)
-			return
-		}
-		// 判断单双周
-		switch {
-		case strings.Contains(text, "单"):
-			evenOrOdd = 1
-		case strings.Contains(text, "双"):
-			evenOrOdd = 0
-		}
-		//fmt.Println("起始周-结束周", startWeek, "-", endWeek)
-	}
-	return
-}
-
-// ParseTableUgAll 给定一个学期的课表, 返回这个学期的所有课程, 解析本科生的
-func ParseTableUgAll(table *[]byte) ([]database.Course, error) {
+// ParseDataCrouseAll 给定一个学期的课表, 返回这个学期的所有课程, 解析本科生的
+func ParseDataCrouseAll(table *[]byte) ([]database.Course, error) {
 	//创建返回的变量
 	var courses []database.Course
 
@@ -104,26 +36,7 @@ func ParseTableUgAll(table *[]byte) ([]database.Course, error) {
 		School:  "hrbust",
 	}
 	// 初始化颜色队列, 用于给课程上色, 一共19个, 应该用不完
-	queue := list.New()
-	queue.PushBack("#2e1f54")
-	queue.PushBack("#52057f")
-	queue.PushBack("#bf033b")
-	queue.PushBack("#f00a36")
-	queue.PushBack("#ff6908")
-	queue.PushBack("#ffc719")
-	queue.PushBack("#598c14")
-	queue.PushBack("#335238")
-	queue.PushBack("#4a8594")
-	queue.PushBack("#051736")
-	queue.PushBack("#706357")
-	queue.PushBack("#b0a696")
-	queue.PushBack("#004eaf")
-	queue.PushBack("#444444")
-	queue.PushBack("#c1d1e0")
-	queue.PushBack("#c1d1e0")
-	queue.PushBack("#faa918")
-	queue.PushBack("#8f1010")
-	queue.PushBack("#d2ea32")
+	queue := pub.NewColorList()
 
 	// 遍历每个课程
 	doc.Find("table.infolist_tab tbody tr.infolist_common").Each(func(trIndex int, row *goquery.Selection) {
@@ -155,7 +68,7 @@ func ParseTableUgAll(table *[]byte) ([]database.Course, error) {
 
 							// 第0个是周数
 							if tdIndexIn == 0 {
-								startWeek, endWeek, evenOrOdd, err = ExtractWeekRange(text)
+								startWeek, endWeek, evenOrOdd, err = pub.ExtractWeekRange(text)
 								if err != nil {
 									return
 								}
@@ -166,7 +79,7 @@ func ParseTableUgAll(table *[]byte) ([]database.Course, error) {
 								if text == "" {
 									course.WeekDay = 0
 								} else {
-									course.WeekDay, err = chineseToNumber([]rune(text)[2])
+									course.WeekDay, err = pub.ChineseToNumber([]rune(text)[2])
 									if err != nil {
 										fmt.Println(err)
 										return
@@ -250,7 +163,7 @@ func ParseTableUgAll(table *[]byte) ([]database.Course, error) {
 						course.CourseLocation = ""
 					} else {
 						// 类似形式 : 1-15周 时间地点都不占
-						startWeek, endWeek, _, err := ExtractWeekRange(text)
+						startWeek, endWeek, _, err := pub.ExtractWeekRange(text)
 						if err != nil {
 							return
 						}
@@ -270,8 +183,8 @@ func ParseTableUgAll(table *[]byte) ([]database.Course, error) {
 	return courses, nil
 }
 
-// ParseTableUgByWeek 给定一个学期的课表和某一周, 返回这个学期的这周的课程, 解析本科生的
-func ParseTableUgByWeek(table *[]byte, week int) ([]database.Course, error) {
+// ParseDataCrouseByWeek 给定一个学期的课表和某一周, 返回这个学期的这周的课程, 解析本科生的
+func ParseDataCrouseByWeek(table *[]byte, week int) ([]database.Course, error) {
 	//创建返回的变量
 	var courses []database.Course
 
@@ -344,7 +257,7 @@ func ParseTableUgByWeek(table *[]byte, week int) ([]database.Course, error) {
 							text := strings.TrimSpace(cellInIn.Text())
 							// 1是星期几
 							if tdIndexIn == 1 {
-								course.WeekDay, err = chineseToNumber([]rune(text)[2])
+								course.WeekDay, err = pub.ChineseToNumber([]rune(text)[2])
 								if err != nil {
 									fmt.Println(err)
 									return
@@ -352,7 +265,7 @@ func ParseTableUgByWeek(table *[]byte, week int) ([]database.Course, error) {
 							}
 							// 2是第几节
 							if tdIndexIn == 2 {
-								course.NumberOfLessons, err = chineseToNumber([]rune(text)[1])
+								course.NumberOfLessons, err = pub.ChineseToNumber([]rune(text)[1])
 								if err != nil {
 									fmt.Println(err)
 									return
@@ -378,4 +291,83 @@ func ParseTableUgByWeek(table *[]byte, week int) ([]database.Course, error) {
 		fmt.Println()
 	})
 	return courses, nil
+}
+
+// ParseDataSore 解析哈理工本科生成绩页面
+func ParseDataSore(table *[]byte, year, term string) ([]database.CourseGrades, error) {
+	// 使用 goquery 解析 HTML 表格
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(*table)))
+	if err != nil {
+		return nil, err
+	}
+
+	var courseGrades []database.CourseGrades
+	//判断是否能找到课程信息
+	//if doc.Find("table.datalist tbody tr").Length() == 0 {
+	//	return nil, errors.New("not find table.datalist tbody tr")
+	//}
+
+	courseGrade := database.CourseGrades{
+		// 哈理工本科生
+		School:   "hrbust",
+		StuType:  1,
+		Year:     year,
+		Semester: term,
+	}
+
+	// 每个课程的循环
+	doc.Find("table.datalist tbody tr").Each(func(trIndex int, row *goquery.Selection) {
+		// 每个属性的循环
+		row.Find("td").Each(func(tdIndex int, cell *goquery.Selection) {
+			text := strings.TrimSpace(cell.Text())
+			// 课程名称
+			if tdIndex == 3 {
+				courseGrade.CourseName = text
+			}
+
+			// 总评
+			if tdIndex == 6 {
+				grade, err := strconv.ParseFloat(text, 64)
+				if err != nil {
+					switch text {
+					case "优秀":
+						grade = 95
+					case "良好":
+						grade = 85
+					case "中":
+						grade = 75
+					case "及格":
+						grade = 65
+					case "不及格":
+						grade = 0
+					}
+				}
+				courseGrade.CourseGrade = grade
+			}
+
+			//学分
+			if tdIndex == 7 {
+				credit, err := strconv.ParseFloat(text, 64)
+				if err != nil {
+					credit = 0
+				}
+				courseGrade.CourseCredit = credit
+			}
+
+			////学时
+			//if tdIndex == 8 {
+			//
+			//}
+
+			// 任课属性
+			if tdIndex == 9 {
+				courseGrade.CourseType = text
+
+				// 一行有消息全部获取完毕, 加入切片后结束
+				courseGrades = append(courseGrades, courseGrade)
+				return
+			}
+		})
+	})
+	return courseGrades, nil
 }

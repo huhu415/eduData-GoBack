@@ -1,6 +1,5 @@
-// 研究生教务系统的html获取器
-
-package htmlgetter
+// Package hrbust 哈尔滨理工大学
+package hrbustPg
 
 import (
 	"fmt"
@@ -17,10 +16,10 @@ const (
 	HOST     string = "yjs.hrbust.edu.cn"
 )
 
-// RevLeftChidPg 用于接收左边的各个子成员, 子成员在RevLeftmenu()的返回值里面找
+// GetData 用于接收左边的各个子成员, 子成员在RevLeftmenu()的返回值里面找
 // 例如LeftChidUrl = Course/StuCourseQuery.aspx?EID=pLiWBm!3y8J!emOuKhzHa3uED3OEJzAvyCpKfhbkdg9RKe9VDAjrUw==&UID=
 // CookieAppend = DropDownListWeeks=DropDownListWeeks=13*/
-func RevLeftChidPg(cookie *cookiejar.Jar, username, LeftChidUrl string, CookieAppend ...any) (*[]byte, error) {
+func GetData(cookie *cookiejar.Jar, username, LeftChidUrl string, CookieAppend ...any) (*[]byte, error) {
 	// 从setting中获取UserAgent
 	var userAgent = setting.UserAgent
 
