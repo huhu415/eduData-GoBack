@@ -1,4 +1,4 @@
-### 哈理工研究生管理系统爬虫
+### 哈理工研究生爬虫方法
 
 我们登陆的目标是获得激活后的cookie, 因为请求中带着激活后的cookie可以访问任何我们想要访问的页面
 
@@ -75,7 +75,7 @@
 使用方法如下, 还有凭证要一个月更新一次.[百度手写数字识别](https://ai.baidu.com/tech/ocr_others/numbers)
 > **识别完验证码, 就可以获取正式页面了**
 >
-> baidu识别验证码代码在[identimage](identimage/baidu.go)文件夹中
+> baidu识别验证码代码在[identimage](../../identimage/baidu.go)文件夹中
 
 
 ## 访问正式页面

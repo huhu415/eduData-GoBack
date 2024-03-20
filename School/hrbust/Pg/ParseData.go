@@ -1,5 +1,4 @@
-// Package parse_form 包用来解析表单, 传入带有table的html(例子就是当前目录下的TestForm.html), 解析出[13][11]string的切片.
-package parse_form
+package hrbustPg
 
 import (
 	"errors"
@@ -13,9 +12,9 @@ import (
 	"eduData/database"
 )
 
-// ParseTable1D 要和Coures结构体配合使用, 传入某一周课表, 生成课程信息切片, 解析研究生的
+// ParseDataCoures1D 要和Coures结构体配合使用, 传入某一周课表, 生成课程信息切片, 解析研究生的
 // 我们前端的格式是星期几, 第几节, 上课长度, 上课内容, 上课地点, 可选参数第几周, int*/
-func ParseTable1D(table *[]byte, args ...any) ([]database.Course, error) {
+func ParseDataCoures1D(table *[]byte, args ...any) ([]database.Course, error) {
 	var courses []database.Course
 	week := 0
 
@@ -114,10 +113,10 @@ func ParseTable1D(table *[]byte, args ...any) ([]database.Course, error) {
 	return courses, nil
 }
 
-// ParseTable2D 传入某一周的带有table的html, 解析出[13][11]string的切片,
+// ParseDataCoures2D 传入某一周的带有table的html, 解析出[13][11]string的切片,
 // 这里只针对课表, 其他表格不一定适用, 因为课表只有rowspan, 没有colspan
 // 并且这个函数的结果是横坐标是星期1-8, 竖向坐标是1-12节课的内容string类型, 解析研究生的*/
-func ParseTable2D(table *[]byte) ([][]string, error) {
+func ParseDataCoures2D(table *[]byte) ([][]string, error) {
 	// 使用 goquery 解析 HTML 表格
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(*table)))
 	if err != nil {
@@ -163,8 +162,8 @@ func ParseTable2D(table *[]byte) ([][]string, error) {
 	return MapMaker, err
 }
 
-// ParseTablePgAll 传入html一个学期的课程表, 解析出带有所有课程的切片, 解析研究生的
-func ParseTablePgAll(table *[]byte) ([]database.Course, error) {
+// ParseDataCouresAll 传入html一个学期的课程表, 解析出带有所有课程的切片, 解析研究生的, 与其他的区别是, 这个会解析一学期的, 而不是某一周的
+func ParseDataCouresAll(table *[]byte) ([]database.Course, error) {
 	var courses []database.Course
 
 	// 使用 goquery 解析 HTML 表格

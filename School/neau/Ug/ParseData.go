@@ -1,9 +1,10 @@
-package parse_form
+package neauUg
 
 import (
-	"container/list"
-	"encoding/json"
+	"eduData/School/pub"
 	"strings"
+
+	"encoding/json"
 
 	"eduData/database"
 )
@@ -70,32 +71,13 @@ type Schedule struct {
 	_        any                     `json:"dateList"`
 }
 
-// 解析本科生课表 农大
-func Parse_json_ug_nd(jsonInfo *[]byte) ([]database.Course, error) {
+// ParseData 解析本科生课表json格式数据
+func ParseData(jsonInfo *[]byte) ([]database.Course, error) {
 	// 构造返回参数
 	var courses []database.Course
 
-	// 初始化颜色队列, 用于给课程上色, 一共19个, 应该用不完
-	queue := list.New()
-	queue.PushBack("#2e1f54")
-	queue.PushBack("#52057f")
-	queue.PushBack("#bf033b")
-	queue.PushBack("#f00a36")
-	queue.PushBack("#ff6908")
-	queue.PushBack("#ffc719")
-	queue.PushBack("#598c14")
-	queue.PushBack("#335238")
-	queue.PushBack("#4a8594")
-	queue.PushBack("#051736")
-	queue.PushBack("#706357")
-	queue.PushBack("#b0a696")
-	queue.PushBack("#004eaf")
-	queue.PushBack("#444444")
-	queue.PushBack("#c1d1e0")
-	queue.PushBack("#c1d1e0")
-	queue.PushBack("#faa918")
-	queue.PushBack("#8f1010")
-	queue.PushBack("#d2ea32")
+	// 初始化颜色队列
+	queue := pub.NewColorList()
 
 	// 解析json
 	var schedule Schedule
@@ -121,7 +103,7 @@ func Parse_json_ug_nd(jsonInfo *[]byte) ([]database.Course, error) {
 			course.NumberOfLessons = 0
 			course.NumberOfLessonsLength = 0
 
-			startWeek, endWeek, _, err := ExtractWeekRange(v.Skzcs)
+			startWeek, endWeek, _, err := pub.ExtractWeekRange(v.Skzcs)
 			if err != nil {
 				return nil, err
 			}
@@ -137,7 +119,7 @@ func Parse_json_ug_nd(jsonInfo *[]byte) ([]database.Course, error) {
 				course.NumberOfLessonsLength = timeAndPlace.ContinuingSession
 
 				// 匹配单双周和rangWeek
-				startWeek, endWeek, evenOrOdd, err := ExtractWeekRange(timeAndPlace.WeekDescription)
+				startWeek, endWeek, evenOrOdd, err := pub.ExtractWeekRange(timeAndPlace.WeekDescription)
 				if err != nil {
 					return nil, err
 				}

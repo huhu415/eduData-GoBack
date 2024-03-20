@@ -1,4 +1,4 @@
-package sign_in
+package neauUg
 
 import (
 	"bytes"
@@ -69,8 +69,8 @@ func getAesString(n, f, c string) (string, error) {
 	return ciphertextBase64, nil
 }
 
-// SigninUgND 农大登陆, 得到cookieJar
-func SigninUgNEAU(username, password string) (*cookiejar.Jar, error) {
+// Signin 农大登陆, 得到cookieJar
+func Signin(username, password string) (*cookiejar.Jar, error) {
 	// 新建一个cookieJar
 	cookieJar, err := cookiejar.New(nil)
 	if err != nil {

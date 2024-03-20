@@ -1,5 +1,4 @@
-// Package sign_in 研究生用来利用identimage包识别验证码, 登陆哈理工研究生管理系统, 并返回可直接用的cookie
-package sign_in
+package hrbustPg
 
 import (
 	"errors"
@@ -22,8 +21,8 @@ const (
 	INDEXPG string = "http://yjs.hrbust.edu.cn/"
 )
 
-// SingInPg 登陆哈理工研究生管理系统, 会拿到认证后可以使用的coookie
-func SingInPg(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
+// Signin 登陆哈理工研究生管理系统, 会拿到认证后可以使用的coookie
+func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 	// 从setting中获取UserAgent
 	var userAgent = setting.UserAgent
 

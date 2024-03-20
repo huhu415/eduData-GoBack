@@ -1,5 +1,4 @@
-// Package sign_in_ug 本科生用来利用identimage包中的jfbym识别验证码, 登陆哈理工研究生管理系统, 并返回可直接用的cookie
-package sign_in
+package hrbustUg
 
 import (
 	"errors"
@@ -28,8 +27,8 @@ const (
 	CHECKSECURITY string = "http://jwzx.hrbust.edu.cn/academic/j_acegi_security_check"
 )
 
-// SingInUg 登陆哈理工本科生管理系统, 会拿到认证后可以使用的coookie
-func SingInUg(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
+// Signin 登陆哈理工本科生管理系统, 会拿到认证后可以使用的coookie
+func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 	// 从setting中获取UserAgent
 	var userAgent = setting.UserAgent
 
