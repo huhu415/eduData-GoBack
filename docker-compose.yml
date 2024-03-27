@@ -1,10 +1,36 @@
 version: '3'
-
 services:
-
-  goback:
-    build: .
+  nginx:
+    image: nginx:latest
     ports:
-      - "8080:8080"
+      - "80:80"
+      - "443:443"
+      - "8000:8000"
+    networks:
+      - mynetwork
+    volumes:
+      - /home/nginx/conf/nginx.conf:/etc/nginx/nginx.conf  # 将宿主机的 nginx 配置文件映射到容器中
+      - /home/nginx/conf/conf.d:/etc/nginx/conf.d  # 将宿主机的额外配置文件夹映射到容器中
+      - /home/nginx/log:/var/log/nginx  # 将宿主机的日志文件夹映射到容器中
+      - /home/nginx/html:/usr/share/nginx/html  # 将宿主机的网站文件夹映射到容器中
+    depends_on:
+      - edudata
+      - chatgpt-web
+
+  edudata:
+    image: registry.cn-wulanchabu.aliyuncs.com/zzyan/back-go
+    networks:
+      - mynetwork
+    volumes:
+      - /home/go-back/config:/config/
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+  chatgpt-web:
+    image: yidadaa/chatgpt-next-web
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge

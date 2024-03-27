@@ -1,13 +1,21 @@
 # eduData(大学教务处爬虫)
 这个爬虫是通过学生学号和密码, 模仿真人来登陆到教务处系统, 获取并解析课程表到数据库, 然后增删改查到前端
 
+### 为什么开源
+因为现在的爬虫类小程序, 只要涉及到广告等盈利手段, 那么就是违法的.
+
+只不过就是 法律意识淡泊 或 大学或商业组织 没有找到他, 铤而走险罢了.
+
+我开源出来知识供大家**学习**和**使用**, 不允许用于**任何商业用途**.
+
+### 技术栈
 - 使用了golang作为后台语言
 - postgresql作为数据库
 - gorm来操作数据库
 - gin作为web框架
 - 微信小程序为前端显示
 
-## 目前支持的大学
+### 目前支持的大学
 
 - [x] [哈尔滨理工大学](School/hrbust)
     - [x] 本科生
@@ -78,12 +86,12 @@
 2. 要在项目中安装依赖, 在项目根目录下执行```go mod tidy```
 3. 安装postpresql
    - 创建一个数据库```CREATE DATABASE Courses;```
-   - [config.ini](config.ini)中配置好数据库的连接信息
+   - [config.ini](config/config.ini)中配置好数据库的连接信息
    - ```sudo vim /etc/postgresql/9.3/main/postgresql.conf```中修改```listen_addresses = '*'```
    - ```sudo vim /etc/postgresql/9.3/main/pg_hba.conf```中添加```ipv4 0.0.0.0/0```
 4. 初始化表, 在[database](database/database.go)中有初始化表的方法, 是被注释掉的, 可以取消注释, 创建表就创建一次就行了, 用完取消注释
     - 如果要用代码创建表的话, 是要build出来后, 执行一次的
-5. 查看一下[config.ini](config.ini)配置文件, 看看有没有需要修改的地方
+5. 查看一下[config.ini](config/config.ini)配置文件, 看看有没有需要修改的地方
 6. 在项目根目录下执行```go build .```, 就编译出来可执行文件了
 7. 执行```./eduData```就可以运行了
 8. (可选)如果要部署的话, 用[systemctl命令](eduData.service)这个文件来管理
@@ -94,7 +102,7 @@
     - 执行```systemctl enable eduData```就可以开机自动启动了
 
 ### 部署注意事项
-1. 检查一下[config.ini](config.ini)中的配置
+1. 检查一下[config.ini](config/config.ini)中的配置
 2. 检查[database](database/database.go)中表的初始化那行注释与否
 3. 检查[router](router/router.go)中的路由与中间件是否逻辑正确
 

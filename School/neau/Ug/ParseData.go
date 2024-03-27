@@ -64,11 +64,11 @@ type CourseInfo struct {
 	Zkxh                   string         `json:"zkxh"`
 }
 type Schedule struct {
-	_        any                     `json:"rwbgLists"`
-	AllUnits float64                 `json:"allUnits"`
-	Xkxx     []map[string]CourseInfo `json:"xkxx"`
-	CSZ      string                  `json:"csz"`
-	_        any                     `json:"dateList"`
+	RwbgLists any                     `json:"rwbgLists"`
+	AllUnits  float64                 `json:"allUnits"`
+	Xkxx      []map[string]CourseInfo `json:"xkxx"`
+	CSZ       string                  `json:"csz"`
+	DateList  any                     `json:"dateList"`
 }
 
 // ParseData 解析本科生课表json格式数据
