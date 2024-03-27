@@ -60,19 +60,17 @@ func NewDatabase() {
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		println("database : gorm.Open(), database connect error")
-		panic(err)
 	}
 
 	sqlDB, err := db.DB()
 	if err != nil {
 		println("database : db.DB(), database connect error")
-		panic(err)
 	}
 
 	// Migrate the schema, 创建表用的, 就用一次就完事了
-	//if err = db.AutoMigrate(&Course{}, &CourseGrades{}, &TimeTable{}); err != nil {
-	//	panic(err)
-	//}
+	if err = db.AutoMigrate(&Course{}, &CourseGrades{}, &TimeTable{}); err != nil {
+		panic(err)
+	}
 
 	// SetMaxIdleCons 设置连接池中的最大闲置连接数。
 	sqlDB.SetMaxIdleConns(20)

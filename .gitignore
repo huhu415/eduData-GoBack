@@ -12,7 +12,8 @@ $RECYCLE.BIN/
 
 ssl
 PostManTool
-config_copy.ini
+config/config_copy.ini
+config/config.ini
 .idea
 eduData
 eduData.log
