@@ -201,7 +201,10 @@ func ParseDataCrouseByWeek(table *[]byte, week int) ([]database.Course, error) {
 
 	doc.Find("table.infolist_tab tbody tr.infolist_common").Each(func(trIndex int, row *goquery.Selection) {
 		course := database.Course{
-			Week: week,
+			// 因为函数是解析本科生, 所以这是本科生
+			StuType: 1,
+			School:  "hrbust",
+			Week:    week,
 		}
 		row.Find("td").Each(func(tdIndex int, cell *goquery.Selection) {
 			if tdIndex == 2 {
