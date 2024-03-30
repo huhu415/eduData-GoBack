@@ -55,7 +55,7 @@ func LoggerRecordForm() gin.HandlerFunc {
 			_ = c.Error(errors.New("middleware.LoggerRecordForm()函数中ShouldBind():" + err.Error())).SetType(gin.ErrorTypePrivate)
 			c.JSON(http.StatusBadRequest, gin.H{
 				"status":  "fail",
-				"message": "表单格式错误, 请检查后重新提交",
+				"message": "表单格式错误,重新登陆后重新提交",
 			})
 			c.Abort()
 		}

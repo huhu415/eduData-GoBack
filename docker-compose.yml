@@ -16,15 +16,19 @@ services:
     depends_on:
       - edudata
       - chatgpt-web
-
+    environment:
+      - TZ=Asia/Shanghai
+ 
   edudata:
     image: registry.cn-wulanchabu.aliyuncs.com/zzyan/back-go
     networks:
       - mynetwork
     volumes:
-      - /home/go-back/config:/config/
+      - /home/go-back/config:/config
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    environment:
+      - TZ=Asia/Shanghai
 
   chatgpt-web:
     image: yidadaa/chatgpt-next-web
