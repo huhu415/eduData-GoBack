@@ -18,7 +18,7 @@ type Course struct {
 	StuID                 string `gorm:"index; not null"`                   // 学号
 	School                string `gorm:"index; not null; default:'hrbust'"` // 学校
 	StuType               int    `gorm:"not null"`                          // 本科生还是研究生
-	Week                  int    `gorm:"not null"`                          // 周几 没有的话就设置为0
+	Week                  int    `gorm:"index; not null"`                   // 周几 没有的话就设置为0
 	WeekDay               int    `gorm:"not null"`                          // 星期几 没有的话就设置为0
 	NumberOfLessons       int    `gorm:"not null"`                          // 第几节课
 	NumberOfLessonsLength int    `gorm:"not null"`                          // 课程长度
@@ -102,7 +102,7 @@ func CourseByWeekUsername(week int, username, school string) []Course {
 	var courses []Course
 	//查询数据
 	// select * from courses where week = ? and stu_id = ?
-	db.Where("week = ? AND stu_id = ? AND school = ?", week, username, school).Find(&courses)
+	db.Where("stu_id = ? AND school = ? AND week = ?", username, school, week).Find(&courses)
 	return courses
 }
 
