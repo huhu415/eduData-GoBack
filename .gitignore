@@ -10,7 +10,7 @@ $RECYCLE.BIN/
 .TemporaryItems
 .Trashes
 
-PostManTool
+PostMan.http
 config.yaml
 .idea
 eduData
