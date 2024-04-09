@@ -106,6 +106,26 @@
 2. 检查[database](database/database.go)中表的初始化那行注释与否
 3. 检查[router](router/router.go)中的路由与中间件是否逻辑正确
 
+### config.yaml 示例
+```
+pg_config : host=localhost user=postgre password=123 dbname=123 port=5432 sslmode=disable TimeZone=Asia/Shanghai
+listen_port : 8081
+jwt_key : 9385g0x98n347tx980y****s****
+UserAgent : Mozilla/5.0 (Macintosh Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+
+# https://www.jfbym.com/test/52.html 云码,地址
+jfym_request_url : http://www.jfbym.com/api/YmServer/customApi
+jfym_token : XNcI2JjmD882dHRqDiFMYibe*******
+
+# BaiduAccessToken要30天更新一次，否则会报错. 到期于2024.3.20
+# https://console.bce.baidu.com/tools/#/index 更新token地址
+baidu_request_url : https://aip.baidubce.com/rest/2.0/ocr/v1/numbers
+baidu_accessToken : 24.aa2194d8df42835d0763*****852ba5.*****0******
+```
+
+----------------
+
+
 
 ## TODOs
 
