@@ -7,7 +7,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"eduData/setting"
+	"eduData/bootstrap"
 )
 
 var db *gorm.DB
@@ -54,9 +54,10 @@ type TimeTable struct {
 	grade     string // 年级
 }
 
+// 新建数据库连接
 func NewDatabase() {
 	var err error
-	dsn := setting.Postgres
+	dsn := bootstrap.C.PgConfig
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		println("database : gorm.Open(), database connect error")
@@ -69,6 +70,7 @@ func NewDatabase() {
 
 	// Migrate the schema, 创建表用的, 就用一次就完事了
 	if err = db.AutoMigrate(&Course{}, &CourseGrades{}, &TimeTable{}); err != nil {
+		fmt.Println("database : db.AutoMigrate(), database connect error")
 		panic(err)
 	}
 
@@ -82,6 +84,16 @@ func NewDatabase() {
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	fmt.Println("database Connected!")
+}
+
+// CloseDatabase 断开数据库连接
+func CloseDatabase() {
+	sqlDB, err := db.DB()
+	if err != nil {
+		println("database : db.DB(), database connect error")
+	}
+	sqlDB.Close()
+	fmt.Println("database Closed!")
 }
 
 // AddCourse 添加多条课程, 并且把用户名也添加进去

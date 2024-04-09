@@ -12,7 +12,7 @@ import (
 	"net/url"
 	"strings"
 
-	"eduData/setting"
+	"eduData/bootstrap"
 )
 
 // OCRResult 结构体表示整个OCR的百度的数字识别结果
@@ -32,8 +32,8 @@ type OCRResult struct {
 
 // NumberIdentify 传入图片base64编码, 并返回百度识别后的数据/*
 func NumberIdentify(base64Image *string) (string, error) {
-	requestUrl := setting.RequestUrl
-	accessToken := setting.BaiduAccessToken
+	requestUrl := bootstrap.C.BaiduRequestUrl
+	accessToken := bootstrap.C.BaiduAccesstoken
 
 	client := &http.Client{} //构建http客户端实例
 

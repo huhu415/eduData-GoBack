@@ -8,7 +8,7 @@ import (
 
 	"net/http"
 
-	"eduData/setting"
+	"eduData/bootstrap"
 )
 
 const (
@@ -21,7 +21,7 @@ const (
 // CookieAppend = DropDownListWeeks=DropDownListWeeks=13*/
 func GetData(cookie *cookiejar.Jar, username, LeftChidUrl string, CookieAppend ...any) (*[]byte, error) {
 	// 从setting中获取UserAgent
-	var userAgent = setting.UserAgent
+	var userAgent = bootstrap.C.UserAgent
 
 	//解析参数
 	var CookieAppendRes string

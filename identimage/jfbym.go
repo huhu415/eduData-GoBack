@@ -12,7 +12,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"eduData/setting"
+	"eduData/bootstrap"
 )
 
 type Response struct {
@@ -30,8 +30,8 @@ type ResponseData struct {
 }
 
 func CommonVerify(image *string) (string, error) {
-	Token := setting.Token
-	CustomUrl := setting.CustomUrl
+	CustomUrl := bootstrap.C.JfymRequestUrl
+	Token := bootstrap.C.JfymToken
 
 	//通用数英1~6位plus 10103
 	config := map[string]interface{}{}

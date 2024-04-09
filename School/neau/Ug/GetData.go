@@ -1,7 +1,7 @@
 package neauUg
 
 import (
-	"eduData/setting"
+	"eduData/bootstrap"
 	"io"
 	"net/http"
 	"net/http/cookiejar"
@@ -24,7 +24,7 @@ func GetData(cookieJar *cookiejar.Jar, data string) (*[]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	request.Header.Set("User-Agent", setting.UserAgent)
+	request.Header.Set("User-Agent", bootstrap.C.UserAgent)
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	request.Header.Set("planCode", data)
 	resp, err := client.Do(request)
