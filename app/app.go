@@ -29,12 +29,6 @@ const (
 	LEFTCORUSEALL = "Course/StuCourseQuery.aspx?EID=pLiWBm!3y8J!emOuKhzHa3uED3OEJzAvyCpKfhbkdg9RKe9VDAjrUw==&UID="
 )
 
-// YearSemester 年与学期的结构体
-type YearSemester struct {
-	Year     string // 43是23年, 44是24年
-	Semester string // 1是春季-下学期, 2是秋季-上学期
-}
-
 // judgeUgOrPgGetInfo 根据学校和研究生本科生判断获取html并解析
 func judgeUgOrPgGetInfo(c *gin.Context, cookieJar *cookiejar.Jar) ([]database.Course, error) {
 	var table []database.Course
@@ -81,6 +75,12 @@ func judgeUgOrPgGetInfo(c *gin.Context, cookieJar *cookiejar.Jar) ([]database.Co
 		return nil, errors.New("不支持的学校")
 	}
 	return table, nil
+}
+
+// YearSemester 年与学期的结构体
+type YearSemester struct {
+	Year     string // 43是23年, 44是24年
+	Semester string // 1是春季-下学期, 2是秋季-上学期
 }
 
 // judgeUgOrPgGetGrade 根据学校和研究生本科生判断获取成绩的html, 并解析成绩

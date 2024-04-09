@@ -12,8 +12,8 @@ import (
 	"net/http/cookiejar"
 	"net/url"
 
+	"eduData/bootstrap"
 	ident "eduData/identimage"
-	"eduData/setting"
 )
 
 const (
@@ -30,7 +30,7 @@ const (
 // Signin 登陆哈理工本科生管理系统, 会拿到认证后可以使用的coookie
 func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 	// 从setting中获取UserAgent
-	var userAgent = setting.UserAgent
+	var userAgent = bootstrap.C.UserAgent
 
 	// 新建一个cookieJar
 	cookieJar, err := cookiejar.New(nil)

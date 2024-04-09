@@ -14,13 +14,13 @@ import (
 	"net/http/cookiejar"
 	"net/url"
 
-	"eduData/setting"
+	"eduData/bootstrap"
 )
 
 // GetData 获取原始的各种侧边栏内容, moduleId=2020是成绩查询, 2000是本学期课表, 但2020的成绩页面是空的, 没有成绩, 只有查询按钮
 func GetData(cookieJar *cookiejar.Jar, moduleId string) (*[]byte, error) {
 	// 从setting中获取UserAgent
-	var userAgent = setting.UserAgent
+	var userAgent = bootstrap.C.UserAgent
 
 	//新建一个客户端
 	client := &http.Client{
@@ -94,7 +94,7 @@ func GetDataScore(cookieJar *cookiejar.Jar, year, term string) (*[]byte, error) 
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("User-Agent", setting.UserAgent)
+	req.Header.Add("User-Agent", bootstrap.C.UserAgent)
 	req.Header.Add("Upgrade-Insecure-Requests", "1")
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	resp, err := client.Do(req)

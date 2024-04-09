@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 
-	"eduData/setting"
+	"eduData/bootstrap"
 )
 
 type JWT struct {
@@ -16,7 +16,7 @@ type JWT struct {
 
 func NewJWT() *JWT {
 	return &JWT{
-		JwtSecretKey: []byte(setting.JwtKey),
+		JwtSecretKey: []byte(bootstrap.C.JwtKey),
 	}
 }
 

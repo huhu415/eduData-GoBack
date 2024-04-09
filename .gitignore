@@ -1,5 +1,5 @@
 # Windows
-[Dd]esktop.ini
+Ddesktop.ini
 Thumbs.db
 $RECYCLE.BIN/
 
@@ -10,10 +10,8 @@ $RECYCLE.BIN/
 .TemporaryItems
 .Trashes
 
-ssl
 PostManTool
-config/config_copy.ini
-config/config.ini
+config.yaml
 .idea
 eduData
 eduData.log

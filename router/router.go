@@ -15,8 +15,8 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"eduData/app"
+	"eduData/bootstrap"
 	"eduData/middleware"
-	"eduData/setting"
 )
 
 func InitRouter() {
@@ -60,7 +60,7 @@ func InitRouter() {
 	// todo 增加内部测试功能, 内部账号密码登录, 发送一个html, 返回解析好的课表, 可以用周数的那个函数来调用
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%s", setting.HttpPort),
+		Addr:    fmt.Sprintf(":%s", bootstrap.C.ListenPort),
 		Handler: r,
 	}
 

@@ -16,7 +16,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"net/http/cookiejar"
 
-	"eduData/setting"
+	"eduData/bootstrap"
 )
 
 // encryptPassword 加密密码
@@ -92,7 +92,7 @@ func Signin(username, password string) (*cookiejar.Jar, error) {
 	if err != nil {
 		return nil, err
 	}
-	request.Header.Add("User-Agent", setting.UserAgent)
+	request.Header.Add("User-Agent", bootstrap.C.UserAgent)
 	resp, err := client.Do(request)
 	if err != nil {
 		return nil, err
@@ -129,7 +129,7 @@ func Signin(username, password string) (*cookiejar.Jar, error) {
 	if err != nil {
 		return nil, err
 	}
-	request.Header.Set("User-Agent", setting.UserAgent)
+	request.Header.Set("User-Agent", bootstrap.C.UserAgent)
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	resp, err = client.Do(request)
 	if err != nil {
@@ -150,7 +150,7 @@ func Signin(username, password string) (*cookiejar.Jar, error) {
 	if err != nil {
 		return nil, err
 	}
-	request.Header.Set("User-Agent", setting.UserAgent)
+	request.Header.Set("User-Agent", bootstrap.C.UserAgent)
 	resp, err = client.Do(request)
 	if err != nil {
 		return nil, err
