@@ -13,5 +13,5 @@ func main() {
 	database.NewDatabase()
 	defer database.CloseDatabase()
 
-	router.InitRouter()
+	router.InitRouterRunServer()
 }

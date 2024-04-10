@@ -19,7 +19,7 @@ import (
 	"eduData/middleware"
 )
 
-func InitRouter() {
+func InitRouterRunServer() {
 	// 发布模式, 删了就是debug模式
 	gin.SetMode(gin.ReleaseMode)
 
@@ -28,12 +28,7 @@ func InitRouter() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer func(f *os.File) {
-		err = f.Close()
-		if err != nil {
-			fmt.Println("关闭文件失败" + err.Error())
-		}
-	}(f)
+	defer f.Close()
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 
 	// 路由初始化, 1.日志 2.恢复 3.检查表单完成性
@@ -63,10 +58,13 @@ func InitRouter() {
 		Addr:    fmt.Sprintf(":%s", bootstrap.C.ListenPort),
 		Handler: r,
 	}
+	runServer(srv)
+}
 
-	// http模式
+func runServer(srv *http.Server) {
 	go func() {
-		if err = srv.ListenAndServe(); err != nil || errors.Is(http.ErrServerClosed, err) {
+		log.Printf("Server listening at %s\n", srv.Addr)
+		if err := srv.ListenAndServe(); err != nil || errors.Is(http.ErrServerClosed, err) {
 			log.Fatalf("listen: %s\n", err)
 		}
 	}()
@@ -85,7 +83,7 @@ func InitRouter() {
 	// the request it is currently handling
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	if err = srv.Shutdown(ctx); err != nil {
+	if err := srv.Shutdown(ctx); err != nil {
 		log.Fatal("Server forced to shutdown: ", err)
 	}
 
