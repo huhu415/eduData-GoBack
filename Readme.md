@@ -9,11 +9,11 @@
 ❗️❗️❗️本仓库的所有内容仅供**学习**和**参考**之用, 禁止用于**任何商业用途**.
 
 ### 技术栈
-- 使用了golang作为后台语言
-- postgresql作为数据库
-- gorm来操作数据库
-- gin作为web框架
-- [微信小程序](https://github.com/huhu415/eduData-WxFront)为前端显示
+- 语言: Go
+- 数据库: Postgresql
+- ORM: Gorm
+- Web框架: Gin
+- 前端: [微信小程序](https://github.com/huhu415/eduData-WxFront)
 
 ### 目前支持的大学
 
@@ -44,7 +44,8 @@
 
 
 # Get Start
-## Self Compiled
+## Traditional
+### Compiled
 1. 安装golang, 安装方法自行百度, 国内需要配置go代理
    - ```go env -w GOPROXY=https://goproxy.cn,direct```
    - ```go env -w GOSUMDB=goproxy.cn/sumdb/sum.golang.org```
@@ -52,18 +53,32 @@
 2. 要在项目中安装依赖, 在项目根目录下执行```go mod tidy```
 3. 安装postpresql
    - 创建一个数据库```CREATE DATABASE Courses;```
-   - **环境变量**或**配置文件**中配置好数据库的连接信息
-   - ```sudo vim /etc/postgresql/9.3/main/postgresql.conf```中修改```listen_addresses = '*'```
-   - ```sudo vim /etc/postgresql/9.3/main/pg_hba.conf```中添加```ipv4 0.0.0.0/0```
-4. 在项目根目录下执行```go build .```, 就编译出来可执行文件了
-5. 执行```./eduData```就可以运行了
-6. (可选)如果要部署的话, 用[systemctl命令](eduData.service)这个文件来管理
-    - 把这个文件修改好参数, 然后放到```/etc/systemd/system/```目录下
-    - 执行```systemctl start eduData```就可以启动了
-    - 执行```systemctl stop eduData```就可以停止了
-    - 执行```systemctl status eduData```就可以查看状态和日志
-    - 执行```systemctl enable eduData```就可以开机自动启动了
+   - (如果跨域访问)```sudo vim /etc/postgresql/9.3/main/postgresql.conf```中修改```listen_addresses = '*'```
+   - (如果跨域访问)```sudo vim /etc/postgresql/9.3/main/pg_hba.conf```中添加```ipv4 0.0.0.0/0```
+4. **环境变量**或**配置文件**中配置好数据库信息等各种参数
+5. 在项目根目录下执行```go build .```, 就编译出来可执行文件了
+6. 执行```./eduData```就可以运行了
 
+### Deploy
+eduData.service
+```shell
+# Put the eduData.service file into /etc/systemd/system/
+[Service]
+Type=simple
+ExecStart=/root/eduData-GoBack/eduData
+WorkingDirectory=/root/eduData-GoBack
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+Command
+```shell
+systemctl start eduData
+systemctl stop eduData
+systemctl status eduData
+systemctl enable eduDat
+```
 
 ## docker
 ### Use Env
