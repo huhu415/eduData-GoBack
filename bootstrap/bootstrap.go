@@ -35,18 +35,24 @@ var C Config
 
 func Loadconfig() {
 	log.Println("Init from config file")
+	// Default config
+	viper.SetDefault("baidu_request_url", "https://aip.baidubce.com/rest/2.0/ocr/v1/numbers")
+	viper.SetDefault("jfym_request_url", "http://www.jfbym.com/api/YmServer/customApi")
+	viper.SetDefault("user_agent", "Mozilla/5.0 (Macintosh Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+	viper.SetDefault("jwt_key", "9385g0x98n347tx980y34g9sfgsldkjvilr")
+
 	viper.SetEnvPrefix("edu")
 	viper.AutomaticEnv()
 
 	parseFlag()
 
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+
 	pathAbs, err := filepath.Abs(os.Args[0])
 	if err != nil {
 		return
 	}
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-
 	viper.AddConfigPath(pathAbs)
 	viper.AddConfigPath("/Users/hello/Library/Mobile Documents/com~apple~CloudDocs/代码项目/eduData-GoBack")
 	viper.AddConfigPath(".")
@@ -61,19 +67,19 @@ func Loadconfig() {
 		log.Printf("unmarshal config file error: %+v\n", err)
 		return
 	}
+	log.Println(viper.GetString("listen_port"))
 	log.Println("read config file success")
 	return
 }
 
 func parseFlag() {
 	pflag.StringP("configFile", "c", "config.yaml", "config file")
-	pflag.StringP("listen_port", "l", "8081", "listen address")
+	pflag.StringP("listen_port", "l", "8080", "listen address")
 	pflag.BoolP("version", "v", false, "version information")
 	pflag.Parse()
 	if err := viper.BindPFlags(pflag.CommandLine); err != nil {
 		panic(err)
 	}
-	fmt.Println("123123123")
 	if viper.GetBool("version") {
 		fmt.Println("version:", version)
 		fmt.Println("buildDate:", buildDate)

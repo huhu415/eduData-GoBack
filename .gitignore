@@ -12,6 +12,7 @@ $RECYCLE.BIN/
 
 PostMan.http
 config.yaml
+docker-compose.yml
 .idea
 eduData
 eduData.log
