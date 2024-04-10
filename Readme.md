@@ -1,26 +1,25 @@
 # eduData(大学教务处爬虫)
 这个爬虫是通过学生学号和密码, 模仿真人来登陆到教务处系统, 获取并解析课程表到数据库, 就可以通过后端增删改发送给前端
 
-### 为什么开源
+### Why open source ?
 ❗❗️❗️现在从教务处查课表的爬虫小程序, 只要涉及到广告等盈利手段, 那么就是违法的.
 
 ❗️❗️❗️只不过就是 __法律意识淡薄__ 或 __大学和商业组织__ 没有找到他, **铤而走险**.
 
 ❗️❗️❗️本仓库的所有内容仅供**学习**和**参考**之用, 禁止用于**任何商业用途**.
 
-### 技术栈
+### Tech
 - 语言: Go
 - 数据库: Postgresql
 - ORM: Gorm
 - Web框架: Gin
 - 前端: [微信小程序](https://github.com/huhu415/eduData-WxFront)
 
-### 目前支持的大学
-
-- [x] [哈尔滨理工大学](School/hrbust)
+### Supported universities
+- [x] [hrbust_哈尔滨理工大学](School/hrbust)
     - [x] 本科生
     - [x] 研究生
-- [x] [东北农业大学](School/neau)
+- [x] [neau_东北农业大学](School/neau)
     - [x] 本科生
     - [ ] 研究生
 - [ ] 黑龙江大学
@@ -34,7 +33,6 @@
     - [ ] 研究生
 
 ### TODOs
-
 - [ ] 多适配不同的学校
 - [ ] 通过grpc来分布式获取课表, 以防学校封ip
 - [ ] 日志记录的不全面
@@ -42,10 +40,9 @@
 - [ ] 以后有钱了, 把百度orc下了, 因为百度的需要一个月更新一次凭证, 到期后也没有提示, 就是500错误
 
 
-
 # Get Start
 ## Traditional
-### Compiled
+#### Compiled
 1. 安装golang, 安装方法自行百度, 国内需要配置go代理
    - ```go env -w GOPROXY=https://goproxy.cn,direct```
    - ```go env -w GOSUMDB=goproxy.cn/sumdb/sum.golang.org```
@@ -59,7 +56,7 @@
 5. 在项目根目录下执行```go build .```, 就编译出来可执行文件了
 6. 执行```./eduData```就可以运行了
 
-### Deploy
+#### Deploy
 eduData.service
 ```shell
 # Put the eduData.service file into /etc/systemd/system/
