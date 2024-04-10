@@ -13,6 +13,7 @@ $RECYCLE.BIN/
 # Project
 .idea
 PostMan.http
+eduData.service
 config.yaml
 docker-compose.yml
 eduData
