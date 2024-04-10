@@ -10,9 +10,10 @@ $RECYCLE.BIN/
 .TemporaryItems
 .Trashes
 
+# Project
+.idea
 PostMan.http
 config.yaml
 docker-compose.yml
-.idea
 eduData
 eduData.log
