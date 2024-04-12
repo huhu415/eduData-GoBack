@@ -3,10 +3,10 @@ package middleware
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 // LoginForm POST中body的内容, 这个结构体只用在判断表单完整性来使用
@@ -49,7 +49,6 @@ func Logger() gin.HandlerFunc {
 // LoggerRecordForm 记录提交的表单中的内容
 func LoggerRecordForm() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
 		var loginForm LoginForm
 		if err := c.ShouldBind(&loginForm); err != nil {
 			_ = c.Error(errors.New("middleware.LoggerRecordForm()函数中ShouldBind():" + err.Error())).SetType(gin.ErrorTypePrivate)

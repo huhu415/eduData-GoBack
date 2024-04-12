@@ -53,6 +53,7 @@ func InitRouterRunServer() {
 		auth.POST("/getTimeTable", app.GetTimeTable)
 	}
 	// todo 增加内部测试功能, 内部账号密码登录, 发送一个html, 返回解析好的课表, 可以用周数的那个函数来调用
+	// todo https://gin-gonic.com/zh-cn/docs/examples/serving-data-from-reader/
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", bootstrap.C.ListenPort),

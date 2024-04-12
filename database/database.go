@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"gorm.io/driver/postgres"
@@ -54,7 +55,7 @@ type TimeTable struct {
 	grade     string // 年级
 }
 
-// 新建数据库连接
+// NewDatabase 新建数据库连接
 func NewDatabase() {
 	var err error
 	dsn := bootstrap.C.PgConfig
@@ -83,7 +84,7 @@ func NewDatabase() {
 	// SetConnMaxLifetiment 设置连接的最大可复用时间。
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
-	fmt.Println("database Connected!")
+	log.Println("database Connected!")
 }
 
 // CloseDatabase 断开数据库连接

@@ -33,7 +33,7 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 	//第一次请求(GET方法)
 	//请求首页, 接收带有__VIEWSTATE, __EVENTVALIDATION, ValidateCode链接的响应体,
 	//同时__VIEWSTATE里面也有验证码ValidateCode链接, 两个途径都可以拿到ValidateCode链接
-	req, err := http.NewRequest("GET", INDEXPG, nil)
+	req, err := http.NewRequest(http.MethodGet, INDEXPG, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 
 	//第二次请求(GET方法)
 	//请求验证码, 并接收图片和cookie
-	req, err = http.NewRequest("GET", INDEXPG+ValidateCodeSrc, nil)
+	req, err = http.NewRequest(http.MethodGet, INDEXPG+ValidateCodeSrc, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +95,7 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 	values.Set("drpLoginType", "1")
 	values.Set("__ASYNCPOST", "true")
 	//构建请求体
-	req, _ = http.NewRequest("POST", INDEXPG, strings.NewReader(values.Encode()))
+	req, _ = http.NewRequest(http.MethodPost, INDEXPG, strings.NewReader(values.Encode()))
 	req.Header.Add("cookie", cookie)
 	req.Header.Add("User-Agent", userAgent)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")

@@ -3,9 +3,6 @@ package app
 
 import (
 	"context"
-	hrbustPg "eduData/School/hrbust/Pg"
-	hrbustUg "eduData/School/hrbust/Ug"
-	neauUg "eduData/School/neau/Ug"
 	"errors"
 	"net/http"
 	"net/http/cookiejar"
@@ -17,6 +14,9 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/sync/errgroup"
 
+	hrbustPg "eduData/School/hrbust/Pg"
+	hrbustUg "eduData/School/hrbust/Ug"
+	neauUg "eduData/School/neau/Ug"
 	"eduData/database"
 	"eduData/middleware"
 )
