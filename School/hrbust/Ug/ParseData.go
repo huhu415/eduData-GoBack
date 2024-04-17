@@ -155,10 +155,9 @@ func ParseDataCrouseAll(table *[]byte) ([]database.Course, error) {
 				} else {
 					// 如果没有课程时间的table, 那么就是单纯的汉字, 或空白
 					text := strings.TrimSpace(cell.Text())
-					// 判断空白与否
 					if len(text) == 0 {
-						// 空白的就不放数据库里了
-						course.WeekDay, course.Week, course.NumberOfLessons, course.NumberOfLessonsLength = 0, 0, 0, 0
+						// 空白的
+						course.BeginWeek, course.EndWeek = 0, 0
 						course.CourseLocation = ""
 					} else {
 						// 类似形式 : 1-15周 时间地点都不占
@@ -167,9 +166,9 @@ func ParseDataCrouseAll(table *[]byte) ([]database.Course, error) {
 							return
 						}
 						course.BeginWeek, course.EndWeek = startWeek, endWeek
-						course.WeekDay, course.Week, course.NumberOfLessons, course.NumberOfLessonsLength = 0, 0, 0, 0
-						courses = append(courses, course)
 					}
+					course.WeekDay, course.Week, course.NumberOfLessons, course.NumberOfLessonsLength = 0, 0, 0, 0
+					courses = append(courses, course)
 				}
 			}
 		})
