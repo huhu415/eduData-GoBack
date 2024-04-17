@@ -26,14 +26,13 @@
 
 #FROM alpine
 
-FROM alpine:3
+FROM amd64/alpine
 
 # 待解决时区问题
 ENV TZ=Asia/Shanghai
-#RUN apk add tzdata
+RUN apk add --no-cache tzdata
 
 COPY ./eduData /
-COPY config/config.ini /config/config.ini
 
 EXPOSE 8080
 
