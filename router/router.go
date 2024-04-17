@@ -33,12 +33,14 @@ func InitRouterRunServer() {
 
 	// 路由初始化, 1.日志 2.恢复 3.检查表单完成性
 	r := gin.New()
-	r.Use(middleware.Logger(), gin.Recovery(), middleware.LoggerRecordForm())
+	r.Any("/health", middleware.Logger(), gin.Recovery(), func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"status": "active",
+		})
+	})
 
 	// 路由分组
-	r.Any("/health", func(c *gin.Context) {
-		c.Status(200)
-	})
+	r.Use(middleware.Logger(), gin.Recovery(), middleware.LoggerRecordForm())
 
 	si := r.Group("/")
 	si.Use(middleware.Signin())
