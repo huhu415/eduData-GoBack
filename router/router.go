@@ -36,6 +36,10 @@ func InitRouterRunServer() {
 	r.Use(middleware.Logger(), gin.Recovery(), middleware.LoggerRecordForm())
 
 	// 路由分组
+	r.Any("/health", func(c *gin.Context) {
+		c.Status(200)
+	})
+
 	si := r.Group("/")
 	si.Use(middleware.Signin())
 	{
