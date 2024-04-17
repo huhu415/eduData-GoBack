@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"reflect"
 
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -34,13 +35,14 @@ type Config struct {
 var C Config
 
 func Loadconfig() {
-	log.Println("Init from config file")
+	log.Println("**********Initing flag/env/config**********")
 	// Default config
 	viper.SetDefault("baidu_request_url", "https://aip.baidubce.com/rest/2.0/ocr/v1/numbers")
 	viper.SetDefault("jfym_request_url", "http://www.jfbym.com/api/YmServer/customApi")
 	viper.SetDefault("user_agent", "Mozilla/5.0 (Macintosh Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
 	viper.SetDefault("jwt_key", "9385g0x98n347tx980y34g9sfgsldkjvilr")
 
+	// 环境变量前缀EDU_
 	viper.SetEnvPrefix("edu")
 	viper.AutomaticEnv()
 
@@ -53,22 +55,32 @@ func Loadconfig() {
 	if err != nil {
 		return
 	}
+	// run path
 	viper.AddConfigPath(pathAbs)
+	// for goland debug
 	viper.AddConfigPath("/Users/hello/Library/Mobile Documents/com~apple~CloudDocs/代码项目/eduData-GoBack")
-	viper.AddConfigPath(".")
+	viper.AddConfigPath(pathAbs + "/config")
 
 	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {
 		log.Printf("read config file error: %+v\n", err)
-		return
+	} else {
+		log.Printf("#######read config file success#######")
 	}
 
 	if err := viper.Unmarshal(&C); err != nil {
 		log.Printf("unmarshal config file error: %+v\n", err)
 		return
 	}
-	log.Println(viper.GetString("listen_port"))
-	log.Println("read config file success")
+
+	// 遍历结构体
+	t := reflect.TypeOf(C)
+	v := reflect.ValueOf(C)
+	for i := 0; i < t.NumField(); i++ {
+		log.Printf("%s : %s", t.Field(i).Name, v.Field(i).Interface())
+	}
+
+	log.Println("**********Init flag/env/config success**********")
 	return
 }
 
