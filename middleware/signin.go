@@ -6,6 +6,7 @@ import (
 	"net/http/cookiejar"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 
 	hrbustPg "eduData/School/hrbust/Pg"
 	hrbustUg "eduData/School/hrbust/Ug"
@@ -13,23 +14,23 @@ import (
 )
 
 // JudgeSchoolSignIn 判断是哪个学校的用户来登陆
-func judgeSchoolSignIn(c *gin.Context) (*cookiejar.Jar, error) {
-	switch c.PostForm("school") {
+func judgeSchoolSignIn(loginForm LoginForm) (*cookiejar.Jar, error) {
+	switch loginForm.School {
 	// 哈理工
 	case "hrbust":
-		switch c.PostForm("studentType") {
-		case "1":
-			return hrbustUg.Signin(c.PostForm("username"), c.PostForm("password"))
-		case "2":
-			return hrbustPg.Signin(c.PostForm("username"), c.PostForm("password"))
+		switch loginForm.StudentType {
+		case 1:
+			return hrbustUg.Signin(loginForm.Username, loginForm.Password)
+		case 2:
+			return hrbustPg.Signin(loginForm.Username, loginForm.Password)
 		}
 	// 东北农业大学
 	case "neau":
-		switch c.PostForm("studentType") {
-		case "1":
-			return neauUg.Signin(c.PostForm("username"), c.PostForm("password"))
-		case "2":
-			return nil, errors.New(c.PostForm("school") + "研究生登陆功能还未开发")
+		switch loginForm.StudentType {
+		case 1:
+			return neauUg.Signin(loginForm.Username, loginForm.Password)
+		case 2:
+			return nil, errors.New(loginForm.School + "研究生登陆功能还未开发")
 		}
 	// 其他没有适配的学校
 	default:
@@ -41,10 +42,19 @@ func judgeSchoolSignIn(c *gin.Context) (*cookiejar.Jar, error) {
 // Signin 中间件登陆函数
 func Signin() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		var loginForm LoginForm
+		if err := c.ShouldBindBodyWith(&loginForm, binding.JSON); err != nil {
+			_ = c.Error(errors.New("middleware.Signin()函数中ShouldBindBodyWith():" + err.Error())).SetType(gin.ErrorTypePrivate)
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status":  "fail",
+				"message": "表单格式错误,重新登陆后重新提交",
+			})
+			c.Abort()
+		}
 		// 判断是哪个学校的用户来登陆
-		signinCookieJar, err := judgeSchoolSignIn(c)
+		signinCookieJar, err := judgeSchoolSignIn(loginForm)
 		if err != nil {
-			_ = c.Error(errors.New("middleware.signin()JudgeSchoolSignIn():" + c.PostForm("school") + c.PostForm("studentType") + err.Error())).SetType(gin.ErrorTypePrivate)
+			_ = c.Error(errors.New("middleware.signin()JudgeSchoolSignIn():" + err.Error())).SetType(gin.ErrorTypePrivate)
 
 			// 获取最内层的错误给用户
 			for {

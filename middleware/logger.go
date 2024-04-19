@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 // LoginForm POST中body的内容, 这个结构体只用在判断表单完整性来使用
@@ -50,8 +51,8 @@ func Logger() gin.HandlerFunc {
 func LoggerRecordForm() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var loginForm LoginForm
-		if err := c.ShouldBind(&loginForm); err != nil {
-			_ = c.Error(errors.New("middleware.LoggerRecordForm()函数中ShouldBind():" + err.Error())).SetType(gin.ErrorTypePrivate)
+		if err := c.ShouldBindBodyWith(&loginForm, binding.JSON); err != nil {
+			_ = c.Error(errors.New("middleware.LoggerRecordForm()函数中ShouldBindBodyWith():" + err.Error())).SetType(gin.ErrorTypePrivate)
 			c.JSON(http.StatusBadRequest, gin.H{
 				"status":  "fail",
 				"message": "表单格式错误,重新登陆后重新提交",
