@@ -98,10 +98,14 @@ func CloseDatabase() {
 }
 
 // AddCourse 添加多条课程, 并且把用户名也添加进去
-func AddCourse(courses []Course, username string) {
+func AddCourse(courses []Course, username, school string, studentType int) {
+	// 如果有StuType, 那么添加到结构体中, 不然就不添加
 	for index := range courses {
 		courses[index].StuID = username
+		courses[index].School = school
+		courses[index].StuType = studentType
 	}
+
 	db.Create(&courses)
 }
 
@@ -145,7 +149,7 @@ func CourseGradesByUsername(username, school string) ([]CourseGrades, []CourseGr
 }
 
 // WeightedAverage 计算加权平均分和加拿大绩点算法
-func WeightedAverage(username, school, stuType string) (float64, float64) {
+func WeightedAverage(username, school string, stuType int) (float64, float64) {
 	var result1, result2 float64
 	db.Raw("SELECT round(COALESCE(SUM( course_grade * course_credit ), 0) / COALESCE(SUM ( course_credit ), 1),2) FROM course_grades WHERE course_type = '必修' AND course_grade >= 60  AND course_credit != 0 AND stu_id = ? AND school = ? and stu_type = ?", username, school, stuType).Scan(&result1)
 	db.Raw("SELECT round(COALESCE(sum((CASE WHEN course_grade >= 80 THEN 4.0 WHEN course_grade >= 70 THEN 3.0 WHEN course_grade >= 60 THEN 2.0 WHEN course_grade >= 50 THEN 1.0 ELSE 0.0 END)* course_credit), 0)/ COALESCE(sum(course_credit), 1),2)FROM course_grades WHERE course_credit != 0 AND course_grade!= 0 AND stu_id = ? AND school = ? and stu_type = ?", username, school, stuType).Scan(&result2)
