@@ -8,15 +8,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-)
 
-// LoginForm POST中body的内容, 这个结构体只用在判断表单完整性来使用
-type LoginForm struct {
-	Username    string `form:"username"  binding:"required"`
-	Password    string `form:"password"  binding:"required"`
-	School      string `form:"school"  binding:"required"`
-	StudentType int    `form:"studentType"  binding:"required,min=1,max=2"` // 1 本科生 2 研究生, 不可以是其他的
-}
+	"eduData/domain"
+)
 
 // Logger 日志中间件
 func Logger() gin.HandlerFunc {
@@ -50,14 +44,13 @@ func Logger() gin.HandlerFunc {
 // LoggerRecordForm 记录提交的表单中的内容
 func LoggerRecordForm() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var loginForm LoginForm
+		var loginForm domain.LoginForm
 		if err := c.ShouldBindBodyWith(&loginForm, binding.JSON); err != nil {
 			_ = c.Error(errors.New("middleware.LoggerRecordForm()函数中ShouldBindBodyWith():" + err.Error())).SetType(gin.ErrorTypePrivate)
-			c.JSON(http.StatusBadRequest, gin.H{
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"status":  "fail",
 				"message": "表单格式错误,重新登陆后重新提交",
 			})
-			c.Abort()
 		}
 
 		c.Set("username", loginForm.Username)

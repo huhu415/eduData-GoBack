@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"eduData/api/middleware"
 	"errors"
 	"net/http/cookiejar"
 	"strconv"
@@ -14,6 +13,7 @@ import (
 	hrbustPg "eduData/School/hrbust/Pg"
 	hrbustUg "eduData/School/hrbust/Ug"
 	neauUg "eduData/School/neau/Ug"
+	"eduData/domain"
 	"eduData/models"
 )
 
@@ -26,7 +26,7 @@ const (
 )
 
 // judgeUgOrPgGetInfo 根据学校和研究生本科生判断获取html并解析
-func judgeUgOrPgGetInfo(loginForm middleware.LoginForm, cookieJar *cookiejar.Jar) ([]models.Course, error) {
+func judgeUgOrPgGetInfo(loginForm domain.LoginForm, cookieJar *cookiejar.Jar) ([]models.Course, error) {
 	var table []models.Course
 	switch loginForm.School {
 	// 哈理工
@@ -73,14 +73,40 @@ func judgeUgOrPgGetInfo(loginForm middleware.LoginForm, cookieJar *cookiejar.Jar
 	return table, nil
 }
 
+// JudgeSchoolSignIn 判断是哪个学校的用户来登陆
+func JudgeSchoolSignIn(loginForm domain.LoginForm) (*cookiejar.Jar, error) {
+	switch loginForm.School {
+	// 哈理工
+	case "hrbust":
+		switch loginForm.StudentType {
+		case 1:
+			return hrbustUg.Signin(loginForm.Username, loginForm.Password)
+		case 2:
+			return hrbustPg.Signin(loginForm.Username, loginForm.Password)
+		}
+	// 东北农业大学
+	case "neau":
+		switch loginForm.StudentType {
+		case 1:
+			return neauUg.Signin(loginForm.Username, loginForm.Password)
+		case 2:
+			return nil, errors.New(loginForm.School + "研究生登陆功能还未开发")
+		}
+	// 其他没有适配的学校
+	default:
+		return nil, errors.New("不支持的学校")
+	}
+	return nil, errors.New("不支持的学校")
+}
+
 // YearSemester 年与学期的结构体
-type YearSemester struct {
+type yearSemester struct {
 	Year     string // 43是23年, 44是24年
 	Semester string // 1是春季-下学期, 2是秋季-上学期
 }
 
 // judgeUgOrPgGetGrade 根据学校和研究生本科生判断获取成绩的html, 并解析成绩
-func judgeUgOrPgGetGrade(loginForm middleware.LoginForm, cookieJar *cookiejar.Jar) ([]models.CourseGrades, error) {
+func judgeUgOrPgGetGrade(loginForm domain.LoginForm, cookieJar *cookiejar.Jar) ([]models.CourseGrades, error) {
 	var grade []models.CourseGrades
 	switch loginForm.School {
 	// 哈理工
@@ -92,7 +118,7 @@ func judgeUgOrPgGetGrade(loginForm middleware.LoginForm, cookieJar *cookiejar.Ja
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 			errs, ctx := errgroup.WithContext(ctx)
-			msg := make(chan YearSemester, 10)
+			msg := make(chan yearSemester, 10)
 			var mutex sync.Mutex
 			for i := 0; i < 3; i++ {
 				errs.Go(func() error {
@@ -124,9 +150,9 @@ func judgeUgOrPgGetGrade(loginForm middleware.LoginForm, cookieJar *cookiejar.Ja
 			for i := atoiYear; i <= time.Now().Year(); i++ {
 				if i != atoiYear {
 					// 第一年没有春季成绩, 所以不是第一年的时候才添加春季
-					msg <- YearSemester{Year: strconv.Itoa(i%100 + 20), Semester: "1"}
+					msg <- yearSemester{Year: strconv.Itoa(i%100 + 20), Semester: "1"}
 				}
-				msg <- YearSemester{Year: strconv.Itoa(i%100 + 20), Semester: "2"}
+				msg <- yearSemester{Year: strconv.Itoa(i%100 + 20), Semester: "2"}
 			}
 
 			close(msg)
@@ -145,21 +171,7 @@ func judgeUgOrPgGetGrade(loginForm middleware.LoginForm, cookieJar *cookiejar.Ja
 	return grade, nil
 }
 
-type AddcouresStruct struct {
-	middleware.LoginForm
-	Color   string      `json:"color"`
-	Coures  string      `json:"coures" binding:"required"`
-	Teacher string      `json:"teacher"`
-	Time    []TimeEntry `json:"time" binding:"required"`
-}
-
-type TimeEntry struct {
-	Checkboxs  []int  `json:"checkboxs" binding:"required"`
-	MultiIndex []int  `json:"multiIndex" binding:"required"`
-	Place      string `json:"place"`
-}
-
-func parseAddCrouse(data AddcouresStruct) []models.Course {
+func parseAddCrouse(data *domain.AddcouresStruct) []models.Course {
 	var courses []models.Course
 	for _, key := range data.Time {
 		course := models.Course{

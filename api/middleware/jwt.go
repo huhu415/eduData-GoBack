@@ -9,6 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 
 	"eduData/bootstrap"
+	"eduData/domain"
 )
 
 type JWT struct {
@@ -42,7 +43,7 @@ func RequireAuthJwt() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, err)
 		}
 
-		var loginForm LoginForm
+		var loginForm domain.LoginForm
 		if err := c.ShouldBindBodyWith(&loginForm, binding.JSON); err != nil {
 			_ = c.Error(errors.New("middleware.RequireAuthJwt()函数中ShouldBindBodyWith():" + err.Error())).SetType(gin.ErrorTypePrivate)
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
