@@ -9,13 +9,13 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 
-	"eduData/database"
+	"eduData/models"
 )
 
 // ParseDataCrouseAll 给定一个学期的课表, 返回这个学期的所有课程, 解析本科生的
-func ParseDataCrouseAll(table *[]byte) ([]database.Course, error) {
+func ParseDataCrouseAll(table *[]byte) ([]models.Course, error) {
 	//创建返回的变量
-	var courses []database.Course
+	var courses []models.Course
 
 	// 使用 goquery 解析 HTML 表格
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(*table)))
@@ -29,7 +29,7 @@ func ParseDataCrouseAll(table *[]byte) ([]database.Course, error) {
 	}
 
 	//创建一个课程
-	course := database.Course{
+	course := models.Course{
 		// 因为函数是解析本科生, 所以这是本科生
 		StuType: 1,
 		School:  "hrbust",
@@ -182,9 +182,9 @@ func ParseDataCrouseAll(table *[]byte) ([]database.Course, error) {
 }
 
 // ParseDataCrouseByWeek 给定一个学期的课表和某一周, 返回这个学期的这周的课程, 解析本科生的
-func ParseDataCrouseByWeek(table *[]byte, week int) ([]database.Course, error) {
+func ParseDataCrouseByWeek(table *[]byte, week int) ([]models.Course, error) {
 	//创建返回的变量
-	var courses []database.Course
+	var courses []models.Course
 
 	// 使用 goquery 解析 HTML 表格
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(*table)))
@@ -198,7 +198,7 @@ func ParseDataCrouseByWeek(table *[]byte, week int) ([]database.Course, error) {
 	}
 
 	//创建一个课程
-	course := database.Course{
+	course := models.Course{
 		// 因为函数是解析本科生, 所以这是本科生
 		StuType: 1,
 		School:  "hrbust",
@@ -351,20 +351,20 @@ func ParseDataCrouseByWeek(table *[]byte, week int) ([]database.Course, error) {
 }
 
 // ParseDataSore 解析哈理工本科生成绩页面
-func ParseDataSore(table *[]byte, year, term string) ([]database.CourseGrades, error) {
+func ParseDataSore(table *[]byte, year, term string) ([]models.CourseGrades, error) {
 	// 使用 goquery 解析 HTML 表格
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(*table)))
 	if err != nil {
 		return nil, err
 	}
 
-	var courseGrades []database.CourseGrades
+	var courseGrades []models.CourseGrades
 	//判断是否能找到课程信息
 	//if doc.Find("table.datalist tbody tr").Length() == 0 {
 	//	return nil, errors.New("not find table.datalist tbody tr")
 	//}
 
-	courseGrade := database.CourseGrades{
+	courseGrade := models.CourseGrades{
 		// 哈理工本科生
 		School:   "hrbust",
 		StuType:  1,
