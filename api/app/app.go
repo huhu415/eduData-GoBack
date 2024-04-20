@@ -8,24 +8,25 @@ import (
 	"net/http/cookiejar"
 	"strconv"
 
+	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/golang-jwt/jwt/v5"
 
 	"eduData/api/middleware"
+	"eduData/domain"
 	"eduData/models"
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 // Signin 下发jwt的cookie
 func Signin(c *gin.Context) {
-	var loginForm middleware.LoginForm
+	var loginForm domain.LoginForm
 	if err := c.ShouldBindBodyWith(&loginForm, binding.JSON); err != nil {
 		_ = c.Error(errors.New("app.Signin()函数中ShouldBindBodyWith():" + err.Error())).SetType(gin.ErrorTypePrivate)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  "fail",
 			"message": "表单格式错误,重新登陆后重新提交",
 		})
-		c.Abort()
+		return
 	}
 
 	//创建jwt
@@ -52,6 +53,16 @@ func Signin(c *gin.Context) {
 
 // UpdataDB 更新数据库中的课程表
 func UpdataDB(c *gin.Context) {
+	var loginForm domain.LoginForm
+	if err := c.ShouldBindBodyWith(&loginForm, binding.JSON); err != nil {
+		_ = c.Error(errors.New("app.UpdataDB()函数中ShouldBindBodyWith():" + err.Error())).SetType(gin.ErrorTypePrivate)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "fail",
+			"message": "表单格式错误,重新登陆后重新提交",
+		})
+		return
+	}
+
 	cookieAny, ok := c.Get("cookie")
 	if !ok {
 		_ = c.Error(errors.New("app : signin中间件没有正常设置username, cookie, studentType")).SetType(gin.ErrorTypePrivate)
@@ -62,16 +73,6 @@ func UpdataDB(c *gin.Context) {
 		return
 	}
 	cookie := cookieAny.(*cookiejar.Jar)
-
-	var loginForm middleware.LoginForm
-	if err := c.ShouldBindBodyWith(&loginForm, binding.JSON); err != nil {
-		_ = c.Error(errors.New("app.UpdataDB()函数中ShouldBindBodyWith():" + err.Error())).SetType(gin.ErrorTypePrivate)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  "fail",
-			"message": "表单格式错误,重新登陆后重新提交",
-		})
-		c.Abort()
-	}
 
 	//删除数据库中的所有这个用户名的课程
 	models.DeleteUserAllCourse(loginForm.Username, loginForm.School)
@@ -92,11 +93,20 @@ func UpdataDB(c *gin.Context) {
 		"status":  "success",
 		"message": "课程更新成功",
 	})
-
 }
 
 // UpdataGrade 更新数据库中的成绩
 func UpdataGrade(c *gin.Context) {
+	var loginForm domain.LoginForm
+	if err := c.ShouldBindBodyWith(&loginForm, binding.JSON); err != nil {
+		_ = c.Error(errors.New("app.UpdataGrade()函数中ShouldBindBodyWith():" + err.Error())).SetType(gin.ErrorTypePrivate)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "fail",
+			"message": "表单格式错误,重新登陆后重新提交",
+		})
+		return
+	}
+
 	cookieAny, ok := c.Get("cookie")
 	if !ok {
 		_ = c.Error(errors.New("app : signin中间件没有正常设置username, cookie, studentType")).SetType(gin.ErrorTypePrivate)
@@ -107,16 +117,6 @@ func UpdataGrade(c *gin.Context) {
 		return
 	}
 	Cookiejar := cookieAny.(*cookiejar.Jar)
-
-	var loginForm middleware.LoginForm
-	if err := c.ShouldBindBodyWith(&loginForm, binding.JSON); err != nil {
-		_ = c.Error(errors.New("app.UpdataGrade()函数中ShouldBindBodyWith():" + err.Error())).SetType(gin.ErrorTypePrivate)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  "fail",
-			"message": "表单格式错误,重新登陆后重新提交",
-		})
-		c.Abort()
-	}
 
 	//删除数据库中的所有这个用户名的课程
 	models.DeleteUserAllCourseGrades(loginForm.Username, loginForm.School)
@@ -137,11 +137,20 @@ func UpdataGrade(c *gin.Context) {
 		"status":  "success",
 		"message": "成绩更新成功",
 	})
-
 }
 
 // GetWeekCoure 获取某周课程表
 func GetWeekCoure(c *gin.Context) {
+	var loginForm domain.LoginForm
+	if err := c.ShouldBindBodyWith(&loginForm, binding.JSON); err != nil {
+		_ = c.Error(errors.New("app.UpdataGrade()函数中ShouldBindBodyWith():" + err.Error())).SetType(gin.ErrorTypePrivate)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "fail",
+			"message": "表单格式错误,重新登陆后重新提交",
+		})
+		return
+	}
+
 	//获取url中的周数的参数
 	week := c.Param("week")
 	weekInt, err := strconv.Atoi(week)
@@ -160,16 +169,6 @@ func GetWeekCoure(c *gin.Context) {
 		})
 		return
 	}
-
-	var loginForm middleware.LoginForm
-	if err := c.ShouldBindBodyWith(&loginForm, binding.JSON); err != nil {
-		_ = c.Error(errors.New("app.UpdataGrade()函数中ShouldBindBodyWith():" + err.Error())).SetType(gin.ErrorTypePrivate)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  "fail",
-			"message": "表单格式错误,重新登陆后重新提交",
-		})
-		c.Abort()
-	}
 	//fmt.Printf("GetWeekCoure()中的username: %s, week:%d\n", username, weekInt)
 
 	//获取数据库中的课程
@@ -179,14 +178,14 @@ func GetWeekCoure(c *gin.Context) {
 
 // GetGrade 获取成绩
 func GetGrade(c *gin.Context) {
-	var loginForm middleware.LoginForm
+	var loginForm domain.LoginForm
 	if err := c.ShouldBindBodyWith(&loginForm, binding.JSON); err != nil {
 		_ = c.Error(errors.New("app.GetGrade()函数中ShouldBindBodyWith():" + err.Error())).SetType(gin.ErrorTypePrivate)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  "fail",
 			"message": "表单格式错误,重新登陆后重新提交",
 		})
-		c.Abort()
+		return
 	}
 
 	// 获取数据库中所有成绩, 和有那些组
@@ -205,14 +204,14 @@ func GetGrade(c *gin.Context) {
 
 // GetTimeTable 获取上课时间
 func GetTimeTable(c *gin.Context) {
-	var loginForm middleware.LoginForm
+	var loginForm domain.LoginForm
 	if err := c.ShouldBindBodyWith(&loginForm, binding.JSON); err != nil {
 		_ = c.Error(errors.New("app.GetTimeTable()函数中ShouldBindBodyWith():" + err.Error())).SetType(gin.ErrorTypePrivate)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  "fail",
 			"message": "表单格式错误,重新登陆后重新提交",
 		})
-		c.Abort()
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -221,7 +220,7 @@ func GetTimeTable(c *gin.Context) {
 }
 
 func AddCoures(c *gin.Context) {
-	data := AddcouresStruct{}
+	var data domain.AddcouresStruct
 	if err := c.ShouldBindBodyWith(&data, binding.JSON); err != nil {
 		log.Printf("Error: %#v", err)
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -231,7 +230,7 @@ func AddCoures(c *gin.Context) {
 		return
 	}
 
-	models.AddCourse(parseAddCrouse(data), data.LoginForm.Username, data.LoginForm.School, data.LoginForm.StudentType)
+	models.AddCourse(parseAddCrouse(&data), data.LoginForm.Username, data.LoginForm.School, data.LoginForm.StudentType)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "success",
