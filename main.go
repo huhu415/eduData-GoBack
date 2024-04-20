@@ -1,17 +1,17 @@
 package main
 
 import (
+	"eduData/api"
 	"eduData/bootstrap"
-	"eduData/database"
-	"eduData/router"
+	"eduData/models"
 )
 
 // todo 内存泄漏检测, 性能测试
 func main() {
 	bootstrap.Loadconfig()
 
-	database.NewDatabase()
-	defer database.CloseDatabase()
+	models.NewDatabase()
+	defer models.CloseDatabase()
 
-	router.InitRouterRunServer()
+	api.InitRouterRunServer()
 }

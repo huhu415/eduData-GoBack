@@ -59,7 +59,7 @@ func Loadconfig() {
 	viper.AddConfigPath(pathAbs)
 	// for goland debug
 	viper.AddConfigPath("/Users/hello/Library/Mobile Documents/com~apple~CloudDocs/代码项目/eduData-GoBack")
-	viper.AddConfigPath(pathAbs + "/config")
+	viper.AddConfigPath("/config")
 
 	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {

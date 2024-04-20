@@ -1,4 +1,4 @@
-package router
+package api
 
 import (
 	"context"
@@ -14,9 +14,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"eduData/app"
+	"eduData/api/app"
+	"eduData/api/middleware"
 	"eduData/bootstrap"
-	"eduData/middleware"
 )
 
 func InitRouterRunServer() {

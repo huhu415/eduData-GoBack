@@ -112,7 +112,6 @@ baidu_accessToken : 24.aa2194d8df42835d0763*****852ba5.*****0******
 
 docker-compose.yml
 ```yaml
-version: '3'
 services:
   edudata:
     image: registry.cn-wulanchabu.aliyuncs.com/zzyan/back-go

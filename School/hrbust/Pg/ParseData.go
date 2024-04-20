@@ -9,13 +9,13 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 
-	"eduData/database"
+	"eduData/models"
 )
 
 // ParseDataCoures1D 要和Coures结构体配合使用, 传入某一周课表, 生成课程信息切片, 解析研究生的
 // 我们前端的格式是星期几, 第几节, 上课长度, 上课内容, 上课地点, 可选参数第几周, int*/
-func ParseDataCoures1D(table *[]byte, args ...any) ([]database.Course, error) {
-	var courses []database.Course
+func ParseDataCoures1D(table *[]byte, args ...any) ([]models.Course, error) {
+	var courses []models.Course
 	week := 0
 
 	// 使用 goquery 解析 HTML 表格
@@ -84,7 +84,7 @@ func ParseDataCoures1D(table *[]byte, args ...any) ([]database.Course, error) {
 						matchTeacher := regexp.MustCompile(`教师:([^\s,]+)`).FindAllStringSubmatch(Value, 1)
 						matchLocation := regexp.MustCompile(`地点:([^\s\]]+)`).FindAllStringSubmatch(Value, 1)
 						matchContent := regexp.MustCompile(`｛.*?｝`).ReplaceAllString(Value, "")
-						courses = append(courses, database.Course{
+						courses = append(courses, models.Course{
 							StuType:               2,
 							Week:                  week,
 							WeekDay:               colIndexOwn - 2, //因为前面还有2个td所以要减去2
@@ -163,8 +163,8 @@ func ParseDataCoures2D(table *[]byte) ([][]string, error) {
 }
 
 // ParseDataCouresAll 传入html一个学期的课程表, 解析出带有所有课程的切片, 解析研究生的, 与其他的区别是, 这个会解析一学期的, 而不是某一周的
-func ParseDataCouresAll(table *[]byte) ([]database.Course, error) {
-	var courses []database.Course
+func ParseDataCouresAll(table *[]byte) ([]models.Course, error) {
+	var courses []models.Course
 
 	// 使用 goquery 解析 HTML 表格
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(*table)))
@@ -207,7 +207,7 @@ func ParseDataCouresAll(table *[]byte) ([]database.Course, error) {
 						matchTeacher := regexp.MustCompile(`教师:([^\s,]+)`).FindAllStringSubmatch(Value, 1)
 						matchLocation := regexp.MustCompile(`地点:([^\s\]]+)`).FindAllStringSubmatch(Value, 1)
 						matchContent := regexp.MustCompile(`｛.*?｝`).ReplaceAllString(Value, "")
-						course := database.Course{
+						course := models.Course{
 							//id:                    1,
 							//StuID:                 1,
 							//Week:                  1,
