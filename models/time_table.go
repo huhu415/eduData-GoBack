@@ -4,7 +4,7 @@ package models
 type TimeTable struct {
 	ID        uint   `gorm:"primarykey"`       // 主键
 	School    string `gorm:"index; not null;"` // 学校
-	Sort      uint   `gorm:" not null;"`       // 排序
+	Sort      uint   `gorm:"not null;"`        // 排序
 	StartTime string `gorm:"not null;"`        // 开始时间
 	EndTime   string `gorm:"not null;"`        // 结束时间
 	grade     string // 年级

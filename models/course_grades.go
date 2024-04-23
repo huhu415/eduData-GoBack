@@ -22,7 +22,7 @@ func AddCourseGrades(CourseGrades []CourseGrades, username string) {
 }
 
 func DeleteUserAllCourseGrades(username, school string) {
-	db.Where("\"stu_id\" = ? AND \"school\" = ?", username, school).Delete(&CourseGrades{})
+	db.Where("stu_id = ? AND school = ?", username, school).Delete(&CourseGrades{})
 }
 
 func CourseGradesByUsername(username, school string) ([]CourseGrades, []CourseGrades) {

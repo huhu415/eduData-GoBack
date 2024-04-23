@@ -219,6 +219,7 @@ func GetTimeTable(c *gin.Context) {
 	})
 }
 
+// AddCoures 增加课程
 func AddCoures(c *gin.Context) {
 	var data domain.AddcouresStruct
 	if err := c.ShouldBindBodyWith(&data, binding.JSON); err != nil {

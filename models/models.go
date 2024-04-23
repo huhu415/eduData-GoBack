@@ -17,7 +17,9 @@ var db *gorm.DB
 func NewDatabase() {
 	var err error
 	dsn := bootstrap.C.PgConfig
-	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+		PrepareStmt: true, // precompile SQL
+	})
 	if err != nil {
 		println("database : gorm.Open(), database connect error")
 	}
