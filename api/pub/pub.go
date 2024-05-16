@@ -1,4 +1,4 @@
-package app
+package pub
 
 import (
 	"context"
@@ -26,7 +26,7 @@ const (
 )
 
 // judgeUgOrPgGetInfo 根据学校和研究生本科生判断获取html并解析
-func judgeUgOrPgGetInfo(loginForm domain.LoginForm, cookieJar *cookiejar.Jar) ([]models.Course, error) {
+func JudgeUgOrPgGetInfo(loginForm domain.LoginForm, cookieJar *cookiejar.Jar) ([]models.Course, error) {
 	var table []models.Course
 	switch loginForm.School {
 	// 哈理工
@@ -105,8 +105,8 @@ type yearSemester struct {
 	Semester string // 1是春季-下学期, 2是秋季-上学期
 }
 
-// judgeUgOrPgGetGrade 根据学校和研究生本科生判断获取成绩的html, 并解析成绩
-func judgeUgOrPgGetGrade(loginForm domain.LoginForm, cookieJar *cookiejar.Jar) ([]models.CourseGrades, error) {
+// JudgeUgOrPgGetGrade 根据学校和研究生本科生判断获取成绩的html, 并解析成绩
+func JudgeUgOrPgGetGrade(loginForm domain.LoginForm, cookieJar *cookiejar.Jar) ([]models.CourseGrades, error) {
 	var grade []models.CourseGrades
 	switch loginForm.School {
 	// 哈理工
@@ -171,7 +171,7 @@ func judgeUgOrPgGetGrade(loginForm domain.LoginForm, cookieJar *cookiejar.Jar) (
 	return grade, nil
 }
 
-func parseAddCrouse(data *domain.AddcouresStruct) []models.Course {
+func ParseAddCrouse(data *domain.AddcouresStruct) []models.Course {
 	var courses []models.Course
 	for _, key := range data.Time {
 		course := models.Course{
