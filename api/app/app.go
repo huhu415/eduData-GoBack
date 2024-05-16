@@ -13,6 +13,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 
 	"eduData/api/middleware"
+	"eduData/api/pub"
 	"eduData/domain"
 	"eduData/models"
 )
@@ -77,7 +78,7 @@ func UpdataDB(c *gin.Context) {
 	//删除数据库中的所有这个用户名的课程
 	models.DeleteUserAllCourse(loginForm.Username, loginForm.School)
 
-	table, err := judgeUgOrPgGetInfo(loginForm, cookie)
+	table, err := pub.JudgeUgOrPgGetInfo(loginForm, cookie)
 	if err != nil {
 		_ = c.Error(errors.New("app.UpdataDB()函数中judgeUgOrPgGetInfo的错误: " + err.Error())).SetType(gin.ErrorTypePrivate)
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -121,7 +122,7 @@ func UpdataGrade(c *gin.Context) {
 	//删除数据库中的所有这个用户名的课程
 	models.DeleteUserAllCourseGrades(loginForm.Username, loginForm.School)
 
-	grade, err := judgeUgOrPgGetGrade(loginForm, Cookiejar)
+	grade, err := pub.JudgeUgOrPgGetGrade(loginForm, Cookiejar)
 	if err != nil {
 		_ = c.Error(errors.New("app.UpdataGrade()函数中judgeUgOrPgGetGrade的错误: " + err.Error())).SetType(gin.ErrorTypePrivate)
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -231,7 +232,7 @@ func AddCoures(c *gin.Context) {
 		return
 	}
 
-	models.AddCourse(parseAddCrouse(&data), data.LoginForm.Username, data.LoginForm.School, data.LoginForm.StudentType)
+	models.AddCourse(pub.ParseAddCrouse(&data), data.LoginForm.Username, data.LoginForm.School, data.LoginForm.StudentType)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "success",

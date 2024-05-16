@@ -1,11 +1,12 @@
 package middleware
 
 import (
-	"eduData/api/app"
+	"eduData/api/pub"
 	"errors"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"net/http"
 
 	"eduData/domain"
 )
@@ -22,7 +23,7 @@ func Signin() gin.HandlerFunc {
 			})
 		}
 		// 判断是哪个学校的用户来登陆
-		signinCookieJar, err := app.JudgeSchoolSignIn(loginForm)
+		signinCookieJar, err := pub.JudgeSchoolSignIn(loginForm)
 		if err != nil {
 			_ = c.Error(errors.New("middleware.signin()JudgeSchoolSignIn():" + err.Error())).SetType(gin.ErrorTypePrivate)
 
