@@ -2,43 +2,34 @@ package middleware
 
 import (
 	"eduData/api/pub"
-	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
-
-	"eduData/domain"
 )
 
 // Signin 中间件登陆函数
 func Signin() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var loginForm domain.LoginForm
-		if err := c.ShouldBindBodyWith(&loginForm, binding.JSON); err != nil {
-			_ = c.Error(errors.New("middleware.Signin()函数中ShouldBindBodyWith():" + err.Error())).SetType(gin.ErrorTypePrivate)
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+		le, loginForm, err := pub.GetLogerEntryANDLoginForm(c)
+		if err != nil {
+			fmt.Printf("获取失败")
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"status":  "fail",
-				"message": "表单格式错误,重新登陆后重新提交",
+				"message": c.Error(err).Error(),
 			})
+			return
 		}
+
 		// 判断是哪个学校的用户来登陆
 		signinCookieJar, err := pub.JudgeSchoolSignIn(loginForm)
 		if err != nil {
-			_ = c.Error(errors.New("middleware.signin()JudgeSchoolSignIn():" + err.Error())).SetType(gin.ErrorTypePrivate)
-
-			// 获取最内层的错误给用户
-			for {
-				nextErr := errors.Unwrap(err)
-				if nextErr == nil {
-					break
-				}
-				err = nextErr
-			}
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			le.Errorf("学校登陆不成功 %v", err)
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"status":  "fail",
-				"message": err.Error(),
+				"message": c.Error(err).Error(),
 			})
+			return
 		}
 
 		// 为了后续能够获取页面, cookie加入context中

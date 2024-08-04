@@ -1,10 +1,9 @@
 package models
 
 import (
-	"fmt"
-	"log"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
@@ -21,18 +20,17 @@ func NewDatabase() {
 		PrepareStmt: true, // precompile SQL
 	})
 	if err != nil {
-		println("database : gorm.Open(), database connect error")
+		log.Fatal("database connect error")
 	}
 
 	sqlDB, err := db.DB()
 	if err != nil {
-		println("database : db.DB(), database connect error")
+		log.Fatal("database connect error")
 	}
 
 	// Migrate the schema, 创建表用的, 就用一次就完事了
 	if err = db.AutoMigrate(&Course{}, &CourseGrades{}, &TimeTable{}); err != nil {
-		fmt.Println("database : db.AutoMigrate(), database connect error")
-		panic(err)
+		log.Fatal("database connect error")
 	}
 
 	// SetMaxIdleCons 设置连接池中的最大闲置连接数。
@@ -44,15 +42,15 @@ func NewDatabase() {
 	// SetConnMaxLifetiment 设置连接的最大可复用时间。
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
-	log.Println("database Connected!")
+	log.Println("database Connected success!")
 }
 
 // CloseDatabase 断开数据库连接
 func CloseDatabase() {
 	sqlDB, err := db.DB()
 	if err != nil {
-		println("database : db.DB(), database connect error")
+		log.Error("database : db.DB(), database connect error")
 	}
 	sqlDB.Close()
-	fmt.Println("database Closed!")
+	log.Info("database Closed!")
 }

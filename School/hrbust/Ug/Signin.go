@@ -58,12 +58,7 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func(Body io.ReadCloser) {
-		err = Body.Close()
-		if err != nil {
-			fmt.Println(err)
-		}
-	}(resp.Body)
+	defer resp.Body.Close()
 
 	var OrcCodeSuccess string
 	// 重试检查验证码 3 次
@@ -157,16 +152,9 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 		if err != nil {
 			return nil, err
 		}
-		defer func(Body io.ReadCloser) {
-			err = Body.Close()
-			if err != nil {
-				fmt.Println(err)
-			}
-		}(resp.Body)
+		defer resp.Body.Close()
 
-		//fmt.Println(resp.Header.Values("Location")[0])
 		if resp.Header.Values("Location")[0] == "/academic/index_new.jsp" {
-
 			//CookieParts := strings.Split(resp.Header["Set-Cookie"][0], ";")
 			//CookieParts[0]就是最后登陆所要的cookie, 但既然有cookiejar, 就是用cookiejar来充当cookie
 			return cookieJar, nil
@@ -174,5 +162,6 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 			return nil, errors.New("登陆失败, 检查账号密码")
 		}
 	}
+
 	return nil, errors.New("请再试一次, 自动识别验证码失败")
 }

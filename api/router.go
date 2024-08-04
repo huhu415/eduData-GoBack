@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,6 +12,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 
 	"eduData/api/app"
 	"eduData/api/middleware"
@@ -20,6 +20,7 @@ import (
 )
 
 func InitRouterRunServer() {
+	log.SetReportCaller(true)
 	// 发布模式, 删了就是debug模式
 	gin.SetMode(gin.ReleaseMode)
 
@@ -32,14 +33,14 @@ func InitRouterRunServer() {
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 
 	// 路由初始化, 1.日志 2.恢复 3.检查表单完成性
-	r := gin.New()
-	r.Any("/health", middleware.Logger(), gin.Recovery(), func(c *gin.Context) {
+	hc := gin.New()
+	hc.Any("/health", gin.Logger(), gin.Recovery(), func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"status": "active",
 		})
 	})
 
-	// 路由分组
+	r := gin.New()
 	r.Use(middleware.Logger(), gin.Recovery(), middleware.LoggerRecordForm())
 
 	si := r.Group("/")
@@ -71,7 +72,7 @@ func InitRouterRunServer() {
 
 func runServer(srv *http.Server) {
 	go func() {
-		log.Printf("Server listening at %s\n", srv.Addr)
+		log.Infof("Server start listening at %s\n", srv.Addr)
 		if err := srv.ListenAndServe(); err != nil || errors.Is(http.ErrServerClosed, err) {
 			log.Fatalf("listen: %s\n", err)
 		}
@@ -85,7 +86,7 @@ func runServer(srv *http.Server) {
 	// kill -9 is syscall.SIGKILL but can't be catch, so don't need add it
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Println("Shutting down server...")
+	log.Infof("Shutting down server...")
 
 	// The context is used to inform the server it has 5 seconds to finish
 	// the request it is currently handling
@@ -95,5 +96,5 @@ func runServer(srv *http.Server) {
 		log.Fatal("Server forced to shutdown: ", err)
 	}
 
-	log.Println("Server exiting")
+	log.Infof("Server exiting")
 }

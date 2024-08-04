@@ -1,16 +1,15 @@
 package hrbustPg
 
 import (
+	"encoding/base64"
 	"errors"
-	"fmt"
 	"io"
+	"net/http"
 	"net/http/cookiejar"
+	"net/url"
 	"strings"
 
-	"encoding/base64"
 	"github.com/PuerkitoBio/goquery"
-	"net/http"
-	"net/url"
 
 	"eduData/bootstrap"
 	ident "eduData/identimage"
@@ -42,12 +41,7 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func(Body io.ReadCloser) {
-		err = Body.Close()
-		if err != nil {
-			fmt.Println(err)
-		}
-	}(resp.Body)
+	defer resp.Body.Close()
 
 	//从得到的*http.Response中的body得到__VIEWSTATE和__EVENTVALIDATION, 并且通过__VIEWSTATE得到验证码ValidateCode的请求地址
 	VIEWSTATEvalue, EVENTVALIDATIONvalue, ValidateCodeSrc, err := findVEI(resp)
@@ -66,12 +60,6 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func(Body io.ReadCloser) {
-		err = Body.Close()
-		if err != nil {
-			fmt.Printf("defer func(Body io.ReadCloser) error: %v\n", err)
-		}
-	}(resp.Body)
 
 	//从*http.Response中得到cookie和验证码图片, 并将验证码识别成字符串类型的数字
 	IdentifyNum, cookie, err := findValidateCodeCookie(resp)
@@ -103,16 +91,10 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func(Body io.ReadCloser) {
-		err = Body.Close()
-		if err != nil {
-			fmt.Printf("defer func(Body io.ReadCloser) error: %v\n", err)
-		}
-	}(resp.Body)
 
 	ResBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("io.ReadAll()错误: %v", err)
+		return nil, err
 	}
 
 	//判断登陆成功与否

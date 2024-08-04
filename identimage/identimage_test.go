@@ -1,6 +1,7 @@
 package identimage
 
 import (
+	"eduData/bootstrap"
 	"fmt"
 	"testing"
 )
@@ -20,6 +21,7 @@ func TestNumberIdentify(t *testing.T) {
 
 // TestCommonVerify 云码的
 func TestCommonVerify(t *testing.T) {
+	bootstrap.Loadconfig()
 	verify, err := CommonVerify(&base64image)
 	if err != nil {
 		t.Errorf("expected nil, got %s", err)
