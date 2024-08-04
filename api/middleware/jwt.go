@@ -1,15 +1,14 @@
 package middleware
 
 import (
-	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	"github.com/golang-jwt/jwt/v5"
 
+	"eduData/api/pub"
 	"eduData/bootstrap"
-	"eduData/domain"
 )
 
 type JWT struct {
@@ -36,20 +35,24 @@ func (j *JWT) ParseToken(tokenString string) (*jwt.Token, error) {
 // RequireAuthJwt jwt中间件
 func RequireAuthJwt() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		le, loginForm, err := pub.GetLogerEntryANDLoginForm(c)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"status":  "fail",
+				"message": c.Error(err).Error(),
+			})
+			return
+		}
+
 		//找到Authorization
 		tokenString, err := c.Cookie("authentication")
 		if err != nil {
-			err = c.Error(errors.New("jwt: missing Authorization cookie" + err.Error())).SetType(gin.ErrorTypePrivate)
-			c.AbortWithStatusJSON(http.StatusUnauthorized, err)
-		}
-
-		var loginForm domain.LoginForm
-		if err := c.ShouldBindBodyWith(&loginForm, binding.JSON); err != nil {
-			_ = c.Error(errors.New("middleware.RequireAuthJwt()函数中ShouldBindBodyWith():" + err.Error())).SetType(gin.ErrorTypePrivate)
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			le.WithError(err).Error("jwt: missing Authorization cookie")
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"status":  "fail",
-				"message": "表单格式错误,重新登陆后重新提交",
+				"message": c.Error(fmt.Errorf("缺少参数 Authorization cookie %w", err)).Error(),
 			})
+			return
 		}
 
 		//验证Authorization token
@@ -57,12 +60,12 @@ func RequireAuthJwt() gin.HandlerFunc {
 		if token, err := j.ParseToken(tokenString); err == nil && token.Valid && token.Claims.(jwt.MapClaims)["username"].(string) == loginForm.Username {
 			c.Next()
 		} else {
-			_ = c.Error(errors.New("jwt: invalid Authorization cookie" + err.Error())).SetType(gin.ErrorTypePrivate)
+			le.Error("jwt: invalid Authorization cookie")
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"status":  "fail",
-				"message": "身份认证失败",
+				"message": fmt.Errorf("身份认证失败"),
 			})
-
+			return
 		}
 	}
 }

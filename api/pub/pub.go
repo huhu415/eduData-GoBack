@@ -8,6 +8,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
 
 	hrbustPg "eduData/School/hrbust/Pg"
@@ -23,6 +26,7 @@ const (
 	//LEFTCORUSE = "Course/StuCourseWeekQuery.aspx?EID=vB5Ke2TxFzG4yVM8zgJqaQowdgBb6XLK0loEdeh1pyPrNQM0n6oBLQ==&UID="
 	// LEFTCORUSEALL 学期的
 	LEFTCORUSEALL = "Course/StuCourseQuery.aspx?EID=pLiWBm!3y8J!emOuKhzHa3uED3OEJzAvyCpKfhbkdg9RKe9VDAjrUw==&UID="
+	NEAUDATA      = "2023-2024-2-1"
 )
 
 // judgeUgOrPgGetInfo 根据学校和研究生本科生判断获取html并解析
@@ -55,7 +59,7 @@ func JudgeUgOrPgGetInfo(loginForm domain.LoginForm, cookieJar *cookiejar.Jar) ([
 	case "neau":
 		switch loginForm.StudentType {
 		case 1:
-			GetJSONneau, errNeau := neauUg.GetData(cookieJar, "2023-2024-2-1") // todo 设计一下获取学期的函数
+			GetJSONneau, errNeau := neauUg.GetData(cookieJar, NEAUDATA) // todo 设计一下获取学期的函数
 			if errNeau != nil {
 				return nil, errNeau
 			}
@@ -106,6 +110,7 @@ type yearSemester struct {
 }
 
 // JudgeUgOrPgGetGrade 根据学校和研究生本科生判断获取成绩的html, 并解析成绩
+// 根据学号的前两位开始, 查询到现在的年份
 func JudgeUgOrPgGetGrade(loginForm domain.LoginForm, cookieJar *cookiejar.Jar) ([]models.CourseGrades, error) {
 	var grade []models.CourseGrades
 	switch loginForm.School {
@@ -197,4 +202,21 @@ func ParseAddCrouse(data *domain.AddcouresStruct) []models.Course {
 
 	}
 	return courses
+}
+
+func GetLogerEntryANDLoginForm(c *gin.Context) (*logrus.Entry, domain.LoginForm, error) {
+	logerEntry, ok := c.Get("logerEntry")
+	if !ok {
+		return nil, domain.LoginForm{}, errors.New("服务器内部错误,请联系管理员")
+	}
+	le, ok := logerEntry.(*logrus.Entry)
+	if !ok {
+		return nil, domain.LoginForm{}, errors.New("服务器内部错误,请联系管理员")
+	}
+
+	var loginForm domain.LoginForm
+	if err := c.ShouldBindBodyWith(&loginForm, binding.JSON); err != nil {
+		return nil, domain.LoginForm{}, errors.New("表单格式错误,重新登陆后重新提交")
+	}
+	return le, loginForm, nil
 }

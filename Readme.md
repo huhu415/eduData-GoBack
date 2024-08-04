@@ -35,10 +35,10 @@
 
 ### TODOs
 - [x] 自定义添加课程
+- [x] 日志记录的不全面
 - [ ] 自定义删除课程
 - [ ] 多适配不同的学校
 - [ ] 通过grpc来分布式获取课表, 以防学校封ip
-- [ ] 日志记录的不全面
 - [ ] 增加多租户功能
 - [ ] 以后有钱了, 把百度orc下了, 因为百度的需要一个月更新一次凭证, 到期后也没有提示, 就是500错误
 
@@ -127,7 +127,7 @@ services:
 
 ## Develop Tips
 - 以下任何一个满足, 都代表着课程信息不完整, 都在课表里显示不出来, 只能显示在下面
-  - course.NumberOfLessons == 0 
-  - course.NumberOfLessonsLength == 0 
+  - course.NumberOfLessons == 0
+  - course.NumberOfLessonsLength == 0
   - course.WeekDay == 0
   - course.week == 0

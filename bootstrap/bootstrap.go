@@ -2,11 +2,11 @@ package bootstrap
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"reflect"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -77,7 +77,7 @@ func Loadconfig() {
 	t := reflect.TypeOf(C)
 	v := reflect.ValueOf(C)
 	for i := 0; i < t.NumField(); i++ {
-		log.Printf("%s : %s", t.Field(i).Name, v.Field(i).Interface())
+		log.Printf("%s: %s", t.Field(i).Name, v.Field(i).Interface())
 	}
 
 	log.Println("**********Init flag/env/config success**********")
@@ -98,4 +98,14 @@ func parseFlag() {
 		fmt.Println("gitCommit:", gitCommit)
 		os.Exit(0)
 	}
+}
+
+func InitLog() {
+	log.SetFormatter(&log.TextFormatter{
+		ForceColors:     true,
+		FullTimestamp:   true,
+		TimestampFormat: "2006-01-02 15:04:05",
+	})
+	log.SetOutput(os.Stdout)
+	log.SetLevel(log.InfoLevel)
 }

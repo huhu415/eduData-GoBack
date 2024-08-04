@@ -2,6 +2,7 @@
 package hrbustUg
 
 import (
+	"eduData/bootstrap"
 	"fmt"
 	"os"
 	"testing"
@@ -41,6 +42,7 @@ func TestGetData(t *testing.T) {
 
 // TestRevLeftChidScoreUg 本科生, 接收成绩html
 func TestGetDataScore(t *testing.T) {
+	bootstrap.Loadconfig()
 	cookiejar, err := Signin(USERNAME, PASSWORD)
 	if err != nil {
 		t.Errorf("error: %s", err)

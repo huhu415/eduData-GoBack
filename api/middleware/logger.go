@@ -1,13 +1,13 @@
 package middleware
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	log "github.com/sirupsen/logrus"
 
 	"eduData/domain"
 )
@@ -25,7 +25,7 @@ func Logger() gin.HandlerFunc {
 		if param.Latency > time.Minute {
 			param.Latency = param.Latency.Truncate(time.Second)
 		}
-		return fmt.Sprintf("[GIN] %v |%s %3d %s| %13v | %15s |%s %-7s %s %#v %#v %#v %#v %#v \n%s",
+		return fmt.Sprintf("[GIN] %v |%s %3d %s| %13v | %15s |%s %-7s %s %#v %#v %#v %#v %#v %s\n",
 			param.TimeStamp.Format("2006/01/02 - 15:04:05"),
 			statusColor, param.StatusCode, resetColor,
 			param.Latency,
@@ -46,18 +46,24 @@ func LoggerRecordForm() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var loginForm domain.LoginForm
 		if err := c.ShouldBindBodyWith(&loginForm, binding.JSON); err != nil {
-			_ = c.Error(errors.New("middleware.LoggerRecordForm()函数中ShouldBindBodyWith():" + err.Error())).SetType(gin.ErrorTypePrivate)
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"status":  "fail",
 				"message": "表单格式错误,重新登陆后重新提交",
 			})
+			return
 		}
 
 		c.Set("username", loginForm.Username)
 		c.Set("password", loginForm.Password)
 		c.Set("school", loginForm.School)
 		c.Set("studentType", loginForm.StudentType)
+		c.Set("logerEntry", log.WithFields(log.Fields{
+			"username":    loginForm.Username,
+			"password":    loginForm.Password,
+			"school":      loginForm.School,
+			"studentType": loginForm.StudentType,
+		}))
+
 		c.Next()
 	}
-
 }
