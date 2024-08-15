@@ -33,14 +33,12 @@ func InitRouterRunServer() {
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 
 	// 路由初始化, 1.日志 2.恢复 3.检查表单完成性
-	hc := gin.New()
-	hc.Any("/health", gin.Logger(), gin.Recovery(), func(c *gin.Context) {
+	r := gin.New()
+	r.Any("/health", gin.Logger(), gin.Recovery(), func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"status": "active",
 		})
 	})
-
-	r := gin.New()
 	r.Use(middleware.Logger(), gin.Recovery(), middleware.LoggerRecordForm())
 
 	si := r.Group("/")
