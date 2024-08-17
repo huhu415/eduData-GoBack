@@ -26,7 +26,7 @@ const (
 	//LEFTCORUSE = "Course/StuCourseWeekQuery.aspx?EID=vB5Ke2TxFzG4yVM8zgJqaQowdgBb6XLK0loEdeh1pyPrNQM0n6oBLQ==&UID="
 	// LEFTCORUSEALL 学期的
 	LEFTCORUSEALL = "Course/StuCourseQuery.aspx?EID=pLiWBm!3y8J!emOuKhzHa3uED3OEJzAvyCpKfhbkdg9RKe9VDAjrUw==&UID="
-	NEAUDATA      = "2023-2024-2-1"
+	NEAUDATA      = "2023-2024-2-1" // todo 需要随学期更改
 )
 
 // judgeUgOrPgGetInfo 根据学校和研究生本科生判断获取html并解析

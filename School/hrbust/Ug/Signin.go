@@ -14,6 +14,8 @@ import (
 
 	"eduData/bootstrap"
 	ident "eduData/identimage"
+
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -61,8 +63,8 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 	defer resp.Body.Close()
 
 	var OrcCodeSuccess string
-	// 重试检查验证码 3 次
-	for i := 0; i < 3; i++ {
+	// 重试检查验证码 2 次
+	for i := 0; i < 2; i++ {
 		var errVer error
 		var randomNum string
 
@@ -154,11 +156,13 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 		}
 		defer resp.Body.Close()
 
-		if resp.Header.Values("Location")[0] == "/academic/index_new.jsp" {
+		logrus.Debugf("resp.Header: %v", resp.Header)
+		if strings.Contains(resp.Header.Get("Location"), "/academic/index_new.jsp") {
 			//CookieParts := strings.Split(resp.Header["Set-Cookie"][0], ";")
 			//CookieParts[0]就是最后登陆所要的cookie, 但既然有cookiejar, 就是用cookiejar来充当cookie
 			return cookieJar, nil
 		} else {
+			// todo 可能要再请求过去看一下到底是怎么回事, 不过感觉暂时不用. 一般都是密码错了
 			return nil, errors.New("登陆失败, 检查账号密码")
 		}
 	}
