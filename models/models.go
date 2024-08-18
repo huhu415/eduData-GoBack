@@ -29,7 +29,7 @@ func NewDatabase() {
 	}
 
 	// Migrate the schema, 创建表用的, 就用一次就完事了
-	if err = db.AutoMigrate(&Course{}, &CourseGrades{}, &TimeTable{}); err != nil {
+	if err = db.AutoMigrate(&Course{}, &CourseGrades{}, &TimeTable{}, &StuInfo{}); err != nil {
 		log.Fatal("database connect error")
 	}
 
@@ -42,7 +42,7 @@ func NewDatabase() {
 	// SetConnMaxLifetiment 设置连接的最大可复用时间。
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
-	log.Println("database Connected success!")
+	log.Infof("\033[1;32m database Connected success! \033[0m")
 }
 
 // CloseDatabase 断开数据库连接

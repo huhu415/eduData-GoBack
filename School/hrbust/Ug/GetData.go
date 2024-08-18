@@ -8,11 +8,12 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/text/transform"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
 
 	"eduData/bootstrap"
 )
@@ -34,7 +35,7 @@ func GetData(cookieJar *cookiejar.Jar, moduleId string) (*[]byte, error) {
 	newQuery := url.Values{}
 	newQuery.Set("moduleId", moduleId)
 	newQuery.Set("randomString", time.Now().Format("20060102150405")+strconv.Itoa(rand.Int()))
-	req, err := http.NewRequest("GET", "http://jwzx.hrbust.edu.cn/academic/accessModule.do?"+newQuery.Encode(), nil)
+	req, err := http.NewRequest(http.MethodGet, "http://jwzx.hrbust.edu.cn/academic/accessModule.do?"+newQuery.Encode(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +91,7 @@ func GetDataScore(cookieJar *cookiejar.Jar, year, term string) (*[]byte, error) 
 	values.Set("submit", "查询")
 
 	//新建一个客户端请求
-	req, err := http.NewRequest("POST", "http://jwzx.hrbust.edu.cn/academic/manager/score/studentOwnScore.do?"+newQuery.Encode(), strings.NewReader(values.Encode()))
+	req, err := http.NewRequest(http.MethodPost, "http://jwzx.hrbust.edu.cn/academic/manager/score/studentOwnScore.do?"+newQuery.Encode(), strings.NewReader(values.Encode()))
 	if err != nil {
 		return nil, err
 	}

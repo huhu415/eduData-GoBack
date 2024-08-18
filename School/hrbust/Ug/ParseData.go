@@ -1,6 +1,7 @@
 package hrbustUg
 
 import (
+	"bytes"
 	"eduData/School/pub"
 	"errors"
 	"fmt"
@@ -8,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/sirupsen/logrus"
 
 	"eduData/models"
 )
@@ -18,7 +20,7 @@ func ParseDataCrouseAll(table *[]byte) ([]models.Course, error) {
 	var courses []models.Course
 
 	// 使用 goquery 解析 HTML 表格
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(*table)))
+	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(*table))
 	if err != nil {
 		return nil, err
 	}
@@ -187,7 +189,7 @@ func ParseDataCrouseByWeek(table *[]byte, week int) ([]models.Course, error) {
 	var courses []models.Course
 
 	// 使用 goquery 解析 HTML 表格
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(*table)))
+	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(*table))
 	if err != nil {
 		return nil, err
 	}
@@ -353,7 +355,7 @@ func ParseDataCrouseByWeek(table *[]byte, week int) ([]models.Course, error) {
 // ParseDataSore 解析哈理工本科生成绩页面
 func ParseDataSore(table *[]byte, year, term string) ([]models.CourseGrades, error) {
 	// 使用 goquery 解析 HTML 表格
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(*table)))
+	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(*table))
 	if err != nil {
 		return nil, err
 	}
@@ -427,4 +429,57 @@ func ParseDataSore(table *[]byte, year, term string) ([]models.CourseGrades, err
 		})
 	})
 	return courseGrades, nil
+}
+
+// 解析个人信息
+func ParseDataPersonalInfo(table *[]byte) (*models.StuInfo, error) {
+	// 使用 goquery 解析 HTML 表格
+	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(*table))
+	if err != nil {
+		return nil, err
+	}
+
+	var stuInfo models.StuInfo
+	doc.Find("table.form tr").Each(func(i int, s *goquery.Selection) {
+		// 获取当前行的所有单元格
+		cells := s.Find("th, td")
+		switch cells.Eq(0).Text() {
+		case "用户名":
+			stuInfo.StuID = strings.TrimSpace(cells.Eq(1).Text())
+		case "所在院系":
+			stuInfo.College = strings.TrimSpace(cells.Eq(1).Text())
+		case "年级":
+			stuInfo.Grade = strings.TrimSpace(cells.Eq(1).Text())
+		}
+
+		switch cells.Eq(2).Text() {
+		case "真实姓名":
+			stuInfo.Name = strings.TrimSpace(cells.Eq(3).Text())
+		case "专业":
+			stuInfo.Major = strings.TrimSpace(cells.Eq(3).Text())
+		case "学生类别":
+			stuInfo.StuType = 1 // 本科生
+		case "班级":
+			stuInfo.Class = strings.TrimSpace(cells.Eq(3).Text())
+		case "证件号码":
+			stuInfo.IDCard = strings.TrimSpace(cells.Eq(3).Text())
+		case "联系电话":
+			stuInfo.Phone = strings.TrimSpace(cells.Eq(3).Text())
+		}
+		// // 根据单元格数量和内容提取信息
+		// switch cells.Length() {
+		// case 5: // 包含图片的行
+		// 	logrus.Printf("%s: %s\n", cells.Eq(0).Text(), cells.Eq(1).Text())
+		// 	logrus.Printf("%s: %s\n", cells.Eq(2).Text(), cells.Eq(3).Text())
+		// 	if imgSrc, exists := cells.Eq(4).Find("img").Attr("src"); exists {
+		// 		logrus.Printf("照片URL: %s\n", imgSrc)
+		// 	}
+		// case 4: // 标准的信息行
+		// 	logrus.Printf("%s: %s\n", cells.Eq(0).Text(), cells.Eq(1).Text())
+		// 	logrus.Printf("%s: %s\n", cells.Eq(2).Text(), cells.Eq(3).Text())
+		// }
+	})
+	stuInfo.School = "hrbust"
+	logrus.Debug(fmt.Sprintf("%+v", stuInfo))
+	return &stuInfo, nil
 }

@@ -19,14 +19,16 @@ import (
 )
 
 const (
+	ROOT     string = "http://jwzx.hrbust.edu.cn"
+	ACADEMIC string = "/academic"
 	// INDEXUG 哈理工研究生首页地址
-	INDEXUG string = "http://jwzx.hrbust.edu.cn/academic/index.jsp"
+	INDEXUG string = "/index.jsp"
 	// ValidateCodeSrcUg 请求验证码图片地址
-	ValidateCodeSrcUg string = "http://jwzx.hrbust.edu.cn/academic/getCaptcha.do"
+	ValidateCodeSrcUg string = "/getCaptcha.do?"
 	// CheckCodeSrc 检查验证码地址
-	CheckCodeSrc string = "http://jwzx.hrbust.edu.cn/academic/checkCaptcha.do"
+	CheckCodeSrc string = "/checkCaptcha.do?"
 	// CHECKSECURITY 最终登陆地址
-	CHECKSECURITY string = "http://jwzx.hrbust.edu.cn/academic/j_acegi_security_check"
+	CHECKSECURITY string = "/j_acegi_security_check"
 )
 
 // Signin 登陆哈理工本科生管理系统, 会拿到认证后可以使用的coookie
@@ -51,7 +53,7 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 
 	//第一次请求(GET方法)
 	//请求首页, 从set-cookie中接收cookie
-	req, err := http.NewRequest("GET", INDEXUG, nil)
+	req, err := http.NewRequest(http.MethodGet, ROOT+ACADEMIC+INDEXUG, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -71,11 +73,11 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 		// 如果不是第一次请求, 生成随机数来请求验证码图片
 		if i != 0 {
 			// 生成0到1之间的随机浮点数
-			randomNum = fmt.Sprintf("?%f", rand.Float64())
+			randomNum = fmt.Sprintf("%f", rand.Float64())
 		}
 
 		//第二次请求验证码图片
-		req, errVer = http.NewRequest("GET", ValidateCodeSrcUg+randomNum, nil)
+		req, errVer = http.NewRequest(http.MethodGet, ROOT+ACADEMIC+ValidateCodeSrcUg+randomNum, nil)
 		if errVer != nil {
 			return nil, errVer
 		}
@@ -106,7 +108,7 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 		//http://jwzx.hrbust.edu.cn/academic/checkCaptcha.do;jsessionid=40EAEB8FB62DF19770458A7C87E62C75.TA1?captchaCode=8226
 		values := url.Values{}
 		values.Set("captchaCode", OrcCode)
-		req, errVer = http.NewRequest("POST", CheckCodeSrc+"?captchaCode="+OrcCode, strings.NewReader(values.Encode()))
+		req, errVer = http.NewRequest(http.MethodPost, ROOT+ACADEMIC+CheckCodeSrc+"captchaCode="+OrcCode, strings.NewReader(values.Encode()))
 		if errVer != nil {
 			return nil, errVer
 		}
@@ -143,7 +145,7 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 		values.Set("j_captcha", OrcCodeSuccess)
 		// shit, 写成j_captch了, 少个a
 		values.Set("j_username", USERNAME)
-		req, err = http.NewRequest("POST", CHECKSECURITY, strings.NewReader(values.Encode()))
+		req, err = http.NewRequest(http.MethodPost, ROOT+ACADEMIC+CHECKSECURITY, strings.NewReader(values.Encode()))
 		if err != nil {
 			return nil, err
 		}
