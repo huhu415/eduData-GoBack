@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/golang-jwt/jwt/v5"
 
+	hrbustUg "eduData/School/hrbust/Ug"
 	"eduData/api/middleware"
 	"eduData/api/pub"
 	"eduData/domain"
@@ -26,6 +27,36 @@ func Signin(c *gin.Context) {
 			"message": c.Error(err).Error(),
 		})
 		return
+	}
+
+	cookieAny, ok := c.Get("cookie")
+	if !ok {
+		le.Error("signin中间件没有正常设置cookie")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "fail",
+			"message": c.Error(fmt.Errorf("请重试 %w", err)).Error(),
+		})
+		return
+	}
+	cookie := cookieAny.(*cookiejar.Jar)
+
+	if loginForm.School == "hrbust" && loginForm.StudentType == 1 {
+		body, err := hrbustUg.GetUserInfo(cookie)
+		if err != nil {
+			le.Errorf("解析课程出错 %v", err)
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status":  "fail",
+				"message": c.Error(fmt.Errorf("请重试 %w", err)).Error(),
+			})
+			return
+		}
+
+		stuInfo, err := hrbustUg.ParseDataPersonalInfo(body)
+		if err != nil {
+			le.Errorf("解析课程出错 %v", err)
+		}
+
+		stuInfo.CreatAndUpdataStuInfo()
 	}
 
 	//创建jwt

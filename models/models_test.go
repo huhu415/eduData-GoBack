@@ -1,6 +1,7 @@
 package models
 
 import (
+	"eduData/bootstrap"
 	"testing"
 )
 
@@ -27,4 +28,22 @@ func TestCalculateGPA(t *testing.T) {
 	NewDatabase()
 	gpa1, gpa2 := WeightedAverage("2204010417", "hrbust", 1)
 	t.Log(gpa1, gpa2)
+}
+
+func TestCreatAndUpdataStuInfo(t *testing.T) {
+	bootstrap.InitLog()
+	bootstrap.Loadconfig()
+
+	NewDatabase()
+	defer CloseDatabase()
+
+	stu := &StuInfo{
+		StuID:   "2306070112",
+		School:  "hrbust",
+		StuType: 1,
+	}
+	err := stu.CreatAndUpdataStuInfo()
+	if err != nil {
+		t.Error(err)
+	}
 }

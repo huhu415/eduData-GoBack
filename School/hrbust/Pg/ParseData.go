@@ -1,11 +1,11 @@
 package hrbustPg
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
-	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 
@@ -19,7 +19,7 @@ func ParseDataCoures1D(table *[]byte, args ...any) ([]models.Course, error) {
 	week := 0
 
 	// 使用 goquery 解析 HTML 表格
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(*table)))
+	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(*table))
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ func ParseDataCoures1D(table *[]byte, args ...any) ([]models.Course, error) {
 // 并且这个函数的结果是横坐标是星期1-8, 竖向坐标是1-12节课的内容string类型, 解析研究生的*/
 func ParseDataCoures2D(table *[]byte) ([][]string, error) {
 	// 使用 goquery 解析 HTML 表格
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(*table)))
+	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(*table))
 	if err != nil {
 		return nil, err
 	}
@@ -167,7 +167,7 @@ func ParseDataCouresAll(table *[]byte) ([]models.Course, error) {
 	var courses []models.Course
 
 	// 使用 goquery 解析 HTML 表格
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(*table)))
+	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(*table))
 	if err != nil {
 		return nil, err
 	}

@@ -35,7 +35,7 @@ type Config struct {
 var C Config
 
 func Loadconfig() {
-	log.Println("**********Initing flag/env/config**********")
+	log.Info("\033[1;34m**********Initing flag/env/config**********\033[0m")
 	// Default config
 	viper.SetDefault("baidu_request_url", "https://aip.baidubce.com/rest/2.0/ocr/v1/numbers")
 	viper.SetDefault("jfym_request_url", "http://www.jfbym.com/api/YmServer/customApi")
@@ -63,9 +63,7 @@ func Loadconfig() {
 
 	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {
-		log.Printf("read config file error: %+v\n", err)
-	} else {
-		log.Printf("#######read config file success#######")
+		log.Errorf("read config file error: %+v\n", err)
 	}
 
 	if err := viper.Unmarshal(&C); err != nil {
@@ -77,10 +75,10 @@ func Loadconfig() {
 	t := reflect.TypeOf(C)
 	v := reflect.ValueOf(C)
 	for i := 0; i < t.NumField(); i++ {
-		log.Printf("%s: %s", t.Field(i).Name, v.Field(i).Interface())
+		log.Infof("%s: %s", t.Field(i).Name, v.Field(i).Interface())
 	}
 
-	log.Println("**********Init flag/env/config success**********")
+	log.Info("\033[1;34m**********Init flag/env/config success!**********\033[0m")
 	return
 }
 
