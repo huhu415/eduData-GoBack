@@ -59,7 +59,8 @@ func TestGetDataScore(t *testing.T) {
 
 // TestParseTablePgByWeek 给定一个学期的课表, 生成课程信息切片, 解析本科生的
 func TestParseTableUgAll(t *testing.T) {
-	table, err := os.ReadFile("Ug课程html/本学期课表.html")
+	// table, err := os.ReadFile("Ug课程html/本学期课表.html")
+	table, err := os.ReadFile("Ug课程html/currcourse.html")
 	if err != nil {
 		t.Error(err)
 	}

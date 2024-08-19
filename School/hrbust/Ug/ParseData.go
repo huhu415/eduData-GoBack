@@ -26,8 +26,8 @@ func ParseDataCrouseAll(table *[]byte) ([]models.Course, error) {
 	}
 
 	//判断是否能找到课程信息
-	if doc.Find("table.infolist_tab tbody tr.infolist_common").Length() == 0 {
-		return nil, errors.New("not find table.infolist_hr tbody tr.infolist_common")
+	if doc.Find("table.infolist_tab tr.infolist_common").Length() == 0 {
+		return nil, errors.New("not find table.infolist_hr tr.infolist_common")
 	}
 
 	//创建一个课程
@@ -40,7 +40,7 @@ func ParseDataCrouseAll(table *[]byte) ([]models.Course, error) {
 	queue := pub.NewColorList()
 
 	// 遍历每个课程
-	doc.Find("table.infolist_tab tbody tr.infolist_common").Each(func(trIndex int, row *goquery.Selection) {
+	doc.Find("table.infolist_tab tr.infolist_common").Each(func(trIndex int, row *goquery.Selection) {
 		// 遍历每个课程的元素, 课程名称, 任教老师, 上课时间、地点等
 		row.Find("td").Each(func(tdIndex int, cell *goquery.Selection) {
 			// 课程名称
@@ -53,12 +53,12 @@ func ParseDataCrouseAll(table *[]byte) ([]models.Course, error) {
 			}
 			// 上课时间、地点			或单纯的汉字
 			if tdIndex == 9 {
-				if cell.Find("table.none tbody tr").Length() != 0 {
+				if cell.Find("table.none tr").Length() != 0 {
 					// 如果有课程时间的table, 把颜色掏出来
 					color := queue.Remove(queue.Front()).(string)
 
 					// 开始遍历个课程中上课时间地点的每行
-					cell.Find("table.none tbody tr").Each(func(trIndexIn int, cellIn *goquery.Selection) {
+					cell.Find("table.none tr").Each(func(trIndexIn int, cellIn *goquery.Selection) {
 						startWeek, endWeek := 0, 0
 						// 单周或双周, 或者没有
 						evenOrOdd := 0

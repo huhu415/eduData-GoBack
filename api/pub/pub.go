@@ -37,7 +37,9 @@ func JudgeUgOrPgGetInfo(loginForm domain.LoginForm, cookieJar *cookiejar.Jar) ([
 	case "hrbust":
 		switch loginForm.StudentType {
 		case 1:
-			ugHTML, errUg := hrbustUg.GetData(cookieJar, "2000")
+			// 获取当前学期的课表
+			// ugHTML, errUg := hrbustUg.GetData(cookieJar, "2000")
+			ugHTML, errUg := hrbustUg.GetCourseByTime(cookieJar, "44", "2")
 			if errUg != nil {
 				return nil, errUg
 			}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"math/rand"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -64,6 +65,54 @@ func GetData(cookieJar *cookiejar.Jar, moduleId string) (*[]byte, error) {
 		if err != nil {
 			return nil, err
 		}
+		return &utf8Bytes, nil
+	}
+
+	return &ioRead, nil
+}
+
+func GetCourseByTime(cookieJar *cookiejar.Jar, year, term string) (*[]byte, error) {
+	// 从setting中获取UserAgent
+	var userAgent = bootstrap.C.UserAgent
+
+	//新建一个客户端
+	client := &http.Client{
+		Jar: cookieJar,
+	}
+	defer client.CloseIdleConnections()
+
+	//http://jwzx.hrbust.edu.cn/academic/accessModule.do?moduleId=2000&groupId=&randomString=20240221153427x91KU5
+	//http://jwzx.hrbust.edu.cn/academic/accessModule.do?moduleId=2020&groupId=&randomString=20240304095909VGZjoo
+	// 第三次请求, 请求课表
+	newQuery := url.Values{}
+	newQuery.Set("year", year)
+	newQuery.Set("term", term)
+	req, err := http.NewRequest(http.MethodGet, ROOT+ACADEMIC+"/student/currcourse/currcourse.jsdo?"+newQuery.Encode(), nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("User-Agent", userAgent)
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	//发送请求, 并接收响应, 同时defer关闭响应体
+	defer resp.Body.Close()
+
+	// 读取课表
+	ioRead, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if strings.Contains(resp.Header.Get("Content-Type"), "gbk") || strings.Contains(resp.Header.Get("Content-Type"), "GBK") {
+		decoder := simplifiedchinese.GBK.NewDecoder()
+		utf8Bytes, _, err := transform.Bytes(decoder, ioRead)
+		if err != nil {
+			return nil, err
+		}
+		// 把ioRead保存到文件中
+		os.WriteFile("currcourse.html", utf8Bytes, 0666)
 		return &utf8Bytes, nil
 	}
 
