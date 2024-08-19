@@ -25,17 +25,17 @@ func Logger() gin.HandlerFunc {
 		if param.Latency > time.Minute {
 			param.Latency = param.Latency.Truncate(time.Second)
 		}
-		return fmt.Sprintf("[GIN] %v |%s %3d %s| %13v | %15s |%s %-7s %s %#v %#v %#v %#v %#v %s\n",
+		return fmt.Sprintf("[GIN] %v |%s %3d %s| %13v | %15s |%s %-6s %s|%#-20v|%#-8v %#-2v %#-12v %#v %s\n",
 			param.TimeStamp.Format("2006/01/02 - 15:04:05"),
 			statusColor, param.StatusCode, resetColor,
 			param.Latency,
 			param.ClientIP,
 			methodColor, param.Method, resetColor,
 			param.Path,
-			param.Keys["username"],
-			param.Keys["password"],
 			param.Keys["school"],
 			param.Keys["studentType"],
+			param.Keys["username"],
+			param.Keys["password"],
 			param.ErrorMessage,
 		)
 	})
