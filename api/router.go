@@ -25,12 +25,14 @@ func InitRouterRunServer() {
 	gin.SetMode(gin.ReleaseMode)
 
 	// 日志记录
+	gin.ForceConsoleColor()
 	f, err := os.OpenFile("eduData.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer f.Close()
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
+	log.SetOutput(gin.DefaultWriter)
 
 	// 路由初始化, 1.日志 2.恢复 3.检查表单完成性
 	r := gin.New()

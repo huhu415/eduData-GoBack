@@ -63,7 +63,7 @@ func RequireAuthJwt() gin.HandlerFunc {
 			le.Error("jwt: invalid Authorization cookie")
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"status":  "fail",
-				"message": fmt.Errorf("身份认证失败"),
+				"message": c.Error(fmt.Errorf("无效的Authorization cookie %w", err)).Error(),
 			})
 			return
 		}
