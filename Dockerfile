@@ -1,42 +1,28 @@
-## 容器交叉编译, 并上传
-#FROM golang as builder
-#
-#ENV GOPROXY=https://goproxy.cn,https://goproxy.io,direct \
-#    GO111MODULE=on
-#
-##设置时区参数
-#ENV TZ=Asia/Shanghai
-#
-#WORKDIR /app
-#COPY . /app
-#
-## 编译应用程序为x86架构
-#RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" .
-#
-#
-#
-## 第二阶段：使用scratch作为基础镜像创建最终镜像
-#FROM --platform=linux/amd64 Alpine
-#
-## 从构建器阶段复制编译好的应用程序
-#COPY --from=builder /app/eduData /eduData
-#
-## 运行应用程序
-#ENTRYPOINT ["./eduData"]
+# 第一阶段：构建阶段
+FROM golang:1.23.0-alpine3.19 AS builder
 
-#FROM alpine
+# 设置工作目录
+WORKDIR /app
 
-FROM amd64/alpine
+# 复制源代码
+COPY . .
 
-# 待解决时区问题
+# 构建应用
+RUN CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -buildmode "pie" .
+
+# 第二阶段：运行阶段
+FROM alpine
+
+# 设置时区
 ENV TZ=Asia/Shanghai
 RUN apk add --no-cache tzdata
 
-COPY ./eduData /
+# 从构建阶段复制编译好的二进制文件
+COPY --from=builder /app/eduData /
 
 EXPOSE 8080
 
 HEALTHCHECK --interval=60s --timeout=5s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8080/health || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
 
 ENTRYPOINT ["/eduData"]
