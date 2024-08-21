@@ -1,3 +1,4 @@
+# go build -ldflags "-X main.build=`git rev-parse HEAD`
 LDFLAGS := -s -w
 
 # build: build
