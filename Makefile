@@ -13,11 +13,4 @@ cbuild:
 vet:
 	go vet ./...
 
-# dockerbuild: build docker image
-dockerbuildamd64:
-	rm eduData
-	make cbuild
-	docker build -t registry.cn-wulanchabu.aliyuncs.com/zzyan/back-go:latest .
-	docker push registry.cn-wulanchabu.aliyuncs.com/zzyan/back-go:latest
-
-.PHONY: build cbuild vet dockerbuildamd64
+.PHONY: build cbuild vet

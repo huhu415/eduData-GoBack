@@ -30,3 +30,15 @@ func TestCommonVerify(t *testing.T) {
 		t.Errorf("expected 1192, got %s", verify)
 	}
 }
+
+func TestYesCaptcha(t *testing.T) {
+	bootstrap.Loadconfig()
+	ii := NewYescaptcha(bootstrap.C.YescaptchaRequestUrl, bootstrap.C.YesCaptchaToken)
+	verify, err := ii.Identify(&base64image)
+	if err != nil {
+		t.Errorf("expected nil, got %s", err)
+	}
+	if verify != "1192" {
+		t.Errorf("expected 1192, got %s", verify)
+	}
+}

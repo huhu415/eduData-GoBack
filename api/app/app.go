@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/golang-jwt/jwt/v5"
 
-	hrbustUg "eduData/School/hrbust/Ug"
+	hrbustUg "eduData/school/hrbust/Ug"
 	"eduData/api/middleware"
 	"eduData/api/pub"
 	"eduData/domain"
@@ -53,7 +53,7 @@ func Signin(c *gin.Context) {
 
 		stuInfo, err := hrbustUg.ParseDataPersonalInfo(body)
 		if err != nil {
-			le.Errorf("解析课程出错 %v", err)
+			le.Errorf("解析个人信息出错 %v", err)
 		}
 
 		stuInfo.CreatAndUpdataStuInfo()

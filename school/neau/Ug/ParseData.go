@@ -1,7 +1,7 @@
 package neauUg
 
 import (
-	"eduData/School/pub"
+	"eduData/school/pub"
 	"strings"
 
 	"encoding/json"
