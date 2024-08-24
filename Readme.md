@@ -17,10 +17,10 @@
 - 前端: [微信小程序](https://github.com/huhu415/eduData-WxFront)
 
 ### Supported universities
-- [x] [hrbust_哈尔滨理工大学](School/hrbust)
+- [x] [hrbust_哈尔滨理工大学](school/hrbust)
     - [x] 本科生
     - [x] 研究生
-- [x] [neau_东北农业大学](School/neau)
+- [x] [neau_东北农业大学](school/neau)
     - [x] 本科生
     - [ ] 研究生
 - [ ] 黑龙江大学

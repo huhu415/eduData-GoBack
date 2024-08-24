@@ -13,9 +13,9 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
 
-	hrbustPg "eduData/School/hrbust/Pg"
-	hrbustUg "eduData/School/hrbust/Ug"
-	neauUg "eduData/School/neau/Ug"
+	hrbustPg "eduData/school/hrbust/Pg"
+	hrbustUg "eduData/school/hrbust/Ug"
+	neauUg "eduData/school/neau/Ug"
 	"eduData/domain"
 	"eduData/models"
 )

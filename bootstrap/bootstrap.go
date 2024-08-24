@@ -20,10 +20,12 @@ var (
 
 type Config struct {
 	// ocr
-	BaiduRequestUrl  string `mapstructure:"baidu_request_url"`
-	BaiduAccesstoken string `mapstructure:"baidu_accessToken"`
-	JfymRequestUrl   string `mapstructure:"jfym_request_url"`
-	JfymToken        string `mapstructure:"jfym_token"`
+	BaiduRequestUrl      string `mapstructure:"baidu_request_url"`
+	BaiduAccesstoken     string `mapstructure:"baidu_accessToken"`
+	JfymRequestUrl       string `mapstructure:"jfym_request_url"`
+	JfymToken            string `mapstructure:"jfym_token"`
+	YescaptchaRequestUrl string `mapstructure:"yescaptcha_request_url"`
+	YesCaptchaToken      string `mapstructure:"yescaptcha_token"`
 
 	// extra
 	PgConfig   string `mapstructure:"pg_config"`

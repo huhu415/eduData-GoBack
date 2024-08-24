@@ -3,15 +3,15 @@ package models
 // Course 为什么要设置周, 而不是利用>BeginWeek && <EndWeek 因为可以方便处理单双周问题
 type Course struct {
 	ID                    uint   `gorm:"primarykey"`
-	StuID                 string `gorm:"index; not null"`                   // 学号
-	School                string `gorm:"index; not null; default:'hrbust'"` // 学校
-	StuType               int    `gorm:"not null"`                          // 本科生还是研究生
-	Week                  int    `gorm:"index; not null"`                   // 周几 没有的话就设置为0
-	WeekDay               int    `gorm:"not null"`                          // 星期几 没有的话就设置为0
-	NumberOfLessons       int    `gorm:"not null"`                          // 第几节课
-	NumberOfLessonsLength int    `gorm:"not null"`                          // 课程长度
-	CourseContent         string `gorm:"not null"`                          // 课程名称或内容
-	Color                 string `gorm:"not null; default:'#c1d1e0'"`       // 课程颜色
+	StuID                 string `gorm:"index:idx_stuid_school_week_stype; not null"`                   // 学号
+	School                string `gorm:"index:idx_stuid_school_week_stype; not null; default:'hrbust'"` // 学校
+	Week                  int    `gorm:"index:idx_stuid_school_week_stype; not null"`                   // 周几 没有的话就设置为0
+	StuType               int    `gorm:"index:idx_stuid_school_week_stype; not null"`                   // 本科生还是研究生
+	WeekDay               int    `gorm:"not null"`                                                      // 星期几 没有的话就设置为0
+	NumberOfLessons       int    `gorm:"not null"`                                                      // 第几节课
+	NumberOfLessonsLength int    `gorm:"not null"`                                                      // 课程长度
+	CourseContent         string `gorm:"not null"`                                                      // 课程名称或内容
+	Color                 string `gorm:"not null; default:'#c1d1e0'"`                                   // 课程颜色
 	CourseLocation        string
 	TeacherName           string
 	BeginWeek             int

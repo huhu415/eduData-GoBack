@@ -2,7 +2,7 @@ package hrbustUg
 
 import (
 	"bytes"
-	"eduData/School/pub"
+	"eduData/school/pub"
 	"errors"
 	"fmt"
 	"strconv"
