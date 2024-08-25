@@ -10,19 +10,22 @@ var base64image string = "R0lGODlhNAAUAPcAAAAAAAAAMwAAZgAAmQAAzAAA/wArAAArMwArZg
 
 // TestNumberIdentify 百度的
 func TestNumberIdentify(t *testing.T) {
-	identify, err := NumberIdentify(&base64image)
+	bootstrap.Loadconfig()
+	ocr := NewBaiduOcr(bootstrap.C.BaiduRequestUrl, bootstrap.C.BaiduAccesstoken)
+	verify, err := ocr.Identify(&base64image)
 	if err != nil {
 		fmt.Printf("error: %s", err)
 	}
-	if identify != "1192" {
-		t.Errorf("expected 1192, got %s", identify)
+	if verify != "1192" {
+		t.Errorf("expected 1192, got %s", verify)
 	}
 }
 
 // TestCommonVerify 云码的
 func TestCommonVerify(t *testing.T) {
 	bootstrap.Loadconfig()
-	verify, err := CommonVerify(&base64image)
+	ocr := NewJfbymOcr(bootstrap.C.JfymRequestUrl, bootstrap.C.JfymToken)
+	verify, err := ocr.Identify(&base64image)
 	if err != nil {
 		t.Errorf("expected nil, got %s", err)
 	}
@@ -33,8 +36,8 @@ func TestCommonVerify(t *testing.T) {
 
 func TestYesCaptcha(t *testing.T) {
 	bootstrap.Loadconfig()
-	ii := NewYescaptcha(bootstrap.C.YescaptchaRequestUrl, bootstrap.C.YesCaptchaToken)
-	verify, err := ii.Identify(&base64image)
+	ocr := NewYescaptchaOcr(bootstrap.C.YescaptchaRequestUrl, bootstrap.C.YesCaptchaToken)
+	verify, err := ocr.Identify(&base64image)
 	if err != nil {
 		t.Errorf("expected nil, got %s", err)
 	}

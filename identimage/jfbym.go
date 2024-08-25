@@ -17,21 +17,19 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type Response struct {
-	Msg  string       `json:"msg"`
-	Code int          `json:"code"`
-	Data ResponseData `json:"data"`
+type JfbymOcr struct {
+	ClientUrl   string
+	ClientToken string
 }
 
-type ResponseData struct {
-	Code       int     `json:"code"`
-	Data       string  `json:"data"`
-	Time       float64 `json:"time"`
-	Externel   int     `json:"externel"`
-	UniqueCode string  `json:"unique_code"`
+func NewJfbymOcr(url, token string) IdentImage {
+	return &JfbymOcr{
+		ClientUrl:   url,
+		ClientToken: token,
+	}
 }
 
-func CommonVerify(image *string) (string, error) {
+func (j *JfbymOcr) Identify(image *string) (string, error) {
 	CustomUrl := bootstrap.C.JfymRequestUrl
 	Token := bootstrap.C.JfymToken
 
@@ -89,4 +87,18 @@ func CommonVerify(image *string) (string, error) {
 		return "", errors.New("请求结束")
 	}
 	return "", errors.New("云码平台识别未成功" + response.Msg + string(rune(response.Code)))
+}
+
+type Response struct {
+	Msg  string       `json:"msg"`
+	Code int          `json:"code"`
+	Data ResponseData `json:"data"`
+}
+
+type ResponseData struct {
+	Code       int     `json:"code"`
+	Data       string  `json:"data"`
+	Time       float64 `json:"time"`
+	Externel   int     `json:"externel"`
+	UniqueCode string  `json:"unique_code"`
 }

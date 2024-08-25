@@ -36,12 +36,12 @@ func InitRouterRunServer() {
 
 	// 路由初始化, 1.日志 2.恢复 3.检查表单完成性
 	r := gin.New()
-	r.Any("/health", gin.Logger(), gin.Recovery(), func(c *gin.Context) {
+	r.Any("/health", gin.Recovery(), func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"status": "active",
 		})
 	})
-	r.Use(middleware.Logger(), gin.Recovery(), middleware.LoggerRecordForm())
+	r.Use(middleware.Logger(), gin.Recovery(), middleware.CreatSchoolObject())
 
 	si := r.Group("/")
 	si.Use(middleware.Signin())

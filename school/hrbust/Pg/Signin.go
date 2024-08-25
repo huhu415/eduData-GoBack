@@ -155,7 +155,8 @@ func findValidateCodeCookie(resp *http.Response) (IdentifyNum, cookieres string,
 	base64String = strings.TrimPrefix(base64String, "data:image/gif;base64,")
 	// 使用 strings 包去除可能的Base64编码时添加的前缀（如 "data:image/gif;base64,"）最后得到base64编码后的图片数据
 
-	IdentifyNum, err = ident.NumberIdentify(&base64String)
+	baidu := ident.NewBaiduOcr(bootstrap.C.BaiduRequestUrl, bootstrap.C.BaiduAccesstoken)
+	IdentifyNum, err = baidu.Identify(&base64String)
 	if err != nil {
 		return "0", "0", err
 	}
