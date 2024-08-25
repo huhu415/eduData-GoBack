@@ -64,6 +64,7 @@ func (j *JfbymOcr) Identify(image *string) (string, error) {
 	// https://www.jfbym.com/demo.html
 	switch response.Code {
 	case 10000:
+		fmt.Println("JfbymOcr Task successful")
 		return response.Data.Data, nil
 	case 10001:
 		return "", errors.New("参数错误")
