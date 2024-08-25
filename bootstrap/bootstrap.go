@@ -50,15 +50,17 @@ func Loadconfig() {
 
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	// run path
+
 	pathAbs, err := filepath.Abs(os.Args[0])
 	if err != nil {
 		return
 	}
 	viper.AddConfigPath(filepath.Dir(pathAbs))
-	// for goland debug
+
 	viper.AddConfigPath("/Users/hello/Projects/eduData-GoBack")
+	viper.AddConfigPath(".")
 	viper.AddConfigPath("/config")
+
 	viper.SetConfigFile(viper.GetString("configFile"))
 
 	if err = viper.ReadInConfig(); err != nil {
@@ -88,7 +90,7 @@ func Loadconfig() {
 }
 
 func parseFlag() {
-	pflag.StringP("configFile", "c", "config.yaml", "config file")
+	pflag.StringP("configFile", "c", "", "config file")
 	pflag.StringP("listen_port", "l", "8080", "listen address")
 	pflag.BoolP("version", "v", false, "version information")
 	pflag.BoolP("help", "h", false, "display help information")

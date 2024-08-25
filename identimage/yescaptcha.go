@@ -64,11 +64,10 @@ func (y *YescaptchaOcr) Identify(base64Image *string) (string, error) {
 
 	// 输出响应结果
 	if respData.ErrorId == 0 && respData.Status == "ready" {
-		fmt.Println("Task successful, solution:", respData.Solution.Text)
+		fmt.Println("YescaptchaOcr Task successful")
 		return respData.Solution.Text, nil
 	} else {
-		fmt.Printf("Task failed: %s (%s)\n", respData.ErrorDescription, respData.ErrorCode)
-		return "", fmt.Errorf("Task failed: %s (%s)", respData.ErrorDescription, respData.ErrorCode)
+		return "", fmt.Errorf("task failed: %s (%s)", respData.ErrorDescription, respData.ErrorCode)
 	}
 }
 

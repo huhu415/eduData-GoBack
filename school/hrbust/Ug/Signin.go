@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 
 	"encoding/base64"
@@ -65,8 +66,8 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 	defer resp.Body.Close()
 
 	var OrcCodeSuccess string
-	// 重试检查验证码 2 次
-	for i := 0; i < 2; i++ {
+	// 重试检查验证码 4 次
+	for i := 0; i < 4; i++ {
 		var errVer error
 		var randomNum string
 
@@ -93,10 +94,25 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 			return nil, errVer
 		}
 		base64String := base64.StdEncoding.EncodeToString(imageBytes)
-		jfbym := ident.NewJfbymOcr(bootstrap.C.JfymRequestUrl, bootstrap.C.JfymToken)
-		OrcCode, errVer := jfbym.Identify(&base64String)
-		if errVer != nil {
-			return nil, errVer
+
+		var OrcCode string
+		r := rand.Intn(3)
+		if r == 0 {
+			jfbym := ident.NewJfbymOcr(bootstrap.C.JfymRequestUrl, bootstrap.C.JfymToken)
+			OrcCode, errVer = jfbym.Identify(&base64String)
+			if errVer != nil {
+				return nil, errVer
+			}
+		} else {
+			yes := ident.NewYescaptchaOcr(bootstrap.C.YescaptchaRequestUrl, bootstrap.C.YesCaptchaToken)
+			OrcCode, errVer = yes.Identify(&base64String)
+			if errVer != nil {
+				return nil, errVer
+			}
+		}
+		// 如果识别出来的验证码不是4位数字, 说明识别失败, 跳过这次循环
+		if _, err = strconv.Atoi(OrcCode); err != nil {
+			continue
 		}
 
 		//关闭图片回应体
