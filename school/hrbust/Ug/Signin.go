@@ -93,7 +93,8 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 			return nil, errVer
 		}
 		base64String := base64.StdEncoding.EncodeToString(imageBytes)
-		OrcCode, errVer := ident.CommonVerify(&base64String)
+		jfbym := ident.NewJfbymOcr(bootstrap.C.JfymRequestUrl, bootstrap.C.JfymToken)
+		OrcCode, errVer := jfbym.Identify(&base64String)
 		if errVer != nil {
 			return nil, errVer
 		}

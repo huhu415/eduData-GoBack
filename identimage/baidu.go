@@ -15,23 +15,19 @@ import (
 	"eduData/bootstrap"
 )
 
-// OCRResult 结构体表示整个OCR的百度的数字识别结果
-type OCRResult struct {
-	WordsResult []struct {
-		Words    string `json:"words"`
-		Location struct {
-			Top    int `json:"top"`
-			Left   int `json:"left"`
-			Width  int `json:"width"`
-			Height int `json:"height"`
-		} `json:"location"`
-	} `json:"words_result"`
-	WordsResultNum int   `json:"words_result_num"`
-	LogID          int64 `json:"log_id"`
+type BaiduOcr struct {
+	ClientUrl   string
+	ClientToken string
 }
 
-// NumberIdentify 传入图片base64编码, 并返回百度识别后的数据/*
-func NumberIdentify(base64Image *string) (string, error) {
+func NewBaiduOcr(url, token string) IdentImage {
+	return &BaiduOcr{
+		ClientUrl:   url,
+		ClientToken: token,
+	}
+}
+
+func (b *BaiduOcr) Identify(base64Image *string) (string, error) {
 	requestUrl := bootstrap.C.BaiduRequestUrl
 	accessToken := bootstrap.C.BaiduAccesstoken
 
@@ -73,5 +69,19 @@ func NumberIdentify(base64Image *string) (string, error) {
 	//fmt.Println(result)
 
 	return result.WordsResult[0].Words, nil
+}
 
+// OCRResult 结构体表示整个OCR的百度的数字识别结果
+type OCRResult struct {
+	WordsResult []struct {
+		Words    string `json:"words"`
+		Location struct {
+			Top    int `json:"top"`
+			Left   int `json:"left"`
+			Width  int `json:"width"`
+			Height int `json:"height"`
+		} `json:"location"`
+	} `json:"words_result"`
+	WordsResultNum int   `json:"words_result_num"`
+	LogID          int64 `json:"log_id"`
 }

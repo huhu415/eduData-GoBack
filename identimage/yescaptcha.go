@@ -10,19 +10,19 @@ import (
 
 const IMAGE_TO_TEXT_TASK_TEST = "ImageToTextTaskTest"
 
-type Yescaptcha struct {
+type YescaptchaOcr struct {
 	ClientUrl   string
 	ClientToken string
 }
 
-func NewYescaptcha(url, token string) IdentImage {
-	return &Yescaptcha{
+func NewYescaptchaOcr(url, token string) IdentImage {
+	return &YescaptchaOcr{
 		ClientUrl:   url,
 		ClientToken: token,
 	}
 }
 
-func (y *Yescaptcha) Identify(base64Image *string) (string, error) {
+func (y *YescaptchaOcr) Identify(base64Image *string) (string, error) {
 	// 构建请求数据
 	reqData := yescaptchaRequestData{
 		ClientKey: y.ClientToken,

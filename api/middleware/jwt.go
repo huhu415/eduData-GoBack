@@ -7,8 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 
-	"eduData/api/pub"
 	"eduData/bootstrap"
+	"eduData/pub"
 )
 
 type JWT struct {
@@ -35,7 +35,7 @@ func (j *JWT) ParseToken(tokenString string) (*jwt.Token, error) {
 // RequireAuthJwt jwt中间件
 func RequireAuthJwt() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		le, loginForm, err := pub.GetLogerEntryANDLoginForm(c)
+		s, le, err := pub.GetSchoolAndLogrus(c)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"status":  "fail",
@@ -48,7 +48,7 @@ func RequireAuthJwt() gin.HandlerFunc {
 		tokenString, err := c.Cookie("authentication")
 		if err != nil {
 			le.WithError(err).Error("jwt: missing Authorization cookie")
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"status":  "fail",
 				"message": c.Error(fmt.Errorf("缺少参数 Authorization cookie %w", err)).Error(),
 			})
@@ -57,7 +57,9 @@ func RequireAuthJwt() gin.HandlerFunc {
 
 		//验证Authorization token
 		j := NewJWT()
-		if token, err := j.ParseToken(tokenString); err == nil && token.Valid && token.Claims.(jwt.MapClaims)["username"].(string) == loginForm.Username {
+		if token, err := j.ParseToken(tokenString); err == nil &&
+			token.Valid &&
+			token.Claims.(jwt.MapClaims)["username"].(string) == s.StuID() {
 			c.Next()
 		} else {
 			le.Error("jwt: invalid Authorization cookie")
