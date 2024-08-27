@@ -32,7 +32,8 @@ func AddCourse(courses []Course, username, school string, studentType int) {
 
 // DeleteUserAllCourse 删除用户的所有课程
 func DeleteUserAllCourse(username, school string) {
-	db.Where("stu_id = ? AND school = ?", username, school).Delete(&Course{})
+	db.Where("stu_id = ? AND school = ?", username, school).
+		Delete(&Course{})
 }
 
 // CourseByWeekUsername 通过周数和用户名查询符合的课程
@@ -40,6 +41,7 @@ func CourseByWeekUsername(week int, username, school string) []Course {
 	var courses []Course
 	//查询数据
 	// select * from courses where week = ? and stu_id = ?
-	db.Where("stu_id = ? AND school = ? AND week = ?", username, school, week).Find(&courses)
+	db.Where("stu_id = ? AND school = ? AND week = ?", username, school, week).
+		Find(&courses)
 	return courses
 }
