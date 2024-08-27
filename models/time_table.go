@@ -2,11 +2,11 @@ package models
 
 // TimeTable 时间表, 可以实现不同学校, 不同年级, 不同的时间表
 type TimeTable struct {
-	ID        uint   `gorm:"primarykey"`       // 主键
-	School    string `gorm:"index; not null;"` // 学校
-	Sort      uint   `gorm:"not null;"`        // 排序
-	StartTime string `gorm:"not null;"`        // 开始时间
-	EndTime   string `gorm:"not null;"`        // 结束时间
+	ID        uint   `gorm:"primarykey"`                      // 主键
+	School    string `gorm:"index:idx_school_sort;not null;"` // 学校
+	Sort      uint   `gorm:"index:idx_school_sort;not null;"` // 排序
+	StartTime string `gorm:"not null;"`                       // 开始时间
+	EndTime   string `gorm:"not null;"`                       // 结束时间
 	grade     string // 年级
 }
 
