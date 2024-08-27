@@ -39,10 +39,10 @@ func CourseGradesByUsername(username, school string) ([]CourseGrades, []CourseGr
 	return courseGrades, courseGradesPrompt
 }
 
-// WeightedAverage 计算加权平均分和加拿大绩点算法
+// WeightedAverage 计算加权平均分和哈理工绩点算法
 func WeightedAverage(username, school string, stuType int) (float64, float64) {
 	var result1, result2 float64
-	db.Raw("SELECT round(COALESCE(SUM( course_grade * course_credit ), 0) / COALESCE(SUM ( course_credit ), 1),2) FROM course_grades WHERE course_type = '必修' AND course_grade >= 60  AND course_credit != 0 AND stu_id = ? AND school = ? and stu_type = ?", username, school, stuType).Scan(&result1)
-	db.Raw("SELECT round(COALESCE(sum((CASE WHEN course_grade >= 80 THEN 4.0 WHEN course_grade >= 70 THEN 3.0 WHEN course_grade >= 60 THEN 2.0 WHEN course_grade >= 50 THEN 1.0 ELSE 0.0 END)* course_credit), 0)/ COALESCE(sum(course_credit), 1),2)FROM course_grades WHERE course_credit != 0 AND course_grade!= 0 AND stu_id = ? AND school = ? and stu_type = ?", username, school, stuType).Scan(&result2)
+	db.Raw("SELECT round(COALESCE(SUM( course_grade * course_credit ), 0) / COALESCE(SUM ( course_credit ), 1),2) FROM course_grades WHERE  course_grade >= 60  AND course_credit != 0 AND stu_id = ? AND school = ? and stu_type = ?", username, school, stuType).Scan(&result1)
+	db.Raw("SELECT ROUND(COALESCE (SUM ((CASE WHEN course_grade>=85 THEN 7.0 WHEN course_grade>=75 THEN 6.0 WHEN course_grade>=65 THEN 5.0 WHEN course_grade>=50 THEN 4.0 WHEN course_grade>=45 THEN 3.0 ELSE 0.0 END)*course_credit),0)/COALESCE (SUM (course_credit),1),2) AS australia_gpa FROM course_grades WHERE course_credit !=0 AND course_grade !=0 AND stu_id=? AND school=? AND stu_type=?", username, school, stuType).Scan(&result2)
 	return result1, result2
 }

@@ -13,6 +13,7 @@ type TimeTable struct {
 // GetTimeTable 通过学校获取时间表
 func GetTimeTable(school string) []TimeTable {
 	var timeTables []TimeTable
-	db.Where("school = ?", school).Order("sort").Find(&timeTables)
+	db.Where("school = ?", school).
+		Order("sort").Find(&timeTables)
 	return timeTables
 }
