@@ -6,6 +6,7 @@ import (
 	"io"
 	"strconv"
 	"strings"
+	"time"
 
 	"encoding/base64"
 	"math/rand"
@@ -112,6 +113,7 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 		}
 		// 如果识别出来的验证码不是4位数字, 说明识别失败, 跳过这次循环
 		if _, err = strconv.Atoi(OrcCode); err != nil {
+			time.Sleep(500 * time.Microsecond)
 			continue
 		}
 

@@ -1,39 +1,34 @@
 package neauUg
 
 import (
-	"fmt"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const (
 	// 东北农业大学本科生账号密码
-	USERNAME string = "A08220441"
-	PASSWORD string = "shiyunxin0527@"
+	USERNAME     = "A08220441"
+	PASSWORD     = "shiyunxin0527@"
+	NEAUDATATEST = "2024-2025-1-1"
 )
 
-// TestSigninUgNEAU 测试东北农业大学本科生登陆
-func TestUgSignin(t *testing.T) {
-	_, err := Signin(USERNAME, PASSWORD)
-	if err != nil {
-		t.Error(err)
-	}
-}
+func TestNeauUg(t *testing.T) {
+	assert := assert.New(t)
 
-/*----------------------------------------------------------------------*/
-
-// TestRevLeftChidScorePg 东北农业大学本科生, 接收成绩json
-func TestGetJSONneau(t *testing.T) {
 	cookiejar, err := Signin(USERNAME, PASSWORD)
-	if err != nil {
-		t.Error(err)
+	if assert.Nil(err, "登陆失败") {
+
+		// 获取课表
+		t.Run("GetData", func(t *testing.T) {
+			jsoNneau, err := GetData(cookiejar, NEAUDATATEST)
+			assert.Nilf(err, "获取json失败")
+
+			t.Log(string(*jsoNneau))
+		})
 	}
-	jsoNneau, err := GetData(cookiejar, "2024-2025-1-1")
-	if err != nil {
-		t.Errorf("error: %s", err)
-	} else {
-		fmt.Println(string(*jsoNneau))
-	}
+
 }
 
 /*----------------------------------------------------------------------*/
@@ -41,14 +36,12 @@ func TestGetJSONneau(t *testing.T) {
 // TestParse_json_ug_nd 解析农大课表json
 func TestParse_json_ug_nd(t *testing.T) {
 	jsonInfo, err := os.ReadFile("农大课表json/tsconfig.json")
-	if err != nil {
-		t.Error(err)
-	}
+	assert.Nilf(t, err, "读取json文件失败")
+
 	res, err := ParseData(&jsonInfo)
-	if err != nil {
-		t.Error(err)
-	}
+	assert.Nilf(t, err, "解析json失败")
+
 	for _, v := range res {
-		fmt.Println(v)
+		t.Log(v)
 	}
 }

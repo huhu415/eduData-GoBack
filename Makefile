@@ -15,6 +15,6 @@ cbuild:
 
 # vet: 找错误
 vet:
-	go vet ./...
+	@go vet ./...
 
 .PHONY: build cbuild vet
