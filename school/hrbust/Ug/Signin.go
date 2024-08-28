@@ -96,7 +96,7 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 		base64String := base64.StdEncoding.EncodeToString(imageBytes)
 
 		var OrcCode string
-		r := rand.Intn(3)
+		r := rand.Intn(5)
 		if r == 0 {
 			jfbym := ident.NewJfbymOcr(bootstrap.C.JfymRequestUrl, bootstrap.C.JfymToken)
 			OrcCode, errVer = jfbym.Identify(&base64String)
