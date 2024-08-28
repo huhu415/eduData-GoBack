@@ -120,6 +120,7 @@ func GetCourseByTime(cookieJar *cookiejar.Jar, year, term string) (*[]byte, erro
 }
 
 // GetDataScore 获取原始的本学期html成绩表(个人成绩查询), year, term为学年和学期, 要自己去html中查看
+// 1是春, 2是秋
 func GetDataScore(cookieJar *cookiejar.Jar, year, term string) (*[]byte, error) {
 	//新建一个客户端
 	client := &http.Client{

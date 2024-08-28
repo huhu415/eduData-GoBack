@@ -3,47 +3,40 @@ package models
 import (
 	"eduData/bootstrap"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-// TestNewDatabase 测试NewDatabase是否能够连接上数据库
-func TestNewDatabase(t *testing.T) {
-	NewDatabase()
-}
-
-// TestAddCourse 测试AddCourse是否能够添加课程
-func TestAddCourse(t *testing.T) {
-	NewDatabase()
-	//AddCourse()
-}
-
-// TestCourseByWeekUsername 测试CourseByWeekUsername是否能够查询课程
-func TestCourseByWeekUsername(t *testing.T) {
-	NewDatabase()
-	courses := CourseByWeekUsername(1, "1234567", "hrbust")
-	t.Log(courses)
-}
-
-// 测试能否计算出来绩点
-func TestCalculateGPA(t *testing.T) {
-	NewDatabase()
-	gpa1, gpa2 := WeightedAverage("2204010417", "hrbust", 1)
-	t.Log(gpa1, gpa2)
-}
-
-func TestCreatAndUpdataStuInfo(t *testing.T) {
+func TestDatabase(t *testing.T) {
 	bootstrap.InitLog()
 	bootstrap.Loadconfig()
+	NewDatabase()
 
 	NewDatabase()
 	defer CloseDatabase()
 
-	stu := &StuInfo{
-		StuID:   "2306070112",
-		School:  "hrbust",
-		StuType: 1,
-	}
-	err := stu.CreatAndUpdataStuInfo()
-	if err != nil {
-		t.Error(err)
-	}
+	t.Run("添加课程", func(t *testing.T) {
+
+	})
+
+	t.Run("查询课程", func(t *testing.T) {
+		courses := CourseByWeekUsername(1, "1234567", "hrbust")
+		t.Log(courses)
+	})
+
+	t.Run("查询成绩", func(t *testing.T) {
+		gpa1, gpa2 := WeightedAverage("2204010417", "hrbust", 1)
+		t.Log(gpa1, gpa2)
+	})
+
+	t.Run("更新/添加个人信息", func(t *testing.T) {
+		stu := &StuInfo{
+			StuID:   "2306070112",
+			School:  "hrbust",
+			StuType: 1,
+		}
+		err := stu.CreatAndUpdataStuInfo()
+		assert.Nil(t, err, "更新个人信息失败")
+		t.Log(stu)
+	})
 }

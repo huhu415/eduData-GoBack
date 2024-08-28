@@ -6,52 +6,60 @@ import (
 	"fmt"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const (
 	// 本科生账号密码
 	USERNAME string = "2204010417"
-	PASSWORD string = "13737826060a"
+	PASSWORD        = "13737826060a"
+	YEARTEST        = "43"
+	TERMTEST        = "2"
 )
 
-// TestSingInUg 测试哈尔滨理工大学本科生登陆
-func TestSignin(t *testing.T) {
-	_, err := Signin(USERNAME, PASSWORD)
-	if err != nil {
-		t.Errorf("登陆失败: %s", err)
-	}
-}
-
-/*----------------------------------------------------------------------*/
-
-// TestRevLeftChidUg 本科生, 接收点击左侧地址后的html
-func TestGetData(t *testing.T) {
-	// TestRevLeftChid 发送LEFTTERM, 获得学期课表
-	cookiejar, err := Signin(USERNAME, PASSWORD)
-	if err != nil {
-		t.Errorf("error: %s", err)
-	}
-	CourseTable, err := GetData(cookiejar, "2000")
-	if err != nil {
-		t.Errorf("error: %s", err)
-		//t.Fatalf("error: %s", err)
-	} else {
-		fmt.Println(string(*CourseTable))
-	}
-}
-
-// TestRevLeftChidScoreUg 本科生, 接收成绩html
-func TestGetDataScore(t *testing.T) {
+func TestHrbustUg(t *testing.T) {
 	bootstrap.Loadconfig()
-	cookiejar, err := Signin(USERNAME, PASSWORD)
-	if err != nil {
-		t.Errorf("error: %s", err)
-	}
-	Score, err := GetDataScore(cookiejar, "43", "2")
-	if err != nil {
-		t.Errorf("error: %s", err)
-	} else {
-		fmt.Println(string(*Score))
+	assert := assert.New(t)
+
+	cookie, err := Signin(USERNAME, PASSWORD)
+	if assert.Nil(err, "登陆失败") {
+		// 获取学期课表
+		t.Run("GetData-ThisTerm", func(t *testing.T) {
+			CourseTable, err := GetData(cookie, "2000")
+			if assert.Nil(err, "获取课表失败") {
+
+				// 解析课表
+				t.Run("ParseDataCrouseAll", func(t *testing.T) {
+					allCoures, err := ParseDataCrouseAll(CourseTable)
+					if assert.Nil(err, "解析课程失败") {
+						for _, course := range allCoures {
+							t.Log(course)
+						}
+					}
+				})
+
+			}
+		})
+
+		// 获取成绩
+		t.Run("GetDataScore", func(t *testing.T) {
+			Score, err := GetDataScore(cookie, YEARTEST, TERMTEST)
+			if assert.Nil(err, "获取成绩失败") {
+
+				// 解析成绩
+				t.Run("ParseDataSore", func(t *testing.T) {
+					allCoures, err := ParseDataSore(Score, YEARTEST, TERMTEST)
+					if assert.Nil(err, "解析成绩失败") {
+						for _, course := range allCoures {
+							t.Log(course)
+						}
+					}
+				})
+
+			}
+		})
+
 	}
 }
 
