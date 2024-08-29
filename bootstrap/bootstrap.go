@@ -36,6 +36,16 @@ type Config struct {
 
 var C Config
 
+func InitLog() {
+	log.SetFormatter(&log.TextFormatter{
+		ForceColors:     true,
+		FullTimestamp:   true,
+		TimestampFormat: "2006-01-02 15:04:05",
+	})
+	log.SetOutput(os.Stdout)
+	log.SetLevel(log.InfoLevel)
+}
+
 func Loadconfig() {
 	parseFlag()
 
@@ -78,12 +88,7 @@ func Loadconfig() {
 		return
 	}
 
-	// 遍历结构体
-	t := reflect.TypeOf(C)
-	v := reflect.ValueOf(C)
-	for i := 0; i < t.NumField(); i++ {
-		log.Infof("%s: %s", t.Field(i).Name, v.Field(i).Interface())
-	}
+	output()
 
 	log.Info("\033[1;34m**********Init flag/env/config success!**********\033[0m")
 	return
@@ -111,12 +116,15 @@ func parseFlag() {
 	}
 }
 
-func InitLog() {
-	log.SetFormatter(&log.TextFormatter{
-		ForceColors:     true,
-		FullTimestamp:   true,
-		TimestampFormat: "2006-01-02 15:04:05",
-	})
-	log.SetOutput(os.Stdout)
-	log.SetLevel(log.InfoLevel)
+func output() {
+	fmt.Println("version:", Version)
+	fmt.Println("buildDate:", BuildDate)
+	fmt.Println("gitCommit:", GitCommit)
+
+	// 遍历结构体
+	t := reflect.TypeOf(C)
+	v := reflect.ValueOf(C)
+	for i := 0; i < t.NumField(); i++ {
+		log.Infof("%s: %s", t.Field(i).Name, v.Field(i).Interface())
+	}
 }
