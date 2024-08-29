@@ -6,9 +6,10 @@ WORKDIR /app
 
 # 复制源代码
 COPY . .
+RUN apk add --no-cache git make
 
 # 构建应用
-RUN CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -buildmode "pie" .
+RUN make build
 
 # 第二阶段：运行阶段
 FROM alpine

@@ -7,7 +7,7 @@ GIT_COMMIT := $(shell git rev-parse --short HEAD)
 
 # build: build
 build:
-	@env CGO_ENABLED=0 								go build -ldflags "-X 'eduData/bootstrap.Version=$(VERSION)' -X 'eduData/bootstrap.BuildDate=$(BUILD_DATE)' -X 'eduData/bootstrap.GitCommit=$(GIT_COMMIT)'"
+	@env CGO_ENABLED=0 								go build -trimpath -ldflags "-X 'eduData/bootstrap.Version=$(VERSION)' -X 'eduData/bootstrap.BuildDate=$(BUILD_DATE)' -X 'eduData/bootstrap.GitCommit=$(GIT_COMMIT)'"
 
 # cbuild: cross build
 cbuild:
