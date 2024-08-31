@@ -26,8 +26,12 @@ func TestHrbustUg(t *testing.T) {
 	if assert.Nil(err, "登陆失败") {
 		// 获取学期课表
 		t.Run("GetData-ThisTerm", func(t *testing.T) {
+			// CourseTable, err:=GetCourseByTime(cookie, "44", "2")
 			CourseTable, err := GetData(cookie, "2000")
 			if assert.Nil(err, "获取课表失败") {
+				// 存储到本地文件
+				err := os.WriteFile("Ug课程html/本学期课表.html", *CourseTable, 0666)
+				assert.Nil(err, "写入文件失败")
 
 				// 解析课表
 				t.Run("ParseDataCrouseAll", func(t *testing.T) {
@@ -67,15 +71,14 @@ func TestHrbustUg(t *testing.T) {
 
 // TestParseTablePgByWeek 给定一个学期的课表, 生成课程信息切片, 解析本科生的
 func TestParseTableUgAll(t *testing.T) {
-	// table, err := os.ReadFile("Ug课程html/本学期课表.html")
-	table, err := os.ReadFile("Ug课程html/currcourse.html")
-	if err != nil {
-		t.Error(err)
-	}
+	assert := assert.New(t)
+	table, err := os.ReadFile("Ug课程html/本学期课表.html")
+	// table, err := os.ReadFile("Ug课程html/currcourse.html")
+	assert.Nil(err, "读取文件失败")
+
 	allCoures, err := ParseDataCrouseAll(&table)
-	if err != nil {
-		t.Error(err)
-	}
+	assert.Nil(err, "解析课程失败")
+
 	for _, course := range allCoures {
 		fmt.Println(course)
 	}
@@ -84,14 +87,13 @@ func TestParseTableUgAll(t *testing.T) {
 
 // TestParseTableUgByWeek 给定一个学期的课表和某一周, 生成那周的课程信息切片, 解析本科生的
 func TestParseTableUgByWeek(t *testing.T) {
+	assert := assert.New(t)
 	table, err := os.ReadFile("Ug课程html/本学期课表.html")
-	if err != nil {
-		t.Error(err)
-	}
+	assert.Nil(err, "读取文件失败")
+
 	allCoures, err := ParseDataCrouseByWeek(&table, 1)
-	if err != nil {
-		t.Error(err)
-	}
+	assert.Nil(err, "解析课程失败")
+
 	for _, course := range allCoures {
 		fmt.Println(course)
 	}
@@ -100,14 +102,13 @@ func TestParseTableUgByWeek(t *testing.T) {
 
 // 解析哈理工本科成绩
 func TestParseDataSore(t *testing.T) {
+	assert := assert.New(t)
 	table, err := os.ReadFile("Ug成绩/Ug成绩.html")
-	if err != nil {
-		t.Error(err)
-	}
+	assert.Nil(err, "读取文件失败")
+
 	allCoures, err := ParseDataSore(&table, "2023", "1")
-	if err != nil {
-		t.Error(err)
-	}
+	assert.Nil(err, "解析成绩失败")
+
 	for _, course := range allCoures {
 		fmt.Println(course)
 	}

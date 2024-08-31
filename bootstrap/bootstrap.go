@@ -2,13 +2,14 @@ package bootstrap
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"reflect"
+
 	"github.com/fsnotify/fsnotify"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	"os"
-	"path/filepath"
-	"reflect"
 )
 
 // 版本信息version information
@@ -49,7 +50,7 @@ func InitLog() {
 func Loadconfig() {
 	parseFlag()
 
-	log.Info("\033[1;34m**********Initing env/config **********\033[0m")
+	log.Info("\033[1;34m*****************Initing env/config *****************\033[0m")
 	// Default config
 	viper.SetDefault("user_agent", "Mozilla/5.0 (Macintosh Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
 	viper.SetDefault("jwt_key", "9385g0x98n347tx980y34g9sfgsldkjvilr")
@@ -76,7 +77,7 @@ func Loadconfig() {
 	if err = viper.ReadInConfig(); err != nil {
 		log.Errorf("read config file error: %+v\n", err)
 	}
-	log.Infof("Using config file: %s\n", viper.ConfigFileUsed())
+	log.Infof("Using config file: \033[1;34m%s\033[0m", viper.ConfigFileUsed())
 
 	viper.OnConfigChange(func(e fsnotify.Event) {
 		log.Info("Config file changed:", e.Name)
@@ -90,7 +91,7 @@ func Loadconfig() {
 
 	output()
 
-	log.Info("\033[1;34m**********Init flag/env/config success!**********\033[0m")
+	log.Info("\033[1;34m*****************Init flag/env/config success!*****************\033[0m")
 	return
 }
 
@@ -117,9 +118,9 @@ func parseFlag() {
 }
 
 func output() {
-	fmt.Println("version:", Version)
-	fmt.Println("buildDate:", BuildDate)
-	fmt.Println("gitCommit:", GitCommit)
+	log.Infof("version:\033[1;34m%s\033[0m", Version)
+	log.Infof("buildDate:\033[1;34m%s\033[0m", BuildDate)
+	log.Infof("gitCommit:\033[1;34m%s\033[0m", GitCommit)
 
 	// 遍历结构体
 	t := reflect.TypeOf(C)
