@@ -5,9 +5,26 @@ import (
 	"eduData/school"
 	"errors"
 	"net/http/cookiejar"
+	"strconv"
+	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
-const NEAUDATA = "2023-2024-2-1"
+func (n *NeauUg) getYearTerm() (yearTerm string) {
+	now := time.Now()
+	nowYear, nowMonth := now.Year(), now.Month()
+	var resYear, resTerm int
+	if nowMonth >= 2 && nowMonth <= 7 {
+		resTerm, resYear = 2, nowYear-1
+	} else {
+		resTerm, resYear = 1, nowYear
+	}
+
+	yearTerm = strconv.Itoa(resYear) + "-" + strconv.Itoa(resYear+1) + "-" + strconv.Itoa(resTerm)
+	logrus.Debugf("yearTerm: %s", yearTerm)
+	return
+}
 
 type NeauUg struct {
 	stuID  string
@@ -52,7 +69,7 @@ func (n *NeauUg) Signin() error {
 }
 
 func (n *NeauUg) GetCourse() ([]models.Course, error) {
-	GetJSONneau, errNeau := GetData(n.cookie, NEAUDATA)
+	GetJSONneau, errNeau := GetData(n.cookie, n.getYearTerm())
 	if errNeau != nil {
 		return nil, errNeau
 	}

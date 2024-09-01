@@ -1,7 +1,6 @@
 package bootstrap
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -37,18 +36,9 @@ type Config struct {
 
 var C Config
 
-func InitLog() {
-	log.SetFormatter(&log.TextFormatter{
-		ForceColors:     true,
-		FullTimestamp:   true,
-		TimestampFormat: "2006-01-02 15:04:05",
-	})
-	log.SetOutput(os.Stdout)
-	log.SetLevel(log.InfoLevel)
-}
-
 func Loadconfig() {
 	parseFlag()
+	initLog()
 
 	log.Info("\033[1;34m*****************Initing env/config *****************\033[0m")
 	// Default config
@@ -89,7 +79,13 @@ func Loadconfig() {
 		return
 	}
 
-	output()
+	versionInfo()
+	// 遍历结构体
+	t := reflect.TypeOf(C)
+	v := reflect.ValueOf(C)
+	for i := 0; i < t.NumField(); i++ {
+		log.Infof("%s: %s", t.Field(i).Name, v.Field(i).Interface())
+	}
 
 	log.Info("\033[1;34m*****************Init flag/env/config success!*****************\033[0m")
 	return
@@ -100,6 +96,8 @@ func parseFlag() {
 	pflag.StringP("listen_port", "l", "8080", "listen address")
 	pflag.BoolP("version", "v", false, "version information")
 	pflag.BoolP("help", "h", false, "display help information")
+	pflag.Bool("debug", false, "debug mode")
+	pflag.CommandLine.SortFlags = false
 	pflag.Parse()
 	if err := viper.BindPFlags(pflag.CommandLine); err != nil {
 		panic(err)
@@ -110,22 +108,27 @@ func parseFlag() {
 		os.Exit(0)
 	}
 	if viper.GetBool("version") {
-		fmt.Println("version:", Version)
-		fmt.Println("buildDate:", BuildDate)
-		fmt.Println("gitCommit:", GitCommit)
+		versionInfo()
 		os.Exit(0)
 	}
 }
 
-func output() {
+func initLog() {
+	log.SetFormatter(&log.TextFormatter{
+		ForceColors:     true,
+		FullTimestamp:   true,
+		TimestampFormat: "2006-01-02 15:04:05",
+	})
+	log.SetOutput(os.Stdout)
+	if viper.GetBool("debug") {
+		log.SetLevel(log.DebugLevel)
+	} else {
+		log.SetLevel(log.InfoLevel)
+	}
+}
+
+func versionInfo() {
 	log.Infof("version:\033[1;34m%s\033[0m", Version)
 	log.Infof("buildDate:\033[1;34m%s\033[0m", BuildDate)
 	log.Infof("gitCommit:\033[1;34m%s\033[0m", GitCommit)
-
-	// 遍历结构体
-	t := reflect.TypeOf(C)
-	v := reflect.ValueOf(C)
-	for i := 0; i < t.NumField(); i++ {
-		log.Infof("%s: %s", t.Field(i).Name, v.Field(i).Interface())
-	}
 }
