@@ -10,13 +10,22 @@ import (
 	"sync"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
 )
 
-const (
-	YEAR = "44"
-	TERM = "2"
-)
+func (h *HrbustUg) getYearTerm() (year, term string) {
+	now := time.Now()
+	nowYear, nowMonth := now.Year(), now.Month()
+	if nowMonth >= 2 && nowMonth <= 7 {
+		term = "1"
+	} else {
+		term = "2"
+	}
+	year = strconv.Itoa(nowYear - 1980)
+	logrus.Debugf("year: %s, term: %s", year, term)
+	return
+}
 
 type HrbustUg struct {
 	stuID  string
@@ -61,7 +70,8 @@ func (h *HrbustUg) Signin() error {
 }
 
 func (h *HrbustUg) GetCourse() ([]models.Course, error) {
-	b, err := GetCourseByTime(h.cookie, YEAR, TERM)
+	y, t := h.getYearTerm()
+	b, err := GetCourseByTime(h.cookie, y, t)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +117,7 @@ func (h *HrbustUg) GetGrade() ([]models.CourseGrades, error) {
 			return nil
 		})
 	}
-	// 添加任务
+	// 添加任务, 根据学生学号判断需要获取什么年份的成绩
 	atoiYear, err := strconv.Atoi("20" + h.stuID[0:2])
 	if err != nil {
 		return nil, err

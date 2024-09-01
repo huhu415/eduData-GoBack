@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"math/rand"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -71,6 +70,8 @@ func GetData(cookieJar *cookiejar.Jar, moduleId string) (*[]byte, error) {
 	return &ioRead, nil
 }
 
+// GetCourseByTime 通过时间获取课程, year, term为当前年和学期
+// term: 1是春, 2是秋. 例如: 要获取24年9月的课程, 就是44,2
 func GetCourseByTime(cookieJar *cookiejar.Jar, year, term string) (*[]byte, error) {
 	// 从setting中获取UserAgent
 	var userAgent = bootstrap.C.UserAgent
@@ -112,15 +113,15 @@ func GetCourseByTime(cookieJar *cookiejar.Jar, year, term string) (*[]byte, erro
 			return nil, err
 		}
 		// 把ioRead保存到文件中
-		os.WriteFile("currcourse.html", utf8Bytes, 0666)
+		// os.WriteFile("currcourse.html", utf8Bytes, 0666)
 		return &utf8Bytes, nil
 	}
 
 	return &ioRead, nil
 }
 
-// GetDataScore 获取原始的本学期html成绩表(个人成绩查询), year, term为学年和学期, 要自己去html中查看
-// 1是春, 2是秋
+// GetDataScore 获取原始的本学期html成绩表(个人成绩查询), year, term为当前年和学期, 要自己去html中查看
+// term: 1是春, 2是秋
 func GetDataScore(cookieJar *cookiejar.Jar, year, term string) (*[]byte, error) {
 	//新建一个客户端
 	client := &http.Client{

@@ -13,6 +13,10 @@ build:
 cbuild:
 	@env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 		go build -trimpath -ldflags "$(LDFLAGS)" .
 
+# debug: debug
+debug:
+	@CompileDaemon -build="make build" -command="./eduData --debug"
+
 # vet: 找错误
 vet:
 	@go vet ./...
