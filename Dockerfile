@@ -1,6 +1,10 @@
 # 第一阶段：构建阶段
 FROM golang:1.23.0-alpine3.19 AS builder
 
+# 设置时区
+ENV TZ=Asia/Shanghai
+RUN apk add --no-cache tzdata
+
 # 设置工作目录
 WORKDIR /app
 
