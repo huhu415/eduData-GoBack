@@ -3,15 +3,28 @@ LDFLAGS := -s -w
 
 VERSION := 1.0.0
 BUILD_DATE := $(shell date +%Y-%m-%dT%H:%M:%S)
-GIT_COMMIT := $(shell git rev-parse --short HEAD)
+GIT_COMMIT := $(shell git rev-parse --short HEAD)  $(shell git log -1 --pretty=%s)
 
-# build: build
+# build: build the project
 build:
-	@env CGO_ENABLED=0 								go build -trimpath -ldflags "-X 'eduData/bootstrap.Version=$(VERSION)' -X 'eduData/bootstrap.BuildDate=$(BUILD_DATE)' -X 'eduData/bootstrap.GitCommit=$(GIT_COMMIT)'"
+	@env CGO_ENABLED=0 \
+	go build -trimpath \
+		-ldflags "\
+		$(LDFLAGS) \
+		-X 'eduData/bootstrap.Version=$(VERSION)' \
+		-X 'eduData/bootstrap.BuildDate=$(BUILD_DATE)' \
+		-X 'eduData/bootstrap.GitCommit=$(GIT_COMMIT)'" \
+		.
 
-# cbuild: cross build
+# cbuild: cross build for Linux amd64
 cbuild:
-	@env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 		go build -trimpath -ldflags "$(LDFLAGS)" .
+	@env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+	go build -trimpath \
+		-ldflags "$(LDFLAGS)" \
+		-X 'eduData/bootstrap.Version=$(VERSION)' \
+		-X 'eduData/bootstrap.BuildDate=$(BUILD_DATE)' \
+		-X 'eduData/bootstrap.GitCommit=$(GIT_COMMIT)'" \
+		.
 
 # debug: debug
 debug:
