@@ -12,8 +12,8 @@ import (
 
 const (
 	// 本科生账号密码
-	USERNAME string = "2204010417"
-	PASSWORD        = "13737826060a"
+	USERNAME string = ""
+	PASSWORD        = ""
 	YEARTEST        = "43"
 	TERMTEST        = "2"
 )

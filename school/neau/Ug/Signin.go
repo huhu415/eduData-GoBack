@@ -13,8 +13,9 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
-	"github.com/PuerkitoBio/goquery"
 	"net/http/cookiejar"
+
+	"github.com/PuerkitoBio/goquery"
 
 	"eduData/bootstrap"
 )
@@ -125,7 +126,7 @@ func Signin(username, password string) (*cookiejar.Jar, error) {
 	values.Set("dllt", "generalLogin")
 	values.Set("execution", execution)
 	// 发送请求第二次, 登陆
-	request, err = http.NewRequest("POST", "https://authserver-443.webvpn.neau.edu.cn/authserver/login", strings.NewReader(values.Encode()))
+	request, err = http.NewRequest(http.MethodPost, "https://authserver-443.webvpn.neau.edu.cn/authserver/login", strings.NewReader(values.Encode()))
 	if err != nil {
 		return nil, err
 	}

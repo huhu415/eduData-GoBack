@@ -9,8 +9,8 @@ import (
 
 const (
 	// 研究生账号密码
-	USERNAME string = "2320410125"
-	PASSWORD string = "Aa788415"
+	USERNAME string = ""
+	PASSWORD string = ""
 
 	// 研究生不同的登陆页面
 	//登陆后成功后跳转的页面

@@ -99,6 +99,8 @@ func ChineseToNumber(chinese rune) (int, error) {
 		return 6, nil
 	case '日':
 		return 7, nil
+	case '天':
+		return 7, nil
 	default:
 		return 0, fmt.Errorf("不支持的汉字数字: %s", string(chinese))
 	}

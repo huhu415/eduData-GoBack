@@ -4,6 +4,7 @@ import (
 	"eduData/domain"
 	"eduData/models"
 	"eduData/school"
+	hljuUg "eduData/school/hlju/Ug"
 	hrbustUg "eduData/school/hrbust/Ug"
 	neauUg "eduData/school/neau/Ug"
 	"errors"
@@ -29,6 +30,14 @@ func NewSchoolSwitch(d domain.LoginForm) (school.School, error) {
 		switch d.StudentType {
 		case 1:
 			s = neauUg.NewNeauUg(d.Username, d.Password)
+		case 2:
+			return nil, errors.New(d.School + "研究生登陆功能还未开发")
+		}
+	// 黑龙江大学
+	case "hlju":
+		switch d.StudentType {
+		case 1:
+			s = hljuUg.NewHljuUg(d.Username, d.Password)
 		case 2:
 			return nil, errors.New(d.School + "研究生登陆功能还未开发")
 		}
