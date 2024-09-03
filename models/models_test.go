@@ -8,7 +8,6 @@ import (
 )
 
 func TestDatabase(t *testing.T) {
-	bootstrap.InitLog()
 	bootstrap.Loadconfig()
 	NewDatabase()
 
@@ -39,4 +38,37 @@ func TestDatabase(t *testing.T) {
 		assert.Nil(t, err, "更新个人信息失败")
 		t.Log(stu)
 	})
+
+	t.Run("添加时间表", func(t *testing.T) {
+		times := make([]TimeTable, 0)
+		for i, v := range courses {
+			times = append(times, TimeTable{
+				School:    "hlju",
+				Sort:      uint(i + 1),
+				StartTime: v.startTime,
+				EndTime:   v.endTime,
+			})
+		}
+		assert.Nil(t, AddTimeTable(&times), "添加时间表失败")
+	})
+}
+
+type course struct {
+	startTime string
+	endTime   string
+}
+
+// hlju时间表
+var courses = []course{
+	{"08:00", "08:45"},
+	{"08:50", "09:35"},
+	{"10:00", "10:45"},
+	{"10:50", "11:35"},
+	{"13:30", "14:15"},
+	{"14:20", "15:05"},
+	{"15:30", "16:15"},
+	{"16:20", "17:05"},
+	{"18:30", "19:15"},
+	{"19:20", "20:05"},
+	{"20:10", "20:55"},
 }

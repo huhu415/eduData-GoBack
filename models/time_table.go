@@ -17,3 +17,7 @@ func GetTimeTable(school string) []TimeTable {
 		Order("sort").Find(&timeTables)
 	return timeTables
 }
+
+func AddTimeTable(timeTables *[]TimeTable) error {
+	return db.Create(timeTables).Error
+}

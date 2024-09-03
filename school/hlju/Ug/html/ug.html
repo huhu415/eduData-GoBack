@@ -1,0 +1,830 @@
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>教务管理系统</title>
+
+
+	<script type="text/javascript">
+		var ssfwConfig = {
+			contextPath: '/ssfw',
+			comboboxUrl: '/ssfw/combobox.widgets',
+			combotreeUrl: '/ssfw/combotree.widgets',
+			combotableUrl: '/ssfw/combotable.widgets',
+			photoDownloadUrl: '/ssfw/photo.widgets',
+			photoUploadUrl: '/ssfw/photo.widgets',
+			selectrangeUrl: '/ssfw/selectrange.widgets',
+			combobox: ['xxfs', 'xsly', 'qxxxkdjzt', 'kkdw', 'zcdm', 'bkks_shzt', 'xldm', 'jdfs', 'ydxl', 'xndm', 'hssxwfs', 'ksdm_bk', 'zyfx', 'xz', 'xqdm', 'pylb', 'jxlh', 'bkks_fyshzt', 'kcxz', 'tsxslxdm', 'kcsyfw', 'lqlb', 'hyzk', 'lxbz', 'kclb', 'djcj', 'xslb2', 'pyfs', 'xjzt', 'zsjd', 'wyzl', 'tsxslx', 'rxklb', 'zs', 'xjyd_shzt', 'xbdm', 'cjtsyy', 'jxxz', 'njdm', 'cxcyfl', 'pyfalx', 'xqxx', 'cjlrzt', 'zjlx', 'jtgx', 'gat', 'pyjhxxxq', 'zydm', 'zsksfs', 'wyzldm', 'jslx', 'jkpc', 'xdfs', 'skyz', 'bylx', 'cxcylb', 'ksxm', 'sf', 'jcxx', 'xxxs', 'xnxq', 'jxfs', 'yddl', 'ksdm', 'rxfs', 'gbzwmc', 'bjh', 'zzmm', 'kspc', 'mzdm', 'zyjszw', 'djcjlx', 'ksqhd', 'zxjh', 'gjdq', 'sydw', 'xw', 'xnxqdm', 'rxjj', 'xkml', 'kcjb', 'dwdm', 'kcfl', 'pyccm', 'jxzs', 'xslb', 'xxxsdm'],
+			combotree: ['kkdw', 'xzqh', 'dsjbxx', 'ssxxxx'],
+			combotable: [{ "config": { "columns": [{ "header": "院系代码", "width": "60", "name": "id" }, { "header": "院系名称", "width": "120", "name": "name" }], "title": "校标单位" }, "name": "nuistTable" }, { "config": { "columns": [{ "header": "ISBN", "width": "150", "name": "isbn" }, { "header": "书名", "width": "300", "name": "sm" }, { "header": "丛书名", "width": "180", "name": "csm" }, { "header": "著作者", "width": "120", "name": "zzz" }, { "header": "价格", "width": "60", "name": "jg" }], "title": "请选择教材库" }, "name": "selectJcTable" }, { "config": { "columns": [{ "header": "院系代码", "width": "60", "name": "dwdm" }, { "header": "院系名称", "width": "120", "name": "dwmc" }], "title": "校标单位" }, "name": "yxdmTable" }]
+		};
+	</script>
+
+	<link href="/ssfw/resources/js/ssfw/widgets/base/css/jquery-ui-1.9.1.custom.css" rel="stylesheet" type="text/css" />
+	<link href="/ssfw/resources/lovey/style/css/lovey.css" rel="stylesheet" type="text/css" />
+	<!-- 教务系统自定义的产品样式，主要用于覆盖loevy css，定义自己的css -->
+	<link href="/ssfw/resources/common/css/custom.css" rel="stylesheet" type="text/css" />
+	<link href="/ssfw/resources/js/ssfw/widgets/base/css/base.css" rel="stylesheet" type="text/css" />
+
+	<script type="text/javascript" src="/ssfw/resources/js/jquery/jquery-1.8.2.min.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/jquery-ui.js"></script>
+
+
+	<!-- js框架 -->
+	<script src="/ssfw/resources/js/jquery-plugins/validate/jquery.metadata.js" type="text/javascript"></script>
+	<script src="/ssfw/resources/js/jquery-plugins/validate/jquery.validate.js" type="text/javascript"></script>
+	<script src="/ssfw/resources/js/jquery-plugins/validate/messages_cn.js" type="text/javascript"></script>
+	<script src="/ssfw/resources/js/jquery-plugins/validate/validate_ex.js" type="text/javascript"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/ssfw/widgets/base/jquery.ui.tooltip.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/jquery-plugins/jstree/jquery.jstree.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/jquery-plugins/jquery.form.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/jquery-plugins/jquery.query-2.1.7.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/jquery-plugins/kindeditor/kindeditor-min.js"></script>
+
+	<script type="text/javascript" src="/ssfw/resources/js/ssfw/widgets/base/jquery.ui.text.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/ssfw/widgets/base/jquery.ui.textButton.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/ssfw/widgets/base/jquery.ui.selectRange.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/ssfw/widgets/base/jquery.ui.attachment.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/ssfw/widgets/base/jquery.ui.util.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/ssfw/widgets/base/jquery.ui.combobox.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/ssfw/widgets/base/jquery.ui.combotree.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/ssfw/widgets/base/jquery.ui.date.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/ssfw/widgets/base/jquery.ui.textarea.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/ssfw/widgets/base/jquery.ui.photo.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/ssfw/widgets/base/jquery.ui.selectTable.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/ssfw/widgets/base/jquery.ui.multiText.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/ssfw/widgets/base/jquery.ui.editableForm.js"></script>
+	<!-- ssfwUtil.js -->
+	<script type="text/javascript" src="/ssfw/resources/js/ssfwUtil.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/lovey/js/easyloader.js"></script>
+
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" href="/ssfw/resources/css/module/query.css" type="text/css">
+	<link rel="stylesheet" href="/ssfw/resources/css/dataTable/demo_page.css" type="text/css">
+	<link rel="stylesheet" href="/ssfw/resources/css/dataTable/demo_table.css" type="text/css">
+	<link rel="stylesheet" href="/ssfw/resources/js/jquery-plugins/kissy/dpl-min.css" />
+	<link rel="stylesheet" href="/ssfw/resources/css/module/xkgl/xkcx.css">
+	<script type="text/javascript" src="/ssfw/resources/module/xkgl/xkjgcx.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/jquery-plugins/kissy/kissy-min.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/jquery-plugins/kissy/tabs-min.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/jquery-plugins/kissy/component-min.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/jquery-plugins/kissy/button-min.js"></script>
+	<script type="text/javascript" src="/ssfw/resources/js/jquery-plugins/kissy/toolbar-min.js"></script>
+
+	<style type="text/css">
+		a,
+		a:HOVER {
+			color: blue;
+			text-decoration: underline;
+		}
+
+		.ui_table_style02 th,
+		.ui_table_style02 td {
+			white-space: normal;
+		}
+	</style>
+
+	<!--[if IE 6]>
+                   <script type="text/javascript" language="javascript" src="/ssfw/resources/js/ie6png.js"></script>
+                <![endif]-->
+	<style type="text/css">
+		.ul_fixed {
+			position: fixed;
+			width: 100%;
+			z-index: 9999;
+		}
+
+		.div_body {
+			margin-top: 30px;
+		}
+
+		.favi_img {
+			cursor: pointer;
+		}
+
+		span.inf {
+			font-size: 10px;
+			color: #EE9A00;
+		}
+	</style>
+</head>
+
+<body>
+	<ul class="ui_nav_breadcrumb_style02 ul_fixed">
+		<li><a href="#" class="homepage"></a><span class="divider"></span></li>
+
+
+	</ul>
+	<div class="p10">
+		<div class="div_body">
+
+			<div>
+				<div class="ks-tabs ks-tabs-top" id="tabs">
+					<div class="ks-tabs-bar">
+
+
+
+						<div class="ks-tabs-tab ks-button ks-tabs-tab-selected" style="cursor: pointer;">本学期选课结果</div>
+						<div class="ks-tabs-tab ks-button" style="cursor: pointer;">历年选课结果</div>
+
+
+					</div>
+					<div class="ks-tabs-body">
+
+
+
+						<div class="ks-tabs-panel ks-tabs-panel-selected">
+
+
+							<!-- 本学期开始 -->
+							<div>
+								<table class="ui_table ui_table_striped ui_table_style02" width="100%" border="0"
+									align="center" cellpadding="0" cellspacing="0">
+									<tr class="tableTr">
+										<th width="12%" style="text-align: center;" height="25" align="center"
+											valign="middle" class="fontColorBlue" scope="col">学年学期</th>
+										<th width="8%" style="text-align: center;" height="25" align="center"
+											valign="middle" scope="col">课程号</th>
+										<th width="13%" style="text-align: center;" height="25" align="center"
+											valign="middle" scope="col">课程名称</th>
+										<th width="5%" style="text-align: center;" height="25" align="center"
+											valign="middle" scope="col">学时</th>
+										<th width="5%" style="text-align: center;" height="25" align="center"
+											valign="middle" scope="col">学分</th>
+										<th width="8%" style="text-align: center;" height="25" align="center"
+											valign="middle" scope="col">上课时间</th>
+										<th width="8%" style="text-align: center;" height="25" align="center"
+											valign="middle" scope="col">上课地点</th>
+										<th width="10%" style="text-align: center;" height="25" align="center"
+											valign="middle" scope="col">上课教师</th>
+										<th width="7%" style="text-align: center;" height="25" align="center"
+											valign="middle" scope="col">校区</th>
+										<th width="7%" style="text-align: center;" height="25" align="center"
+											valign="middle" scope="col">修读方式</th>
+										<th width="7%" style="text-align: center;" height="25" align="center"
+											valign="middle" scope="col">重修重考</th>
+										<th width="7%" style="text-align: center;" height="25" align="center"
+											valign="middle" scope="col">审核状态</th>
+										<th width="10%" style="text-align: center;" height="25" align="center"
+											valign="middle" scope="col">操作</th>
+									</tr>
+
+
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2023-2024 第二学期</span></td>
+										<td align="center" valign="middle"><span>1411021002</span></td>
+										<td align="center" valign="middle"><span>就业指导</span></td>
+										<td align="center" valign="middle"><span>16</span></td>
+										<td align="center" valign="middle"><span>1</span></td>
+										<td align="center" valign="middle"><span>7-9周 星期四 7-8节</span></td>
+										<td align="center" valign="middle"><span>汇文楼 汇文楼-124</span></td>
+										<td align="center" valign="middle"><span>郭一鸣</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span>正常</span></td>
+										<td align="center" valign="middle"><span>初修</span></td>
+										<td align="center" valign="middle">
+
+											<strong>
+												<font color="green">已审核</font>
+											</strong>
+
+
+										</td>
+										<td align="center" valign="middle">
+											<span class="shyj">
+
+												<a href="#" id="showShyj" xnxqdm="2023-2024-2"
+													jxbid="202320242141102100208">审核意见<br></a>
+
+
+
+											</span>
+										</td>
+									</tr>
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2023-2024 第二学期</span></td>
+										<td align="center" valign="middle"><span>1412016024</span></td>
+										<td align="center" valign="middle"><span>建模与估计</span></td>
+										<td align="center" valign="middle"><span>66</span></td>
+										<td align="center" valign="middle"><span>3.5</span></td>
+										<td align="center" valign="middle"><span>1-2周<br />5-16周 星期一
+												7-8节<br />1-2周<br />5-16周 星期五 5-6节</span></td>
+										<td align="center" valign="middle"><span>汇文楼 汇文楼-436<br />汇文楼 汇文楼-324</span>
+										</td>
+										<td align="center" valign="middle"><span>石莹</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span>正常</span></td>
+										<td align="center" valign="middle"><span>初修</span></td>
+										<td align="center" valign="middle">
+
+
+											<strong>
+												<font color="red">未审核</font>
+											</strong>
+
+										</td>
+										<td align="center" valign="middle">
+											<span class="shyj">
+
+
+
+											</span>
+										</td>
+									</tr>
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2023-2024 第二学期</span></td>
+										<td align="center" valign="middle"><span>1412016025</span></td>
+										<td align="center" valign="middle"><span>运动控制</span></td>
+										<td align="center" valign="middle"><span>64</span></td>
+										<td align="center" valign="middle"><span>3.5</span></td>
+										<td align="center" valign="middle"><span>1-2周<br />5-16周 星期三
+												7-8节<br />1-2周<br />5-16周 星期一 9-10节</span></td>
+										<td align="center" valign="middle"><span>汇文楼 汇文楼-336<br />3号楼 3号楼-318</span>
+										</td>
+										<td align="center" valign="middle"><span>孙国兵</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span>正常</span></td>
+										<td align="center" valign="middle"><span>初修</span></td>
+										<td align="center" valign="middle">
+
+
+											<strong>
+												<font color="red">未审核</font>
+											</strong>
+
+										</td>
+										<td align="center" valign="middle">
+											<span class="shyj">
+
+
+
+											</span>
+										</td>
+									</tr>
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2023-2024 第二学期</span></td>
+										<td align="center" valign="middle"><span>1412016076</span></td>
+										<td align="center" valign="middle"><span>电工学</span></td>
+										<td align="center" valign="middle"><span>48</span></td>
+										<td align="center" valign="middle"><span>3</span></td>
+										<td align="center" valign="middle"><span>1-12周 星期四 1-2节<br />1-12周 星期二
+												1-2节</span></td>
+										<td align="center" valign="middle"><span>汇文楼 汇文楼-550<br />汇文楼 汇文楼-540</span>
+										</td>
+										<td align="center" valign="middle"><span>窦寅丰</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span>正常</span></td>
+										<td align="center" valign="middle"><span>重修</span></td>
+										<td align="center" valign="middle">
+
+
+											<strong>
+												<font color="red">未审核</font>
+											</strong>
+
+										</td>
+										<td align="center" valign="middle">
+											<span class="shyj">
+
+
+
+											</span>
+										</td>
+									</tr>
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2023-2024 第二学期</span></td>
+										<td align="center" valign="middle"><span>1912016028</span></td>
+										<td align="center" valign="middle"><span>倒立摆控制系统综合设计</span></td>
+										<td align="center" valign="middle"><span>0</span></td>
+										<td align="center" valign="middle"><span>1</span></td>
+										<td align="center" valign="middle"><span></span></td>
+										<td align="center" valign="middle"><span></span></td>
+										<td align="center" valign="middle"><span>孙书利</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span>正常</span></td>
+										<td align="center" valign="middle"><span>初修</span></td>
+										<td align="center" valign="middle">
+
+
+											<strong>
+												<font color="red">未审核</font>
+											</strong>
+
+										</td>
+										<td align="center" valign="middle">
+											<span class="shyj">
+
+
+
+											</span>
+										</td>
+									</tr>
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2023-2024 第二学期</span></td>
+										<td align="center" valign="middle"><span>1912016037</span></td>
+										<td align="center" valign="middle"><span>电气控制与PLC</span></td>
+										<td align="center" valign="middle"><span>48</span></td>
+										<td align="center" valign="middle"><span>3</span></td>
+										<td align="center" valign="middle"><span>1-2周<br />5-11周 星期五
+												7-8节<br />1-2周<br />5-11周 星期一 1-2节</span></td>
+										<td align="center" valign="middle"><span>汇文楼 汇文楼-148(150)<br />3号楼
+												3号楼-604</span></td>
+										<td align="center" valign="middle"><span>孙国兵</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span></span></td>
+										<td align="center" valign="middle"><span></span></td>
+										<td align="center" valign="middle">
+
+											<strong>
+												<font color="green">已审核</font>
+											</strong>
+
+
+										</td>
+										<td align="center" valign="middle">
+											<span class="shyj">
+
+												<a href="#" id="showShyj" xnxqdm="2023-2024-2"
+													jxbid="202320242191201603701">审核意见<br></a>
+
+
+
+											</span>
+										</td>
+									</tr>
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2023-2024 第二学期</span></td>
+										<td align="center" valign="middle"><span>1912016043</span></td>
+										<td align="center" valign="middle"><span>工程训练（金工实习）</span></td>
+										<td align="center" valign="middle"><span>0</span></td>
+										<td align="center" valign="middle"><span>2</span></td>
+										<td align="center" valign="middle"><span></span></td>
+										<td align="center" valign="middle"><span></span></td>
+										<td align="center" valign="middle"><span>刘新力</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span></span></td>
+										<td align="center" valign="middle"><span></span></td>
+										<td align="center" valign="middle">
+
+											<strong>
+												<font color="green">已审核</font>
+											</strong>
+
+
+										</td>
+										<td align="center" valign="middle">
+											<span class="shyj">
+
+												<a href="#" id="showShyj" xnxqdm="2023-2024-2"
+													jxbid="202320242191201604301">审核意见<br></a>
+
+
+
+											</span>
+										</td>
+									</tr>
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2023-2024 第二学期</span></td>
+										<td align="center" valign="middle"><span>2012016006</span></td>
+										<td align="center" valign="middle"><span>自动化仪表与过程控制</span></td>
+										<td align="center" valign="middle"><span>64</span></td>
+										<td align="center" valign="middle"><span>4</span></td>
+									5	<td align="center" valign="middle">
+											<span>
+												3-4周 星期一 9-10节
+												<br />
+												3-4周 星期四9-10节
+												<br />
+												1-2周
+												<br />
+												5-16周 星期一 3-4节
+												<br />
+												1-2周
+												<br />
+												5-16周 星期四 3-4节
+											</span>
+										</td>
+									6	<td align="center" valign="middle">
+											<span>
+												3号楼 3号楼-318
+												<br />
+												3号楼 3号楼-318
+												<br />
+												3号楼3号楼-318
+												<br />
+												3号楼 3号楼-318
+											</span>
+										</td>
+										<td align="center" valign="middle"><span>郝钢</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span></span></td>
+										<td align="center" valign="middle"><span></span></td>
+										<td align="center" valign="middle">
+
+											<strong>
+												<font color="green">已审核</font>
+											</strong>
+
+
+										</td>
+										<td align="center" valign="middle">
+											<span class="shyj">
+
+												<a href="#" id="showShyj" xnxqdm="2023-2024-2"
+													jxbid="202320242201201600601">审核意见<br></a>
+
+
+
+											</span>
+										</td>
+									</tr>
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2023-2024 第二学期</span></td>
+										<td align="center" valign="middle"><span>2012016011</span></td>
+										<td align="center" valign="middle"><span>智能控制概论</span></td>
+										<td align="center" valign="middle"><span>40</span></td>
+										<td align="center" valign="middle"><span>2</span></td>
+										<td align="center" valign="middle"><span>1-2周<br />5-16周 星期二 7-8节<br />3-4周 星期三
+												9-10节</span></td>
+										<td align="center" valign="middle"><span>3号楼 3号楼-318<br />3号楼 3号楼-318</span>
+										</td>
+										<td align="center" valign="middle"><span>于志刚</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span>正常</span></td>
+										<td align="center" valign="middle"><span>初修</span></td>
+										<td align="center" valign="middle">
+
+
+											<strong>
+												<font color="red">未审核</font>
+											</strong>
+
+										</td>
+										<td align="center" valign="middle">
+											<span class="shyj">
+
+
+
+											</span>
+										</td>
+									</tr>
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2023-2024 第二学期</span></td>
+										<td align="center" valign="middle"><span>2012026006</span></td>
+										<td align="center" valign="middle"><span>形势与政策（2024春）</span></td>
+										<td align="center" valign="middle"><span>8</span></td>
+										<td align="center" valign="middle"><span>.25</span></td>
+										<td align="center" valign="middle"><span>7-8周 星期一 5-6节</span></td>
+										<td align="center" valign="middle"><span>2号楼 2号楼-517</span></td>
+										<td align="center" valign="middle"><span>谷真研</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span></span></td>
+										<td align="center" valign="middle"><span></span></td>
+										<td align="center" valign="middle">
+
+											<strong>
+												<font color="green">已审核</font>
+											</strong>
+
+
+										</td>
+										<td align="center" valign="middle">
+											<span class="shyj">
+
+												<a href="#" id="showShyj" xnxqdm="2023-2024-2"
+													jxbid="2023202422012026006175">审核意见<br></a>
+
+
+
+											</span>
+										</td>
+									</tr>
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2023-2024 第二学期</span></td>
+										<td align="center" valign="middle"><span>2112016001</span></td>
+										<td align="center" valign="middle"><span>微处理器原理与接口综合实验</span></td>
+										<td align="center" valign="middle"><span>20</span></td>
+										<td align="center" valign="middle"><span>1</span></td>
+										<td align="center" valign="middle"><span></span></td>
+										<td align="center" valign="middle"><span></span></td>
+										<td align="center" valign="middle"><span>窦寅丰</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span></span></td>
+										<td align="center" valign="middle"><span></span></td>
+										<td align="center" valign="middle">
+
+											<strong>
+												<font color="green">已审核</font>
+											</strong>
+
+
+										</td>
+										<td align="center" valign="middle">
+											<span class="shyj">
+
+												<a href="#" id="showShyj" xnxqdm="2023-2024-2"
+													jxbid="202320242211201600101">审核意见<br></a>
+
+
+
+											</span>
+										</td>
+									</tr>
+
+								</table>
+							</div>
+							<!-- 本学期结束 -->
+
+						</div>
+
+
+
+
+						<div class="ks-tabs-panel">
+
+
+							<!-- 历年学期 -->
+							<form id="form1" method="post" action="/ssfw/xkgl/xkjgcx.do"
+								onsubmit="return checkQueryParams()">
+								<input type="hidden" name="isHistory" value="ss" />
+								<input id="curPageNo" name="curPageNo" type="hidden" value="1">
+								<input id="iDisplayLength" name="iDisplayLength" type="hidden" value="10">
+								<input id="totalSize" name="totalSize" type="hidden" value="74">
+								<div id="mainQuery" class="mainQuery">
+									<div class="queryButView">
+										<ul>
+											<li><button type="submit" class="button">查询</button></li>
+										</ul>
+									</div>
+									<div class="queryFrom">
+										<div>
+											<table border="0" width="100%" height="35px">
+												<tr>
+													<td width="33%">
+														<table>
+															<tr>
+																<td>
+																	<font>学年学期：</font>
+																</td>
+																<td>
+																	<input baseType="xnxq" id="xnxqdm" width="150px"
+																		name="qXnxqdm" value="">
+																</td>
+															</tr>
+														</table>
+													</td>
+
+													<td width="33%">
+														<table>
+															<tr>
+																<td>
+																	<font>课程性质：</font>
+																</td>
+																<td>
+																	<input baseType="kcxz" id="kcxzdm" width="150px"
+																		name="qKcxzdm" value="">
+																</td>
+															</tr>
+														</table>
+													</td>
+
+													<td width="33%">
+														<table>
+															<tr>
+																<td>
+																	<font>课程类别：</font>
+																</td>
+																<td>
+																	<input baseType="kclb" id="kclbdm" width="180px"
+																		name="qKclbdm" value="">
+																</td>
+															</tr>
+														</table>
+													</td>
+												</tr>
+											</table>
+										</div>
+									</div>
+								</div>
+							</form>
+
+
+							<div id="margintop" style="height: 2px"></div>
+
+							<div>
+								<table class="ui_table ui_table_striped ui_table_style02" width="100%" border="0"
+									align="center" cellpadding="0" cellspacing="0">
+									<tr class="tableTr">
+										<th width="15%" height="25" align="center" valign="middle" class="fontColorBlue"
+											scope="col">学年学期</th>
+										<th width="10%" height="25" align="center" valign="middle" scope="col">课程号</th>
+										<th width="15%" height="25" align="center" valign="middle" scope="col">课程名称</th>
+										<th width="5%" height="25" align="center" valign="middle" scope="col">学时</th>
+										<th width="5%" height="25" align="center" valign="middle" scope="col">学分</th>
+										<!-- <th width="20%" height="25" align="center" valign="middle" scope="col">课程类别</th>
+        		                <th width="10%" height="25" align="center" valign="middle" scope="col">课程性质</th>-->
+										<th width="10%" height="25" align="center" valign="middle" scope="col">上课时间</th>
+										<th width="10%" height="25" align="center" valign="middle" scope="col">上课地点</th>
+										<th width="10%" height="25" align="center" valign="middle" scope="col">上课教师</th>
+										<th width="10%" height="25" align="center" valign="middle" scope="col">校区</th>
+										<th width="7%" height="25" align="center" valign="middle" scope="col">修读方式</th>
+										<th width="10%" height="25" align="center" valign="middle" scope="col">重修重考</th>
+									</tr>
+
+
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2021-2022 第一学期</span></td>
+										<td align="center" valign="middle"><span>1412011001</span></td>
+										<td align="center" valign="middle"><span>高等数学A（Ⅰ）</span></td>
+										<td align="center" valign="middle"><span>84</span></td>
+										<td align="center" valign="middle"><span>5</span></td>
+										<td align="center" valign="middle"><span>4-18周 星期一 3-4节<br />4-18周 星期三
+												1-2节<br />4-18周 星期四 5-6节</span></td>
+										<td align="center" valign="middle"><span>汇文楼 汇文楼-573<br />汇文楼 汇文楼-573<br />汇文楼
+												汇文楼-573</span></td>
+										<td align="center" valign="middle"><span>赵治涛</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span></span></td>
+									</tr>
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2021-2022 第一学期</span></td>
+										<td align="center" valign="middle"><span>1412011009</span></td>
+										<td align="center" valign="middle"><span>线性代数与解析几何B</span></td>
+										<td align="center" valign="middle"><span>56</span></td>
+										<td align="center" valign="middle"><span>3</span></td>
+										<td align="center" valign="middle"><span>4-18周 星期五 3-4节<br />4-18周 星期一
+												5-6节</span></td>
+										<td align="center" valign="middle"><span>1号楼 1号楼-304<br />3号楼 3号楼-203</span>
+										</td>
+										<td align="center" valign="middle"><span>于海华</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span></span></td>
+									</tr>
+
+									<tr class="t_con">
+										0 <td align="center" valign="middle"><span>2021-2022 第一学期</span></td>
+										1 <td align="center" valign="middle"><span>1412016001</span></td>
+										2 <td align="center" valign="middle"><span>自动化专业导论</span></td>
+										3 <td align="center" valign="middle"><span>18</span></td>
+										4 <td align="center" valign="middle"><span>1</span></td>
+										5 <td align="center" valign="middle"><span>4-12周 星期四 7-8节</span></td>
+										6 <td align="center" valign="middle"><span>汇文楼 汇文楼-550</span></td>
+										7 <td align="center" valign="middle"><span>石莹</span></td>
+										8 <td align="center" valign="middle"><span>校本部</span></td>
+										9 <td align="center" valign="middle"><span></span></td>
+									</tr>
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2021-2022 第一学期</span></td>
+										<td align="center" valign="middle"><span>1412016033</span></td>
+										<td align="center" valign="middle"><span>机械制图</span></td>
+										<td align="center" valign="middle"><span>36</span></td>
+										<td align="center" valign="middle"><span>2</span></td>
+										<td align="center" valign="middle"><span>4-12周 星期五 5-6节<br />4-12周 星期二
+												5-6节</span></td>
+										<td align="center" valign="middle"><span>3号楼 3号楼-604<br />3号楼 3号楼-604</span>
+										</td>
+										<td align="center" valign="middle"><span>冉陈键</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span></span></td>
+									</tr>
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2021-2022 第一学期</span></td>
+										<td align="center" valign="middle"><span>1412018050</span></td>
+										<td align="center" valign="middle"><span>计算机基础B</span></td>
+										<td align="center" valign="middle"><span>42</span></td>
+										<td align="center" valign="middle"><span>2</span></td>
+										<td align="center" valign="middle"><span>4-18周 星期三 3-4节</span></td>
+										<td align="center" valign="middle"><span>1号楼 1号楼-1q</span></td>
+										<td align="center" valign="middle"><span>李宏伟</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span></span></td>
+									</tr>
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2021-2022 第一学期</span></td>
+										<td align="center" valign="middle"><span>1412025001</span></td>
+										<td align="center" valign="middle"><span>大学英语A（Ⅰ）</span></td>
+										<td align="center" valign="middle"><span>42</span></td>
+										<td align="center" valign="middle"><span>2.5</span></td>
+										<td align="center" valign="middle"><span>4-17周 星期四 3-4节<br />4-16周(双) 星期五
+												7-8节</span></td>
+										<td align="center" valign="middle"><span>汇文楼 汇文楼-525<br /> </span></td>
+										<td align="center" valign="middle"><span>李楠</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span>初修</span></td>
+									</tr>
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2021-2022 第一学期</span></td>
+										<td align="center" valign="middle"><span>1412026001</span></td>
+										<td align="center" valign="middle"><span>思想道德修养与法律基础</span></td>
+										<td align="center" valign="middle"><span>48</span></td>
+										<td align="center" valign="middle"><span>3</span></td>
+										<td align="center" valign="middle"><span>4-18周 星期二 7-8节</span></td>
+										<td align="center" valign="middle"><span>1号楼 1号楼-305</span></td>
+										<td align="center" valign="middle"><span>关雁春</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span></span></td>
+									</tr>
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2021-2022 第一学期</span></td>
+										<td align="center" valign="middle"><span>1412027001</span></td>
+										<td align="center" valign="middle"><span>大学体育A（Ⅰ）</span></td>
+										<td align="center" valign="middle"><span>28</span></td>
+										<td align="center" valign="middle"><span>1</span></td>
+										<td align="center" valign="middle"><span>4-18周 星期二 3-4节</span></td>
+										<td align="center" valign="middle"><span>田径场 田径场-田径场（2号田径场）</span></td>
+										<td align="center" valign="middle"><span>李远辉</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span>初修</span></td>
+									</tr>
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2021-2022 第一学期</span></td>
+										<td align="center" valign="middle"><span>1812026007</span></td>
+										<td align="center" valign="middle"><span>形势与政策（2021秋）</span></td>
+										<td align="center" valign="middle"><span>8</span></td>
+										<td align="center" valign="middle"><span>.25</span></td>
+										<td align="center" valign="middle"><span>5-5周<br />11-11周 星期二 9-10节</span></td>
+										<td align="center" valign="middle"><span>3号楼 3号楼-203</span></td>
+										<td align="center" valign="middle"><span>寇玉达</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span></span></td>
+									</tr>
+
+									<tr class="t_con">
+										<td align="center" valign="middle"><span>2021-2022 第一学期</span></td>
+										<td align="center" valign="middle"><span>2011005001</span></td>
+										<td align="center" valign="middle"><span>大学生心理健康教育与辅导</span></td>
+										<td align="center" valign="middle"><span>32</span></td>
+										<td align="center" valign="middle"><span>2</span></td>
+										<td align="center" valign="middle"><span>4-10周 星期五 1-2节</span></td>
+										<td align="center" valign="middle"><span>2号楼 2号楼-200</span></td>
+										<td align="center" valign="middle"><span>綦明霞</span></td>
+										<td align="center" valign="middle"><span>校本部</span></td>
+										<td align="center" valign="middle"><span>初修</span></td>
+									</tr>
+
+								</table>
+							</div>
+
+							<!-- 表格结束 -->
+
+							<!-- 分页操作 -->
+							<div class="dataTables_paginate paging_full_numbers" style="padding-right:2px;"
+								id="dataView_paginate">
+								<a tabindex="0" style="cursor: pointer" class="first paginate_button"
+									id="dataView_first">首页</a>
+								<a style="cursor: pointer" class="previous paginate_button"
+									id="dataView_previous">上一页</a>
+								<a style="cursor: pointer" class="next paginate_button" id="dataView_next">下一页</a>
+								<a style="cursor: pointer" class="last paginate_button" id="dataView_last">尾页</a>
+							</div>
+
+							<div style="margin-left: 6px"><span>共<b>74</b>条结果/当前显示第<b id="startIndex">1</b>至<b
+										id="endIndex">10</b>个</span></div>
+
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+
+
+			<!-- 表格结束（统计图标） -->
+			<!--
+        		 <div id="accordion1" class="s-demo">
+        	            <div class="ks-switchable-trigger"><i class="ks-icon"></i><strong>&nbsp;选课结果统计</strong></div>
+        	            <div class="ks-switchable-panel" id="container">
+
+        	            </div>
+        	      </div>
+              -->
+			<div id="detailMsg" title="审核意见查看" style="display:none"></div>
+			<script type="text/javascript" src="/ssfw/resources/js/jquery-plugins/highCharts/highcharts.js"></script>
+
+		</div>
+	</div>
+</body>
+
+</html>
