@@ -155,23 +155,40 @@ func ParseData(data *[]byte) ([]models.Course, error) {
 			}
 		})
 
+		// 解析课程信息
 		color := queue.Remove(queue.Front()).(string)
-		for _, c := range class.ctime {
-			for _, weekRange := range c.weekRange {
-				for week := weekRange.first; week <= weekRange.second; week++ {
-					courses = append(courses, models.Course{
-						StuID:                 "123123123123",
-						School:                "hlju",
-						Week:                  week,
-						StuType:               1,
-						WeekDay:               c.weekDay,
-						NumberOfLessons:       c.sectionRange.first,
-						NumberOfLessonsLength: c.sectionRange.second - c.sectionRange.first + 1,
-						CourseContent:         class.name,
-						Color:                 color,
-						CourseLocation:        c.place,
-						TeacherName:           class.teacher,
-					})
+		if len(class.ctime) == 0 {
+			courses = append(courses, models.Course{
+				// StuID:                 "123123123123",
+				School:                "hlju",
+				Week:                  0,
+				StuType:               1,
+				WeekDay:               0,
+				NumberOfLessons:       0,
+				NumberOfLessonsLength: 0,
+				CourseContent:         class.name,
+				Color:                 color,
+				CourseLocation:        "",
+				TeacherName:           class.teacher,
+			})
+		} else {
+			for _, c := range class.ctime {
+				for _, weekRange := range c.weekRange {
+					for week := weekRange.first; week <= weekRange.second; week++ {
+						courses = append(courses, models.Course{
+							// StuID:                 "123123123123",
+							School:                "hlju",
+							Week:                  week,
+							StuType:               1,
+							WeekDay:               c.weekDay,
+							NumberOfLessons:       c.sectionRange.first,
+							NumberOfLessonsLength: c.sectionRange.second - c.sectionRange.first + 1,
+							CourseContent:         class.name,
+							Color:                 color,
+							CourseLocation:        c.place,
+							TeacherName:           class.teacher,
+						})
+					}
 				}
 			}
 		}
