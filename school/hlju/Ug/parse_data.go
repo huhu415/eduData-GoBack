@@ -143,7 +143,12 @@ func ParseData(data *[]byte) ([]models.Course, error) {
 				for i, line := range lines {
 					l := strings.TrimSpace(line)
 					if l != "" {
-						class.ctime[i].place = l
+						lineRuneTemp := []rune(l)
+						if lineRuneTemp[0] == lineRuneTemp[3] &&
+							lineRuneTemp[1] == lineRuneTemp[4] &&
+							lineRuneTemp[2] == lineRuneTemp[5] {
+							class.ctime[i].place = string(lineRuneTemp[3:])
+						}
 					}
 				}
 			case 7:
