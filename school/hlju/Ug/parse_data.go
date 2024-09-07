@@ -2,7 +2,7 @@ package hljuUg
 
 import (
 	"bytes"
-	"eduData/models"
+	"eduData/repository"
 	"eduData/school/pub"
 	"errors"
 	"fmt"
@@ -35,8 +35,8 @@ type ctime struct {
 	weekRange    []pair // 周数范围
 }
 
-func ParseData(data *[]byte) ([]models.Course, error) {
-	var courses []models.Course
+func ParseData(data *[]byte) ([]repository.Course, error) {
+	var courses []repository.Course
 	queue := pub.NewColorList()
 	// 使用 goquery 解析 HTML 表格
 	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(*data))
@@ -163,7 +163,7 @@ func ParseData(data *[]byte) ([]models.Course, error) {
 		// 解析课程信息
 		color := queue.Remove(queue.Front()).(string)
 		if len(class.ctime) == 0 {
-			courses = append(courses, models.Course{
+			courses = append(courses, repository.Course{
 				// StuID:                 "123123123123",
 				School:                "hlju",
 				Week:                  0,
@@ -180,7 +180,7 @@ func ParseData(data *[]byte) ([]models.Course, error) {
 			for _, c := range class.ctime {
 				for _, weekRange := range c.weekRange {
 					for week := weekRange.first; week <= weekRange.second; week++ {
-						courses = append(courses, models.Course{
+						courses = append(courses, repository.Course{
 							// StuID:                 "123123123123",
 							School:                "hlju",
 							Week:                  week,

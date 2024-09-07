@@ -1,8 +1,9 @@
 package neauUg
 
 import (
-	"eduData/models"
+	"eduData/repository"
 	"eduData/school"
+	"eduData/school/pub"
 	"errors"
 	"net/http/cookiejar"
 	"strconv"
@@ -43,11 +44,15 @@ func NewNeauUg(stuID, passWd string, c ...*cookiejar.Jar) school.School {
 	return &n
 }
 
-func (n *NeauUg) SchoolName() string {
-	return "neau"
+func (n *NeauUg) SetCookie(c *cookiejar.Jar) {
+	n.cookie = c
 }
-func (n *NeauUg) StuType() int {
-	return 1
+
+func (n *NeauUg) SchoolName() pub.SchoolName {
+	return pub.NEAU
+}
+func (n *NeauUg) StuType() pub.StuType {
+	return pub.UG
 }
 func (n *NeauUg) StuID() string {
 	return n.stuID
@@ -68,7 +73,7 @@ func (n *NeauUg) Signin() error {
 	return nil
 }
 
-func (n *NeauUg) GetCourse() ([]models.Course, error) {
+func (n *NeauUg) GetCourse() ([]repository.Course, error) {
 	GetJSONneau, errNeau := GetData(n.cookie, n.getYearTerm())
 	if errNeau != nil {
 		return nil, errNeau
@@ -77,10 +82,6 @@ func (n *NeauUg) GetCourse() ([]models.Course, error) {
 	return ParseData(GetJSONneau)
 }
 
-func (n *NeauUg) GetGrade() ([]models.CourseGrades, error) {
+func (n *NeauUg) GetGrade() ([]repository.CourseGrades, error) {
 	return nil, errors.New("不支持这个学校获取成绩")
-}
-
-func (n *NeauUg) GetTimetable() ([]models.TimeTable, error) {
-	return models.GetTimeTable(n.SchoolName()), nil
 }

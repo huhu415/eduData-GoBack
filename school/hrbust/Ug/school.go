@@ -2,8 +2,9 @@ package hrbustUg
 
 import (
 	"context"
-	"eduData/models"
+	"eduData/repository"
 	school "eduData/school"
+	"eduData/school/pub"
 	"errors"
 	"net/http/cookiejar"
 	"strconv"
@@ -44,11 +45,15 @@ func NewHrbustUg(stuID, passWd string, c ...*cookiejar.Jar) school.School {
 	return &h
 }
 
-func (h *HrbustUg) SchoolName() string {
-	return "hrbust"
+func (h *HrbustUg) SetCookie(c *cookiejar.Jar) {
+	h.cookie = c
 }
-func (h *HrbustUg) StuType() int {
-	return 1
+
+func (h *HrbustUg) SchoolName() pub.SchoolName {
+	return pub.HRBUST
+}
+func (h *HrbustUg) StuType() pub.StuType {
+	return pub.UG
 }
 func (h *HrbustUg) StuID() string {
 	return h.stuID
@@ -69,7 +74,7 @@ func (h *HrbustUg) Signin() error {
 	return nil
 }
 
-func (h *HrbustUg) GetCourse() ([]models.Course, error) {
+func (h *HrbustUg) GetCourse() ([]repository.Course, error) {
 	y, t := h.getYearTerm()
 	b, err := GetCourseByTime(h.cookie, y, t)
 	if err != nil {
@@ -84,12 +89,12 @@ type yearSemester struct {
 	Semester string // 1是春季-下学期, 2是秋季-上学期
 }
 
-func (h *HrbustUg) GetGrade() ([]models.CourseGrades, error) {
+func (h *HrbustUg) GetGrade() ([]repository.CourseGrades, error) {
 	if h.cookie == nil {
 		return nil, errors.New("not found the cookie")
 	}
 	// 3个协程获取成绩
-	var grade []models.CourseGrades
+	var grade []repository.CourseGrades
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	errs, ctx := errgroup.WithContext(ctx)
@@ -132,8 +137,4 @@ func (h *HrbustUg) GetGrade() ([]models.CourseGrades, error) {
 
 	close(msg)
 	return grade, errs.Wait()
-}
-
-func (h *HrbustUg) GetTimetable() ([]models.TimeTable, error) {
-	return models.GetTimeTable(h.SchoolName()), nil
 }

@@ -1,9 +1,10 @@
-package api
+package route
 
 import (
 	"context"
 	"errors"
 	"fmt"
+	"gorm.io/gorm"
 	"io"
 	"net/http"
 	"os"
@@ -14,12 +15,11 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 
-	"eduData/api/app"
 	"eduData/api/middleware"
 	"eduData/bootstrap"
 )
 
-func InitRouterRunServer() {
+func Setup(db *gorm.DB) {
 	log.SetReportCaller(true)
 	// 发布模式, 删了就是debug模式
 	gin.SetMode(gin.ReleaseMode)
@@ -43,25 +43,12 @@ func InitRouterRunServer() {
 	})
 	r.Use(middleware.Logger(), gin.Recovery(), middleware.CreatSchoolObject())
 
-	si := r.Group("/")
-	si.Use(middleware.Signin())
-	{
-		si.POST("/signin", app.Signin)
-		si.POST("/updata", app.UpdataDB)
-		si.POST("/updataGrade", app.UpdataGrade)
-	}
+	publicRouter := r.Group("")
+	NewUpDataRouter(db, publicRouter)
 
-	auth := r.Group("/")
-	auth.Use(middleware.RequireAuthJwt())
-	//auth.Use()
-	{
-		auth.POST("/getweekcoure/:week", app.GetWeekCoure)
-		auth.POST("/getgrade", app.GetGrade)
-		auth.POST("/getTimeTable", app.GetTimeTable)
-		auth.POST("/addcoures", app.AddCoures)
-	}
-	// todo 增加内部测试功能, 内部账号密码登录, 发送一个html, 返回解析好的课表, 可以用周数的那个函数来调用
-	// todo https://gin-gonic.com/zh-cn/docs/examples/serving-data-from-reader/
+	protectedRouter := r.Group("")
+	protectedRouter.Use(middleware.RequireAuthJwt())
+	NewGetDataRouter(db, protectedRouter)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", bootstrap.C.ListenPort),

@@ -11,13 +11,13 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/sirupsen/logrus"
 
-	"eduData/models"
+	"eduData/repository"
 )
 
 // ParseDataCrouseAll 给定一个学期的课表, 返回这个学期的所有课程, 解析本科生的
-func ParseDataCrouseAll(table *[]byte) ([]models.Course, error) {
+func ParseDataCrouseAll(table *[]byte) ([]repository.Course, error) {
 	//创建返回的变量
-	var courses []models.Course
+	var courses []repository.Course
 
 	// 使用 goquery 解析 HTML 表格
 	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(*table))
@@ -31,7 +31,7 @@ func ParseDataCrouseAll(table *[]byte) ([]models.Course, error) {
 	}
 
 	//创建一个课程
-	course := models.Course{
+	course := repository.Course{
 		// 因为函数是解析本科生, 所以这是本科生
 		StuType: 1,
 		School:  "hrbust",
@@ -184,9 +184,9 @@ func ParseDataCrouseAll(table *[]byte) ([]models.Course, error) {
 }
 
 // ParseDataCrouseByWeek 给定一个学期的课表和某一周, 返回这个学期的这周的课程, 解析本科生的
-func ParseDataCrouseByWeek(table *[]byte, week int) ([]models.Course, error) {
+func ParseDataCrouseByWeek(table *[]byte, week int) ([]repository.Course, error) {
 	//创建返回的变量
-	var courses []models.Course
+	var courses []repository.Course
 
 	// 使用 goquery 解析 HTML 表格
 	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(*table))
@@ -200,7 +200,7 @@ func ParseDataCrouseByWeek(table *[]byte, week int) ([]models.Course, error) {
 	}
 
 	//创建一个课程
-	course := models.Course{
+	course := repository.Course{
 		// 因为函数是解析本科生, 所以这是本科生
 		StuType: 1,
 		School:  "hrbust",
@@ -353,20 +353,20 @@ func ParseDataCrouseByWeek(table *[]byte, week int) ([]models.Course, error) {
 }
 
 // ParseDataSore 解析哈理工本科生成绩页面
-func ParseDataSore(table *[]byte, year, term string) ([]models.CourseGrades, error) {
+func ParseDataSore(table *[]byte, year, term string) ([]repository.CourseGrades, error) {
 	// 使用 goquery 解析 HTML 表格
 	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(*table))
 	if err != nil {
 		return nil, err
 	}
 
-	var courseGrades []models.CourseGrades
+	var courseGrades []repository.CourseGrades
 	//判断是否能找到课程信息
 	//if doc.Find("table.datalist tbody tr").Length() == 0 {
 	//	return nil, errors.New("not find table.datalist tbody tr")
 	//}
 
-	courseGrade := models.CourseGrades{
+	courseGrade := repository.CourseGrades{
 		// 哈理工本科生
 		School:   "hrbust",
 		StuType:  1,
@@ -432,14 +432,14 @@ func ParseDataSore(table *[]byte, year, term string) ([]models.CourseGrades, err
 }
 
 // 解析个人信息
-func ParseDataPersonalInfo(table *[]byte) (*models.StuInfo, error) {
+func ParseDataPersonalInfo(table *[]byte) (*repository.StuInfo, error) {
 	// 使用 goquery 解析 HTML 表格
 	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(*table))
 	if err != nil {
 		return nil, err
 	}
 
-	var stuInfo models.StuInfo
+	var stuInfo repository.StuInfo
 	doc.Find("table.form tr").Each(func(i int, s *goquery.Selection) {
 		// 获取当前行的所有单元格
 		cells := s.Find("th, td")

@@ -6,7 +6,7 @@ import (
 
 	"encoding/json"
 
-	"eduData/models"
+	"eduData/repository"
 )
 
 type TimeAndPlace struct {
@@ -72,9 +72,9 @@ type Schedule struct {
 }
 
 // ParseData 解析本科生课表json格式数据
-func ParseData(jsonInfo *[]byte) ([]models.Course, error) {
+func ParseData(jsonInfo *[]byte) ([]repository.Course, error) {
 	// 构造返回参数
-	var courses []models.Course
+	var courses []repository.Course
 
 	// 初始化颜色队列
 	queue := pub.NewColorList()
@@ -88,7 +88,7 @@ func ParseData(jsonInfo *[]byte) ([]models.Course, error) {
 
 	// 遍历课程信息
 	for _, v := range schedule.Xkxx[0] {
-		var course models.Course
+		var course repository.Course
 		course.StuType = 1 // 本科生
 		course.School = "neau"
 		course.CourseContent = v.CourseName
