@@ -1,20 +1,23 @@
 package school
 
 import (
-	"eduData/models"
+	"eduData/repository"
+	"eduData/school/pub"
 	"net/http/cookiejar"
 )
 
 type School interface {
-	Cookie() *cookiejar.Jar // 返回cookie
-	SchoolName() string     // 返回学校名
-	StuType() int           // 返回学生类型
-	StuID() string          // 返回学号
-	PassWd() string         // 返回密码
+	SetCookie(*cookiejar.Jar) // 设置cookie
 
-	Signin() error                            // 登陆
-	GetCourse() ([]models.Course, error)      // 获取课程
-	GetGrade() ([]models.CourseGrades, error) // 获取成绩
+	Cookie() *cookiejar.Jar     // 返回cookie
+	SchoolName() pub.SchoolName // 返回学校名
+	StuType() pub.StuType       // 返回学生类型
+	StuID() string              // 返回学号
+	PassWd() string             // 返回密码
+
+	Signin() error                                // 登陆
+	GetCourse() ([]repository.Course, error)      // 获取课程
+	GetGrade() ([]repository.CourseGrades, error) // 获取成绩
 
 	// GetTimetable() ([]models.TimeTable, error)         // 获取课程时间表
 	// GetCourseByWeek(week int) ([]models.Course, error) // 获取某一周课程

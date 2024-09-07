@@ -2,7 +2,7 @@ package pub
 
 import (
 	"eduData/domain"
-	"eduData/models"
+	"eduData/repository"
 	"eduData/school"
 	hljuUg "eduData/school/hlju/Ug"
 	hrbustUg "eduData/school/hrbust/Ug"
@@ -70,10 +70,10 @@ func GetSchoolAndLogrus(c *gin.Context) (school.School, *logrus.Entry, error) {
 	return s, le, nil
 }
 
-func ParseAddCrouse(data *domain.AddcouresStruct) []models.Course {
-	var courses []models.Course
+func ParseAddCrouse(data *domain.AddcouresStruct) []repository.Course {
+	var courses []repository.Course
 	for _, key := range data.Time {
-		course := models.Course{
+		course := repository.Course{
 			Color:                 data.Color,
 			TeacherName:           data.Teacher,
 			CourseContent:         data.Coures,

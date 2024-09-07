@@ -10,6 +10,26 @@ import (
 	"strings"
 )
 
+type StuType int
+
+const (
+	// UG 本科生
+	UG StuType = 1
+	// PG 研究生
+	PG StuType = 2
+)
+
+type SchoolName string
+
+const (
+	// HRBUST 哈尔滨理工大学
+	HRBUST SchoolName = "hrbust"
+	// HLJU 黑龙江大学
+	HLJU SchoolName = "hlju"
+	// NEAU 东北农业大学
+	NEAU SchoolName = "neau"
+)
+
 // ExtractWeekRange 提取周数范围, 返回起始周, 结束周, 单双周, 单双周默认是5, 0是双周, 1是单周, 便于运算
 func ExtractWeekRange(text string) (startWeek, endWeek, evenOrOdd int, err error) {
 	startWeek, endWeek, evenOrOdd = 0, 0, 5

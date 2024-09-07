@@ -8,6 +8,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 
 	"eduData/bootstrap"
+	"eduData/domain"
 	"eduData/pub"
 )
 
@@ -37,9 +38,9 @@ func RequireAuthJwt() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		s, le, err := pub.GetSchoolAndLogrus(c)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-				"status":  "fail",
-				"message": c.Error(err).Error(),
+			c.AbortWithStatusJSON(http.StatusInternalServerError, domain.Response{
+				Status: domain.FAIL,
+				Msg:    c.Error(err).Error(),
 			})
 			return
 		}
@@ -48,9 +49,9 @@ func RequireAuthJwt() gin.HandlerFunc {
 		tokenString, err := c.Cookie("authentication")
 		if err != nil {
 			le.WithError(err).Error("jwt: missing Authorization cookie")
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"status":  "fail",
-				"message": c.Error(fmt.Errorf("缺少参数 Authorization cookie %w", err)).Error(),
+			c.AbortWithStatusJSON(http.StatusBadRequest, domain.Response{
+				Status: domain.FAIL,
+				Msg:    c.Error(fmt.Errorf("缺少参数 Authorization cookie %w", err)).Error(),
 			})
 			return
 		}
@@ -63,9 +64,9 @@ func RequireAuthJwt() gin.HandlerFunc {
 			c.Next()
 		} else {
 			le.Error("jwt: invalid Authorization cookie")
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"status":  "fail",
-				"message": c.Error(fmt.Errorf("无效的Authorization cookie %w", err)).Error(),
+			c.AbortWithStatusJSON(http.StatusUnauthorized, domain.Response{
+				Status: domain.FAIL,
+				Msg:    c.Error(fmt.Errorf("无效的Authorization cookie %w", err)).Error(),
 			})
 			return
 		}

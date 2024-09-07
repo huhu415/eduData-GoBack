@@ -60,9 +60,9 @@ func CreatSchoolObject() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var loginForm domain.LoginForm
 		if err := c.ShouldBind(&loginForm); err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"status":  "fail",
-				"message": "表单格式错误,重新登陆后重新提交",
+			c.AbortWithStatusJSON(http.StatusBadRequest, domain.Response{
+				Status: domain.FAIL,
+				Msg:    "表单格式错误,重新登陆后重新提交",
 			})
 			return
 		}
@@ -77,9 +77,9 @@ func CreatSchoolObject() gin.HandlerFunc {
 		s, err := pub.NewSchoolSwitch(loginForm)
 		if err != nil {
 			le.Errorf("creat school obj fail: %v", err)
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-				"status":  "fail",
-				"message": c.Error(err).Error(),
+			c.AbortWithStatusJSON(http.StatusInternalServerError, domain.Response{
+				Status: domain.FAIL,
+				Msg:    c.Error(err).Error(),
 			})
 			return
 		}

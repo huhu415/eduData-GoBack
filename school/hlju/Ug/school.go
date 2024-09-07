@@ -1,8 +1,9 @@
 package hljuUg
 
 import (
-	"eduData/models"
+	"eduData/repository"
 	"eduData/school"
+	"eduData/school/pub"
 	"errors"
 	"net/http/cookiejar"
 )
@@ -24,13 +25,17 @@ func NewHljuUg(stuID, passWd string, c ...*cookiejar.Jar) school.School {
 	return &h
 }
 
-func (h *HljuUg) SchoolName() string {
-	return "hlju"
+func (h *HljuUg) SetCookie(c *cookiejar.Jar) {
+	h.cookie = c
 }
 
-func (h *HljuUg) StuType() int {
+func (h *HljuUg) SchoolName() pub.SchoolName {
+	return pub.HLJU
+}
+
+func (h *HljuUg) StuType() pub.StuType {
 	// 本科
-	return 1
+	return pub.UG
 }
 
 func (h *HljuUg) StuID() string {
@@ -54,7 +59,7 @@ func (h *HljuUg) Signin() error {
 	return nil
 }
 
-func (h *HljuUg) GetCourse() ([]models.Course, error) {
+func (h *HljuUg) GetCourse() ([]repository.Course, error) {
 	d, err := GetData(h.cookie)
 	if err != nil {
 		return nil, err
@@ -63,6 +68,6 @@ func (h *HljuUg) GetCourse() ([]models.Course, error) {
 	return ParseData(d)
 }
 
-func (h *HljuUg) GetGrade() ([]models.CourseGrades, error) {
+func (h *HljuUg) GetGrade() ([]repository.CourseGrades, error) {
 	return nil, errors.New("hljuUg.GetGrade() not implement")
 }

@@ -2,6 +2,7 @@ package models
 
 import (
 	"eduData/bootstrap"
+	"eduData/repository"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,40 +10,42 @@ import (
 
 func TestDatabase(t *testing.T) {
 	bootstrap.Loadconfig()
-	NewDatabase()
+	db, err := NewDatabase()
+	assert.Nil(t, err, "连接数据库失败")
+	defer CloseDatabase(db)
 
-	NewDatabase()
-	defer CloseDatabase()
+	ur := repository.NewRepository(db)
 
 	t.Run("添加课程", func(t *testing.T) {
-
+		// 添加课程的测试代码
 	})
 
 	t.Run("查询课程", func(t *testing.T) {
-		courses := CourseByWeekUsername(1, "1234567", "hrbust")
-		t.Log(courses)
+		courses, err := ur.CourseByWeekUsername(1, "1234567", "hrbust")
+		assert.Nil(t, err, "查询课程失败")
 	})
 
 	t.Run("查询成绩", func(t *testing.T) {
-		gpa1, gpa2 := WeightedAverage("2204010417", "hrbust", 1)
+		gpa1, gpa2, err := ur.WeightedAverage("2204010417", "hrbust", 1)
+		assert.Nil(t, err, "查询成绩失败")
 		t.Log(gpa1, gpa2)
 	})
 
 	t.Run("更新/添加个人信息", func(t *testing.T) {
-		stu := &StuInfo{
+		stu := &repository.StuInfo{
 			StuID:   "2306070112",
 			School:  "hrbust",
 			StuType: 1,
 		}
-		err := stu.CreatAndUpdataStuInfo()
+		err := stu.CreateAndUpdateStuInfo()
 		assert.Nil(t, err, "更新个人信息失败")
 		t.Log(stu)
 	})
 
 	t.Run("添加时间表", func(t *testing.T) {
-		times := make([]TimeTable, 0)
+		times := make([]repository.TimeTable, 0)
 		for i, v := range courses {
-			times = append(times, TimeTable{
+			times = append(times, repository.TimeTable{
 				School:    "hlju",
 				Sort:      uint(i + 1),
 				StartTime: v.startTime,
