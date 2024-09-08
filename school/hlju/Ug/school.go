@@ -64,7 +64,7 @@ func (h *HljuUg) GetCourse() ([]repository.Course, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	
 	return ParseData(d)
 }
 
