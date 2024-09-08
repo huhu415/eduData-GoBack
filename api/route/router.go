@@ -4,25 +4,31 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gorm.io/gorm"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/spf13/viper"
+
+	"gorm.io/gorm"
+
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 
 	"eduData/api/middleware"
 	"eduData/bootstrap"
 )
 
-func Setup(db *gorm.DB) {
-	log.SetReportCaller(true)
-	// 发布模式, 删了就是debug模式
-	gin.SetMode(gin.ReleaseMode)
+func SetupAndRun(db *gorm.DB) {
+	if viper.GetBool("debug") {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
 
 	// 日志记录
 	gin.ForceConsoleColor()
@@ -36,32 +42,27 @@ func Setup(db *gorm.DB) {
 
 	// 路由初始化, 1.日志 2.恢复 3.检查表单完成性
 	r := gin.New()
-	r.Any("/health", gin.Recovery(), func(c *gin.Context) {
+	r.GET("/health", gin.Recovery(), func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"status": "active",
 		})
 	})
 	r.Use(middleware.Logger(), gin.Recovery(), middleware.CreatSchoolObject())
 
-	publicRouter := r.Group("")
-	NewUpDataRouter(db, publicRouter)
+	NewUpDataRouter(db, r.Group(""))
 
-	protectedRouter := r.Group("")
-	protectedRouter.Use(middleware.RequireAuthJwt())
-	NewGetDataRouter(db, protectedRouter)
-
-	srv := &http.Server{
+	runServer(&http.Server{
 		Addr:    fmt.Sprintf(":%s", bootstrap.C.ListenPort),
 		Handler: r,
-	}
-	runServer(srv)
+	})
 }
 
 func runServer(srv *http.Server) {
 	go func() {
-		log.Infof("Server start listening at %s\n", srv.Addr)
+		logrus.Infof("\u001B[1;32m Server start listening at%s! \u001B[0m", srv.Addr)
+		logrus.SetReportCaller(true)
 		if err := srv.ListenAndServe(); err != nil || errors.Is(http.ErrServerClosed, err) {
-			log.Fatalf("listen: %s\n", err)
+			logrus.Fatalf("listen: %s\n", err)
 		}
 	}()
 
@@ -73,15 +74,15 @@ func runServer(srv *http.Server) {
 	// kill -9 is syscall.SIGKILL but can't be catch, so don't need add it
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Infof("Shutting down server...")
+	logrus.Infof("Shutting down server...")
 
 	// The context is used to inform the server it has 5 seconds to finish
 	// the request it is currently handling
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server forced to shutdown: ", err)
+		logrus.Fatal("Server forced to shutdown: ", err)
 	}
 
-	log.Infof("Server exiting")
+	logrus.Infof("Server already shutdown")
 }

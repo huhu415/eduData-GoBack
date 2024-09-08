@@ -27,7 +27,11 @@ func NewDatabase() (*gorm.DB, error) {
 	}
 
 	// Migrate the schema, 创建表用的, 就用一次就完事了
-	if err = db.AutoMigrate(&repository.Course{}, &repository.CourseGrades{}, &repository.TimeTable{}, &repository.StuInfo{}); err != nil {
+	if err = db.AutoMigrate(
+		&repository.Course{},
+		&repository.CourseGrades{},
+		&repository.TimeTable{},
+		&repository.StuInfo{}); err != nil {
 		return nil, err
 	}
 

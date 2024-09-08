@@ -6,9 +6,10 @@ import (
 	"eduData/pub"
 	"eduData/usecase"
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"net/http"
 )
 
 type SigninController struct {
@@ -59,7 +60,7 @@ func (lc *SigninController) LogIn(c *gin.Context) {
 }
 
 // Updata 更新课程
-func (lc *SigninController) Updata(c *gin.Context) {
+func (lc *SigninController) UpdateCourse(c *gin.Context) {
 	s, le, err := pub.GetSchoolAndLogrus(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.Response{
@@ -107,7 +108,7 @@ func (lc *SigninController) Updata(c *gin.Context) {
 }
 
 // UpdataGrade 更新成绩
-func (lc *SigninController) UpdataGrade(c *gin.Context) {
+func (lc *SigninController) UpdateGrade(c *gin.Context) {
 	s, le, err := pub.GetSchoolAndLogrus(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.Response{
@@ -150,5 +151,100 @@ func (lc *SigninController) UpdataGrade(c *gin.Context) {
 	c.JSON(http.StatusOK, domain.Response{
 		Status: domain.SUCCESS,
 		Msg:    "成绩更新成功",
+	})
+}
+
+// GetWeekCoure 获取某周课程表
+func (lc *SigninController) GetWeekCourse(c *gin.Context) {
+	s, _, err := pub.GetSchoolAndLogrus(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.Response{
+			Status: domain.FAIL,
+			Msg:    c.Error(err).Error(),
+		})
+		return
+	}
+
+	courseByWeekUsername, err := lc.LoginUsecase.GetCourseByWeek(s, c.Param("week"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.Response{
+			Status: domain.FAIL,
+			Msg:    c.Error(err).Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, courseByWeekUsername)
+}
+
+// GetGrade 获取成绩
+func (lc *SigninController) GetGrade(c *gin.Context) {
+	s, _, err := pub.GetSchoolAndLogrus(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.Response{
+			Status: domain.FAIL,
+			Msg:    c.Error(err).Error(),
+		})
+		return
+	}
+
+	// 获取数据库中所有成绩, 还有加权平均分和绩点
+	CourseGradesByUsername, CourseGradesPrompt, WeightedAverage, AcademicCredits := lc.LoginUsecase.GetGrade(s)
+
+	// 返回给前端
+	c.JSON(http.StatusOK, gin.H{
+		"WeightedAverage":    WeightedAverage,
+		"AcademicCredits":    AcademicCredits,
+		"CourseGradesPrompt": CourseGradesPrompt,
+		"CourseGrades":       CourseGradesByUsername,
+	})
+}
+
+func (lc *SigninController) GetTimeTable(c *gin.Context) {
+	s, _, err := pub.GetSchoolAndLogrus(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.Response{
+			Status: domain.FAIL,
+			Msg:    c.Error(err).Error(),
+		})
+		return
+	}
+
+	res, err := lc.LoginUsecase.GetTimeTable(s)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.Response{
+			Status: domain.FAIL,
+			Msg:    c.Error(err).Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, domain.Response{
+		Status: domain.SUCCESS,
+		Msg:    res,
+	})
+}
+
+func (lc *SigninController) AddCourse(c *gin.Context) {
+	s, _, err := pub.GetSchoolAndLogrus(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.Response{
+			Status: domain.FAIL,
+			Msg:    c.Error(err).Error(),
+		})
+		return
+	}
+
+	var data domain.AddcouresStruct
+	if err = lc.LoginUsecase.AddCourse(pub.ParseAddCrouse(&data), s); err != nil {
+		c.JSON(http.StatusInternalServerError, domain.Response{
+			Status: domain.FAIL,
+			Msg:    c.Error(err).Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, domain.Response{
+		Status: domain.SUCCESS,
+		Msg:    "课程添加成功",
 	})
 }

@@ -28,7 +28,7 @@ func Logger() gin.HandlerFunc {
 		}
 
 		if param.Keys["SchoolObj"] == nil {
-			return fmt.Sprintf("[GIN] %v |%s %3d %s| %13v | %15s |%s %-6s %s|%#-20v|%#-8v\n",
+			return fmt.Sprintf("[GIN] %v |%s %3d %s| %13v | %15s |%s %-6s %s|%#-14v|%#-8v\n",
 				param.TimeStamp.Format("2006/01/02 - 15:04:05"),
 				statusColor, param.StatusCode, resetColor,
 				param.Latency,
@@ -38,7 +38,7 @@ func Logger() gin.HandlerFunc {
 				param.ErrorMessage,
 			)
 		} else {
-			return fmt.Sprintf("[GIN] %v |%s %3d %s| %13v | %15s |%s %-6s %s|%#-20v|%#-8v %#-2v %#-12v %#v %s\n",
+			return fmt.Sprintf("[GIN] %v |%s %3d %s| %13v | %15s |%s %-6s %s|%#-14v|%#-8v %#-2v %#-12v %#v %s\n",
 				param.TimeStamp.Format("2006/01/02 - 15:04:05"),
 				statusColor, param.StatusCode, resetColor,
 				param.Latency,

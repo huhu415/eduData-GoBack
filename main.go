@@ -7,7 +7,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// todo 内存泄漏检测, 性能测试
 func main() {
 	bootstrap.Loadconfig()
 
@@ -17,5 +16,5 @@ func main() {
 	}
 	defer models.CloseDatabase(db)
 
-	route.Setup(db)
+	route.SetupAndRun(db)
 }
