@@ -9,8 +9,7 @@ GIT_COMMIT := $(shell git rev-parse --short HEAD)  $(shell git log -1 --pretty=%
 build:
 	@env CGO_ENABLED=0 \
 	go build -trimpath \
-		-ldflags "\
-		$(LDFLAGS) \
+		-ldflags "$(LDFLAGS) \
 		-X 'eduData/bootstrap.Version=$(VERSION)' \
 		-X 'eduData/bootstrap.BuildDate=$(BUILD_DATE)' \
 		-X 'eduData/bootstrap.GitCommit=$(GIT_COMMIT)'" \
@@ -20,7 +19,7 @@ build:
 cbuild:
 	@env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
 	go build -trimpath \
-		-ldflags "$(LDFLAGS)" \
+		-ldflags "$(LDFLAGS) \
 		-X 'eduData/bootstrap.Version=$(VERSION)' \
 		-X 'eduData/bootstrap.BuildDate=$(BUILD_DATE)' \
 		-X 'eduData/bootstrap.GitCommit=$(GIT_COMMIT)'" \

@@ -145,5 +145,12 @@ func (h *HrbustUg) GetGrade() ([]repository.CourseGrades, error) {
 	}
 
 	close(msg)
-	return grade, errs.Wait()
+	err = errs.Wait()
+
+	for i := range grade {
+		grade[i].StuID = h.StuID()
+		grade[i].School = h.SchoolName()
+		grade[i].StuType = h.StuType()
+	}
+	return grade, err
 }
