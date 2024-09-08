@@ -80,7 +80,16 @@ func (h *HrbustUg) GetCourse() ([]repository.Course, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ParseDataCrouseAll(b)
+	res, err := ParseDataCrouseAll(b)
+	if err != nil {
+		return nil, err
+	}
+	for i := range res {
+		res[i].StuID = h.StuID()
+		res[i].School = h.SchoolName()
+		res[i].StuType = h.StuType()
+	}
+	return res, nil
 }
 
 // YearSemester 年与学期的结构体

@@ -79,7 +79,16 @@ func (n *NeauUg) GetCourse() ([]repository.Course, error) {
 		return nil, errNeau
 	}
 
-	return ParseData(GetJSONneau)
+	res, err := ParseData(GetJSONneau)
+	if err != nil {
+		return nil, err
+	}
+	for i := range res {
+		res[i].StuID = n.StuID()
+		res[i].School = n.SchoolName()
+		res[i].StuType = n.StuType()
+	}
+	return res, nil
 }
 
 func (n *NeauUg) GetGrade() ([]repository.CourseGrades, error) {

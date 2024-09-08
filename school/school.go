@@ -18,8 +18,4 @@ type School interface {
 	Signin() error                                // 登陆
 	GetCourse() ([]repository.Course, error)      // 获取课程
 	GetGrade() ([]repository.CourseGrades, error) // 获取成绩
-
-	// GetTimetable() ([]models.TimeTable, error)         // 获取课程时间表
-	// GetCourseByWeek(week int) ([]models.Course, error) // 获取某一周课程
-	// GetScore() ([]models.CourseGrades, error)          // 获取成绩信息
 }
