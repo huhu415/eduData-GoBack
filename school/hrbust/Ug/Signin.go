@@ -3,6 +3,7 @@ package hrbustUg
 import (
 	"errors"
 	"fmt"
+	"github.com/spf13/viper"
 	"io"
 	"strconv"
 	"strings"
@@ -97,7 +98,14 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 		base64String := base64.StdEncoding.EncodeToString(imageBytes)
 
 		var OrcCode string
-		r := rand.Intn(5)
+		// ocr频率
+		var r int
+		logrus.Debugf("ocr_rate: %v", viper.GetInt("ocr_rate"))
+		if viper.GetInt("ocr_rate") == 0 {
+			r = 0
+		} else {
+			r = rand.Intn(viper.GetInt("ocr_rate"))
+		}
 		if r == 0 {
 			jfbym := ident.NewJfbymOcr(bootstrap.C.JfymRequestUrl, bootstrap.C.JfymToken)
 			OrcCode, errVer = jfbym.Identify(&base64String)
