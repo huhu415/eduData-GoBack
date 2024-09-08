@@ -56,6 +56,11 @@ func (u *Usecase) DeleteAndCreateCourse(Course []repository.Course, school schoo
 	if err := u.Repository.DeleteUserAllCourse(school.StuID(), school.SchoolName()); err != nil {
 		return err
 	}
+	for i := range Course {
+		Course[i].StuID = school.StuID()
+		Course[i].School = school.SchoolName()
+		Course[i].StuType = school.StuType()
+	}
 	return u.Repository.AddCourse(Course)
 
 }
@@ -63,6 +68,11 @@ func (u *Usecase) DeleteAndCreateCourse(Course []repository.Course, school schoo
 func (u *Usecase) DeleteAndCreateGrade(CourseGrades []repository.CourseGrades, school school.School) error {
 	if err := u.Repository.DeleteUserAllCourseGrades(school.StuID(), school.SchoolName()); err != nil {
 		return err
+	}
+	for i := range CourseGrades {
+		CourseGrades[i].StuID = school.StuID()
+		CourseGrades[i].School = school.SchoolName()
+		CourseGrades[i].StuType = school.StuType()
 	}
 	return u.Repository.AddCourseGrades(CourseGrades)
 }

@@ -61,16 +61,8 @@ func (h *HrbustPg) GetCourse() ([]repository.Course, error) {
 	if errPg != nil {
 		return nil, errPg
 	}
-	res, err := ParseDataCouresAll(pgHTML)
-	if err != nil {
-		return nil, err
-	}
-	for i := range res {
-		res[i].StuID = h.StuID()
-		res[i].School = h.SchoolName()
-		res[i].StuType = h.StuType()
-	}
-	return res, nil
+
+	return ParseDataCouresAll(pgHTML)
 }
 
 func (h *HrbustPg) GetGrade() ([]repository.CourseGrades, error) {

@@ -26,6 +26,7 @@ type Config struct {
 	JfymToken            string `mapstructure:"jfym_token"`
 	YescaptchaRequestUrl string `mapstructure:"yescaptcha_request_url"`
 	YesCaptchaToken      string `mapstructure:"yescaptcha_token"`
+	OcrRate              string `mapstructure:"ocr_rate"`
 
 	// extra
 	PgConfig   string `mapstructure:"pg_config"`
