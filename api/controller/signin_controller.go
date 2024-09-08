@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/sirupsen/logrus"
 )
 
 type SigninController struct {
@@ -79,6 +80,7 @@ func (lc *SigninController) UpdateCourse(c *gin.Context) {
 	}
 
 	// 获取课程
+	logrus.Debugf("id:%s, schoolName:%s, type:%d", s.StuID(), s.SchoolName(), s.StuType())
 	course, err := s.GetCourse()
 	if err != nil {
 		le.Errorf("获取课程错误 %v", err)
@@ -126,6 +128,7 @@ func (lc *SigninController) UpdateGrade(c *gin.Context) {
 		return
 	}
 
+	logrus.Debugf("id:%s, schoolName:%s, type:%d", s.StuID(), s.SchoolName(), s.StuType())
 	// 获取成绩
 	grade, err := s.GetGrade()
 	if err != nil {
