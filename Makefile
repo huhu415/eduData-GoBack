@@ -27,6 +27,7 @@ cbuild:
 
 # debug: debug
 debug:
+	@brew services start postgresql@14
 	@CompileDaemon -build="make build" -command="./eduData --debug"
 
 # vet: 找错误
