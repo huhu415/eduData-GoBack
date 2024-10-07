@@ -2,6 +2,8 @@ package repository
 
 import (
 	"eduData/school/pub"
+
+	"gorm.io/gorm"
 )
 
 // Course 为什么要设置周, 而不是利用>BeginWeek && <EndWeek 因为可以方便处理单双周问题
@@ -27,13 +29,6 @@ func (r *Repository) AddCourse(Course []Course) error {
 	return r.database.Create(&Course).Error
 }
 
-// DeleteUserAllCourse 删除用户的所有课程
-func (r *Repository) DeleteUserAllCourse(username string, school pub.SchoolName) error {
-	return r.database.
-		Where("stu_id = ? AND school = ?", username, school).
-		Delete(&Course{}).Error
-}
-
 // CourseByWeekUsername 通过周数和用户名查询符合的课程
 func (r *Repository) CourseByWeekUsername(username string, school pub.SchoolName, week int) ([]Course, error) {
 	var course []Course
@@ -41,4 +36,16 @@ func (r *Repository) CourseByWeekUsername(username string, school pub.SchoolName
 		Where("stu_id = ? AND school = ? AND week = ?", username, school, week).
 		Find(&course).Error
 	return course, err
+}
+
+// 利用事务删除用户的所有课程, 并且添加新的课程
+func (r *Repository) DeleteAndCreateCourse(course []Course) error {
+	return r.database.Transaction(func(tx *gorm.DB) error {
+		if err := tx.
+			Where("stu_id = ? AND school = ?", course[0].StuID, course[0].School).
+			Delete(&Course{}).Error; err != nil {
+			return err
+		}
+		return tx.Create(&course).Error
+	})
 }

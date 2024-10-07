@@ -4,11 +4,12 @@ import (
 	"eduData/repository"
 	"eduData/school"
 	"fmt"
-	"github.com/patrickmn/go-cache"
-	"github.com/sirupsen/logrus"
 	"net/http/cookiejar"
 	"strconv"
 	"time"
+
+	"github.com/patrickmn/go-cache"
+	"github.com/sirupsen/logrus"
 )
 
 type Usecase struct {
@@ -53,28 +54,21 @@ func (u *Usecase) SigninAndSetCache(s school.School) error {
 }
 
 func (u *Usecase) DeleteAndCreateCourse(Course []repository.Course, school school.School) error {
-	if err := u.Repository.DeleteUserAllCourse(school.StuID(), school.SchoolName()); err != nil {
-		return err
-	}
 	for i := range Course {
 		Course[i].StuID = school.StuID()
 		Course[i].School = school.SchoolName()
 		Course[i].StuType = school.StuType()
 	}
-	return u.Repository.AddCourse(Course)
-
+	return u.Repository.DeleteAndCreateCourse(Course)
 }
 
 func (u *Usecase) DeleteAndCreateGrade(CourseGrades []repository.CourseGrades, school school.School) error {
-	if err := u.Repository.DeleteUserAllCourseGrades(school.StuID(), school.SchoolName()); err != nil {
-		return err
-	}
 	for i := range CourseGrades {
 		CourseGrades[i].StuID = school.StuID()
 		CourseGrades[i].School = school.SchoolName()
 		CourseGrades[i].StuType = school.StuType()
 	}
-	return u.Repository.AddCourseGrades(CourseGrades)
+	return u.Repository.DeleteAndAddCourseGrades(CourseGrades)
 }
 
 func (u *Usecase) GetCourseByWeek(school school.School, week string) ([]repository.Course, error) {
