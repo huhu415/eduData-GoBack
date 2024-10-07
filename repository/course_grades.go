@@ -2,6 +2,8 @@ package repository
 
 import (
 	"eduData/school/pub"
+
+	"gorm.io/gorm"
 )
 
 // CourseGrades 课程成绩, 还可以计算绩点
@@ -18,14 +20,15 @@ type CourseGrades struct {
 	CourseGrade  float64        `gorm:"not null"`        // 成绩
 }
 
-func (r *Repository) AddCourseGrades(CourseGrades []CourseGrades) error {
-	return r.database.Create(&CourseGrades).Error
-}
-
-func (r *Repository) DeleteUserAllCourseGrades(username string, school pub.SchoolName) error {
-	return r.database.
-		Where("stu_id = ? AND school = ?", username, school).
-		Delete(&CourseGrades{}).Error
+// 利用事务, 删除并更新学生成绩
+func (r *Repository) DeleteAndAddCourseGrades(courseGrades []CourseGrades) error {
+	return r.database.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Where("stu_id = ? AND school = ?", courseGrades[0].StuID, courseGrades[0].School).
+			Delete(&CourseGrades{}).Error; err != nil {
+			return err
+		}
+		return tx.Create(&courseGrades).Error
+	})
 }
 
 func (r *Repository) CourseGradesByUsername(username string, ut pub.StuType, school pub.SchoolName) ([]CourseGrades, []CourseGrades) {

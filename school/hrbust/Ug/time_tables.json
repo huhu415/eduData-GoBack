@@ -1,0 +1,74 @@
+[
+  {
+    "School": "hrbust",
+    "Sort": 1,
+    "StartTime": "8:10",
+    "EndTime": "8:55"
+  },
+  {
+    "School": "hrbust",
+    "Sort": 2,
+    "StartTime": "9:05",
+    "EndTime": "9:50"
+  },
+  {
+    "School": "hrbust",
+    "Sort": 3,
+    "StartTime": "10:10",
+    "EndTime": "10:55"
+  },
+  {
+    "School": "hrbust",
+    "Sort": 4,
+    "StartTime": "11:05",
+    "EndTime": "11:50"
+  },
+  {
+    "School": "hrbust",
+    "Sort": 5,
+    "StartTime": "13:30",
+    "EndTime": "14:15"
+  },
+  {
+    "School": "hrbust",
+    "Sort": 6,
+    "StartTime": "14:25",
+    "EndTime": "15:10"
+  },
+  {
+    "School": "hrbust",
+    "Sort": 7,
+    "StartTime": "15:30",
+    "EndTime": "16:15"
+  },
+  {
+    "School": "hrbust",
+    "Sort": 8,
+    "StartTime": "16:25",
+    "EndTime": "17:10"
+  },
+  {
+    "School": "hrbust",
+    "Sort": 9,
+    "StartTime": "18:00",
+    "EndTime": "18:45"
+  },
+  {
+    "School": "hrbust",
+    "Sort": 10,
+    "StartTime": "18:55",
+    "EndTime": "19:40"
+  },
+  {
+    "School": "hrbust",
+    "Sort": 11,
+    "StartTime": "19:50",
+    "EndTime": "20:35"
+  },
+  {
+    "School": "hrbust",
+    "Sort": 12,
+    "StartTime": "20:45",
+    "EndTime": "21:30"
+  }
+]
