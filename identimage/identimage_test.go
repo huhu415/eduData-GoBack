@@ -1,8 +1,9 @@
 package identimage
 
 import (
-	"eduData/bootstrap"
 	"testing"
+
+	"eduData/bootstrap"
 
 	"github.com/stretchr/testify/assert"
 )

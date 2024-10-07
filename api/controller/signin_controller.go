@@ -1,12 +1,13 @@
 package controller
 
 import (
+	"fmt"
+	"net/http"
+
 	"eduData/api/middleware"
 	"eduData/domain"
 	"eduData/pub"
 	"eduData/usecase"
-	"fmt"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -36,7 +37,7 @@ func (lc *SigninController) LogIn(c *gin.Context) {
 		return
 	}
 
-	//创建jwt
+	// 创建jwt
 	j := middleware.NewJWT()
 	tokenString, err := j.CreateToken(jwt.MapClaims{
 		"school":   s.SchoolName(),
@@ -52,7 +53,7 @@ func (lc *SigninController) LogIn(c *gin.Context) {
 		return
 	}
 
-	//返回给前端结果
+	// 返回给前端结果
 	c.SetCookie("authentication", tokenString, 3600*24*30, "", "", false, true)
 	c.JSON(http.StatusOK, domain.Response{
 		Status: domain.SUCCESS,
@@ -93,7 +94,7 @@ func (lc *SigninController) UpdateCourse(c *gin.Context) {
 		return
 	}
 
-	//把课程添加到数据库, 并且删除原来的课程
+	// 把课程添加到数据库, 并且删除原来的课程
 	if err = lc.LoginUsecase.DeleteAndCreateCourse(course, s); err != nil {
 		c.JSON(http.StatusInternalServerError, domain.Response{
 			Status: domain.FAIL,
@@ -142,7 +143,7 @@ func (lc *SigninController) UpdateGrade(c *gin.Context) {
 		return
 	}
 
-	//把成绩添加到数据库, 并且删除原来的成绩
+	// 把成绩添加到数据库, 并且删除原来的成绩
 	if err = lc.LoginUsecase.DeleteAndCreateGrade(grade, s); err != nil {
 		c.JSON(http.StatusInternalServerError, domain.Response{
 			Status: domain.FAIL,

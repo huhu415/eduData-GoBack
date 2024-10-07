@@ -2,11 +2,12 @@ package hrbustPg
 
 import (
 	"bytes"
-	"eduData/repository"
 	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
+
+	"eduData/repository"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -23,12 +24,12 @@ func ParseDataCoures1D(table *[]byte, args ...any) ([]repository.Course, error) 
 		return nil, err
 	}
 
-	//判断是否能找到课程信息
+	// 判断是否能找到课程信息
 	if doc.Find("table#contentParent_dgData tbody tr").Length() == 0 {
 		return nil, errors.New("not find table#contentParent_dgData tbody tr")
 	}
 
-	//找到当前是第几周, 如果没有会取args[0]的值
+	// 找到当前是第几周, 如果没有会取args[0]的值
 	doc.Find("#contentParent_drpWeek_drpWeeks option").Each(func(rowIndex int, row *goquery.Selection) {
 		selectedWeek, ok := row.Attr("selected")
 		if ok && selectedWeek == "selected" {
@@ -50,35 +51,35 @@ func ParseDataCoures1D(table *[]byte, args ...any) ([]repository.Course, error) 
 		return nil, errors.New("not find the selected week in the table, you need add the weekDay by hand")
 	}
 
-	//课表不算表头, 有12行, 9列, 为什么有11列, 而不是9+1=10列, 是因为colIndexOwn要找到nil才能停下来, 如果是10列, 最后一个就是满的, 需要找到11列才能停下来
+	// 课表不算表头, 有12行, 9列, 为什么有11列, 而不是9+1=10列, 是因为colIndexOwn要找到nil才能停下来, 如果是10列, 最后一个就是满的, 需要找到11列才能停下来
 	var MapMaker [13][11]bool
 	doc.Find("table#contentParent_dgData tbody tr").Each(func(rowIndex int, row *goquery.Selection) {
-		colIndexOwn := 0 //如果换了一行, colIndexOwn要归零, 正常要从0开始, 但下面的函数已经完成colIndexOwn++了
+		colIndexOwn := 0 // 如果换了一行, colIndexOwn要归零, 正常要从0开始, 但下面的函数已经完成colIndexOwn++了
 		row.Find("td").Each(func(colIndex int, cell *goquery.Selection) {
-			colIndexOwn++                                                        //colIndex在这里+1, 那么我们自己的的colIndexOwn也在这里+1
+			colIndexOwn++                                                        // colIndex在这里+1, 那么我们自己的的colIndexOwn也在这里+1
 			Value := regexp.MustCompile(`\s+`).ReplaceAllString(cell.Text(), "") // 定义正则表达式，去除任何空白字符
 
-			//fmt.Printf("Row: %d, Col: %d, rowspan: %s, Value: %s\n", rowIndex, colIndex, cell.AttrOr("rowspan", "0"), Value)
-			//上面语句debug用
+			// fmt.Printf("Row: %d, Col: %d, rowspan: %s, Value: %s\n", rowIndex, colIndex, cell.AttrOr("rowspan", "0"), Value)
+			// 上面语句debug用
 
-			//找到第一个没有被占用的位置, 来更新colIndexOwn, 因为colIndex有的时候会少, 因为合并的原因, 所以要一个标准的colIndexOwn
+			// 找到第一个没有被占用的位置, 来更新colIndexOwn, 因为colIndex有的时候会少, 因为合并的原因, 所以要一个标准的colIndexOwn
 			for MapMaker[rowIndex][colIndexOwn] == true {
 				colIndexOwn++
 			}
 			if len(Value) > 0 {
-				//找不到rowspan, 返回值是0, 所以这里是能找到rowspan的话
+				// 找不到rowspan, 返回值是0, 所以这里是能找到rowspan的话
 				if v := cell.AttrOr("rowspan", "0"); v != "0" {
 					rowspanNum, err := strconv.Atoi(v)
 					if err != nil {
 						fmt.Println(err)
 					}
 
-					//竖向做标记, 因为rowspanNum是跨行数.
+					// 竖向做标记, 因为rowspanNum是跨行数.
 					for i := rowspanNum; i > 0; i-- {
 						MapMaker[rowIndex+i-1][colIndexOwn] = true
 					}
 
-					//要大于2个汉字的长度才能算是课程, 因为"晚上"不算课程
+					// 要大于2个汉字的长度才能算是课程, 因为"晚上"不算课程
 					if len(Value) > 8 {
 						matchTeacher := regexp.MustCompile(`教师:([^\s,]+)`).FindAllStringSubmatch(Value, 1)
 						matchLocation := regexp.MustCompile(`地点:([^\s\]]+)`).FindAllStringSubmatch(Value, 1)
@@ -86,15 +87,15 @@ func ParseDataCoures1D(table *[]byte, args ...any) ([]repository.Course, error) 
 						courses = append(courses, repository.Course{
 							StuType:               2,
 							Week:                  week,
-							WeekDay:               colIndexOwn - 2, //因为前面还有2个td所以要减去2
+							WeekDay:               colIndexOwn - 2, // 因为前面还有2个td所以要减去2
 							NumberOfLessons:       rowIndex,
 							NumberOfLessonsLength: rowspanNum,
 							CourseContent:         matchContent,
 							TeacherName:           matchTeacher[0][1],
 							CourseLocation:        matchLocation[0][1],
-							//TeacherName:           "",
-							//beginWeek:             0,
-							//endWeek:               0,
+							// TeacherName:           "",
+							// beginWeek:             0,
+							// endWeek:               0,
 						})
 					}
 				} else {
@@ -125,26 +126,26 @@ func ParseDataCoures2D(table *[]byte) ([][]string, error) {
 		return nil, errors.New("not find table#contentParent_dgData tbody tr")
 	}
 
-	//课表不算表头, 有12行, 9列, 为什么有11列, 而不是9+1=10列, 是因为colIndexOwn要找到nil才能停下来, 如果是10列, 最后一个就是满的, 需要找到11列才能停下来
+	// 课表不算表头, 有12行, 9列, 为什么有11列, 而不是9+1=10列, 是因为colIndexOwn要找到nil才能停下来, 如果是10列, 最后一个就是满的, 需要找到11列才能停下来
 	MapMaker := make([][]string, 13)
 	for i := 0; i < 13; i++ {
 		MapMaker[i] = make([]string, 11)
 	}
-	//第一节课就是第一行,从左向右依次是时间是1, 节次是2,星期1是3, 到星期7是9. MapMaker从[1][1]开始.
+	// 第一节课就是第一行,从左向右依次是时间是1, 节次是2,星期1是3, 到星期7是9. MapMaker从[1][1]开始.
 	doc.Find("table#contentParent_dgData tbody tr").Each(func(rowIndex int, row *goquery.Selection) {
-		colIndexOwn := 0 //如果换了一行, colIndexOwn要归零, 正常要从0开始, 但下面的函数已经完成colIndexOwn++了
+		colIndexOwn := 0 // 如果换了一行, colIndexOwn要归零, 正常要从0开始, 但下面的函数已经完成colIndexOwn++了
 		row.Find("td").Each(func(colIndex int, cell *goquery.Selection) {
-			colIndexOwn++                                                        //colIndex在这里+1, 那么我们自己的的colIndexOwn也在这里+1
+			colIndexOwn++                                                        // colIndex在这里+1, 那么我们自己的的colIndexOwn也在这里+1
 			Value := regexp.MustCompile(`\s+`).ReplaceAllString(cell.Text(), "") // 定义正则表达式，匹配任何空白字符
 
-			//fmt.Printf("Row: %d, Col: %d, rowspan: %s, Value: %s\n", rowIndex, colIndex, cell.AttrOr("rowspan", "0"), Value)
-			//上面语句debug用
+			// fmt.Printf("Row: %d, Col: %d, rowspan: %s, Value: %s\n", rowIndex, colIndex, cell.AttrOr("rowspan", "0"), Value)
+			// 上面语句debug用
 
 			for MapMaker[rowIndex][colIndexOwn] != "" {
 				colIndexOwn++
 			}
 			if v := cell.AttrOr("rowspan", "0"); v != "0" {
-				//找不到rowspan, 返回值是0, 所以这里是能找到
+				// 找不到rowspan, 返回值是0, 所以这里是能找到
 				i, err := strconv.Atoi(v)
 				if err != nil {
 					fmt.Println(err)
@@ -153,7 +154,7 @@ func ParseDataCoures2D(table *[]byte) ([][]string, error) {
 					MapMaker[rowIndex+i-1][colIndexOwn] = Value
 				}
 			} else {
-				//如果能找不到rowspan, 直接赋值
+				// 如果能找不到rowspan, 直接赋值
 				MapMaker[rowIndex][colIndexOwn] = Value
 			}
 		})
@@ -171,48 +172,48 @@ func ParseDataCouresAll(table *[]byte) ([]repository.Course, error) {
 		return nil, err
 	}
 
-	//判断是否能找到课程信息
+	// 判断是否能找到课程信息
 	if doc.Find("table#contentParent_dgData tbody tr").Length() == 0 {
 		return nil, errors.New("not find table#contentParent_dgData tbody tr")
 	}
 
-	//课表不算表头, 有12行, 9列, 为什么有11列, 而不是9+1=10列, 是因为colIndexOwn要找到nil才能停下来, 如果是10列, 最后一个就是满的, 需要找到11列才能停下来
+	// 课表不算表头, 有12行, 9列, 为什么有11列, 而不是9+1=10列, 是因为colIndexOwn要找到nil才能停下来, 如果是10列, 最后一个就是满的, 需要找到11列才能停下来
 	var MapMaker [13][11]bool
 	doc.Find("table#contentParent_dgData tbody tr").Each(func(rowIndex int, row *goquery.Selection) {
-		colIndexOwn := 0 //如果换了一行, colIndexOwn要归零, 正常要从0开始, 但下面的函数已经完成colIndexOwn++了
+		colIndexOwn := 0 // 如果换了一行, colIndexOwn要归零, 正常要从0开始, 但下面的函数已经完成colIndexOwn++了
 		row.Find("td").Each(func(colIndex int, cell *goquery.Selection) {
-			colIndexOwn++                                                        //colIndex在这里+1, 那么我们自己的的colIndexOwn也在这里+1
+			colIndexOwn++                                                        // colIndex在这里+1, 那么我们自己的的colIndexOwn也在这里+1
 			Value := regexp.MustCompile(`\s+`).ReplaceAllString(cell.Text(), "") // 定义正则表达式，去除任何空白字符
 
-			//fmt.Printf("Row: %d, Col: %d, rowspan: %s, Value: %s\n", rowIndex, colIndex, cell.AttrOr("rowspan", "0"), Value)
-			//上面语句debug用
+			// fmt.Printf("Row: %d, Col: %d, rowspan: %s, Value: %s\n", rowIndex, colIndex, cell.AttrOr("rowspan", "0"), Value)
+			// 上面语句debug用
 
-			//找到第一个没有被占用的位置, 来更新colIndexOwn, 因为colIndex有的时候会少, 因为合并的原因, 所以要一个标准的colIndexOwn
+			// 找到第一个没有被占用的位置, 来更新colIndexOwn, 因为colIndex有的时候会少, 因为合并的原因, 所以要一个标准的colIndexOwn
 			for MapMaker[rowIndex][colIndexOwn] == true {
 				colIndexOwn++
 			}
 			if len(Value) > 0 {
-				//找不到rowspan, 返回值是0, 所以这里是能找到rowspan的话
+				// 找不到rowspan, 返回值是0, 所以这里是能找到rowspan的话
 				if v := cell.AttrOr("rowspan", "0"); v != "0" {
 					rowspanNum, _ := strconv.Atoi(v)
 
-					//竖向做标记, 因为rowspanNum是跨行数.
+					// 竖向做标记, 因为rowspanNum是跨行数.
 					for i := rowspanNum; i > 0; i-- {
 						MapMaker[rowIndex+i-1][colIndexOwn] = true
 					}
 
-					//要大于2个汉字的长度才能算是课程, 因为"晚上"不算课程
+					// 要大于2个汉字的长度才能算是课程, 因为"晚上"不算课程
 					if len(Value) > 8 {
 						matchTeacher := regexp.MustCompile(`教师:([^\s,]+)`).FindAllStringSubmatch(Value, 1)
 						matchLocation := regexp.MustCompile(`地点:([^\s\]]+)`).FindAllStringSubmatch(Value, 1)
 						matchContent := regexp.MustCompile(`｛.*?｝`).ReplaceAllString(Value, "")
 						course := repository.Course{
-							//id:                    1,
-							//StuID:                 1,
-							//Week:                  1,
+							// id:                    1,
+							// StuID:                 1,
+							// Week:                  1,
 							School:                "hrbust",
-							StuType:               2,               //研究生
-							WeekDay:               colIndexOwn - 2, //因为前面还有2个td所以要减去2
+							StuType:               2,               // 研究生
+							WeekDay:               colIndexOwn - 2, // 因为前面还有2个td所以要减去2
 							NumberOfLessons:       rowIndex,
 							NumberOfLessonsLength: rowspanNum,
 							CourseContent:         matchContent,

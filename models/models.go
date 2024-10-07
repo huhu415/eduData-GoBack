@@ -1,14 +1,14 @@
 package models
 
 import (
-	"eduData/repository"
 	"time"
+
+	"eduData/bootstrap"
+	"eduData/repository"
 
 	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-
-	"eduData/bootstrap"
 )
 
 // NewDatabase 新建数据库连接

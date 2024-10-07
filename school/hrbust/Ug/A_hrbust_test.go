@@ -2,10 +2,11 @@
 package hrbustUg
 
 import (
-	"eduData/bootstrap"
 	"fmt"
 	"os"
 	"testing"
+
+	"eduData/bootstrap"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -30,7 +31,7 @@ func TestHrbustUg(t *testing.T) {
 			CourseTable, err := GetData(cookie, "2000")
 			if assert.Nil(err, "获取课表失败") {
 				// 存储到本地文件
-				err := os.WriteFile("Ug课程html/本学期课表.html", *CourseTable, 0666)
+				err := os.WriteFile("Ug课程html/本学期课表.html", *CourseTable, 0o666)
 				assert.Nil(err, "写入文件失败")
 
 				// 解析课表
@@ -50,7 +51,6 @@ func TestHrbustUg(t *testing.T) {
 		t.Run("GetDataScore", func(t *testing.T) {
 			Score, err := GetDataScore(cookie, YEARTEST, TERMTEST)
 			if assert.Nil(err, "获取成绩失败") {
-
 				// 解析成绩
 				t.Run("ParseDataSore", func(t *testing.T) {
 					allCoures, err := ParseDataSore(Score, YEARTEST, TERMTEST)
@@ -60,7 +60,6 @@ func TestHrbustUg(t *testing.T) {
 						}
 					}
 				})
-
 			}
 		})
 

@@ -31,19 +31,19 @@ func (b *BaiduOcr) Identify(base64Image *string) (string, error) {
 	requestUrl := bootstrap.C.BaiduRequestUrl
 	accessToken := bootstrap.C.BaiduAccesstoken
 
-	client := &http.Client{} //构建http客户端实例
+	client := &http.Client{} // 构建http客户端实例
 
 	values := url.Values{
 		"image": {*base64Image},
-	} //传入消息体
+	} // 传入消息体
 	req, err := http.NewRequest("POST", requestUrl+"?access_token="+accessToken, strings.NewReader(values.Encode()))
 	if err != nil {
 		return "0", errors.New("http.NewRequest()错误")
 	}
 
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded") //增加消息头
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded") // 增加消息头
 
-	res, err := client.Do(req) //发送
+	res, err := client.Do(req) // 发送
 	if err != nil {
 		return "0", errors.New("client.Do()错误")
 	}
@@ -65,8 +65,8 @@ func (b *BaiduOcr) Identify(base64Image *string) (string, error) {
 		return "0", errors.New("解析JSON时发生错误")
 	}
 
-	//输出识别结果
-	//fmt.Println(result)
+	// 输出识别结果
+	// fmt.Println(result)
 
 	return result.WordsResult[0].Words, nil
 }

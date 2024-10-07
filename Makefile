@@ -30,8 +30,4 @@ debug:
 	@brew services start postgresql@17
 	@CompileDaemon -build="make build" -command="./eduData --debug"
 
-# vet: 找错误
-vet:
-	@go vet ./...
-
-.PHONY: build cbuild vet
+.PHONY: build cbuild

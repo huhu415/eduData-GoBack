@@ -1,9 +1,10 @@
 package school
 
 import (
+	"net/http/cookiejar"
+
 	"eduData/repository"
 	"eduData/school/pub"
-	"net/http/cookiejar"
 )
 
 type School interface {

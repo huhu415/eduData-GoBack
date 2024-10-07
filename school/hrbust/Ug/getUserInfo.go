@@ -1,7 +1,6 @@
 package hrbustUg
 
 import (
-	"eduData/bootstrap"
 	"io"
 	"math/rand"
 	"net/http"
@@ -9,15 +8,17 @@ import (
 	"net/url"
 	"strconv"
 	"time"
+
+	"eduData/bootstrap"
 )
 
 const SHOWHEADER = "/showPersonalInfo.do?"
 
 func GetUserInfo(cookieJar *cookiejar.Jar) (*[]byte, error) {
 	// 从setting中获取UserAgent
-	var userAgent = bootstrap.C.UserAgent
+	userAgent := bootstrap.C.UserAgent
 
-	//新建一个客户端
+	// 新建一个客户端
 	client := &http.Client{
 		// 禁止重定向
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {

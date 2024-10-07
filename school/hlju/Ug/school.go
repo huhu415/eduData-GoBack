@@ -1,11 +1,12 @@
 package hljuUg
 
 import (
+	"errors"
+	"net/http/cookiejar"
+
 	"eduData/repository"
 	"eduData/school"
 	"eduData/school/pub"
-	"errors"
-	"net/http/cookiejar"
 )
 
 type HljuUg struct {
@@ -64,7 +65,7 @@ func (h *HljuUg) GetCourse() ([]repository.Course, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return ParseData(d)
 }
 

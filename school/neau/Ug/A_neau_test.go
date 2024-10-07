@@ -19,7 +19,6 @@ func TestNeauUg(t *testing.T) {
 
 	cookiejar, err := Signin(USERNAME, PASSWORD)
 	if assert.Nil(err, "登陆失败") {
-
 		// 获取课表
 		t.Run("GetData", func(t *testing.T) {
 			jsoNneau, err := GetData(cookiejar, NEAUDATATEST)
@@ -28,7 +27,6 @@ func TestNeauUg(t *testing.T) {
 			t.Log(string(*jsoNneau))
 		})
 	}
-
 }
 
 /*----------------------------------------------------------------------*/

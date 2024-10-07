@@ -1,13 +1,14 @@
 package neauUg
 
 import (
-	"eduData/repository"
-	"eduData/school"
-	"eduData/school/pub"
 	"errors"
 	"net/http/cookiejar"
 	"strconv"
 	"time"
+
+	"eduData/repository"
+	"eduData/school"
+	"eduData/school/pub"
 
 	"github.com/sirupsen/logrus"
 )
@@ -51,15 +52,19 @@ func (n *NeauUg) SetCookie(c *cookiejar.Jar) {
 func (n *NeauUg) SchoolName() pub.SchoolName {
 	return pub.NEAU
 }
+
 func (n *NeauUg) StuType() pub.StuType {
 	return pub.UG
 }
+
 func (n *NeauUg) StuID() string {
 	return n.stuID
 }
+
 func (n *NeauUg) PassWd() string {
 	return n.passWd
 }
+
 func (n *NeauUg) Cookie() *cookiejar.Jar {
 	return n.cookie
 }
@@ -78,7 +83,7 @@ func (n *NeauUg) GetCourse() ([]repository.Course, error) {
 	if errNeau != nil {
 		return nil, errNeau
 	}
-	
+
 	return ParseData(GetJSONneau)
 }
 

@@ -9,10 +9,10 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/PuerkitoBio/goquery"
-
 	"eduData/bootstrap"
 	ident "eduData/identimage"
+
+	"github.com/PuerkitoBio/goquery"
 )
 
 const (
@@ -23,15 +23,15 @@ const (
 // Signin 登陆哈理工研究生管理系统, 会拿到认证后可以使用的coookie
 func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 	// 从setting中获取UserAgent
-	var userAgent = bootstrap.C.UserAgent
+	userAgent := bootstrap.C.UserAgent
 
-	//新建一个客户端
+	// 新建一个客户端
 	client := &http.Client{}
 	defer client.CloseIdleConnections()
 
-	//第一次请求(GET方法)
-	//请求首页, 接收带有__VIEWSTATE, __EVENTVALIDATION, ValidateCode链接的响应体,
-	//同时__VIEWSTATE里面也有验证码ValidateCode链接, 两个途径都可以拿到ValidateCode链接
+	// 第一次请求(GET方法)
+	// 请求首页, 接收带有__VIEWSTATE, __EVENTVALIDATION, ValidateCode链接的响应体,
+	// 同时__VIEWSTATE里面也有验证码ValidateCode链接, 两个途径都可以拿到ValidateCode链接
 	req, err := http.NewRequest(http.MethodGet, INDEXPG, nil)
 	if err != nil {
 		return nil, err
@@ -43,14 +43,14 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 	}
 	defer resp.Body.Close()
 
-	//从得到的*http.Response中的body得到__VIEWSTATE和__EVENTVALIDATION, 并且通过__VIEWSTATE得到验证码ValidateCode的请求地址
+	// 从得到的*http.Response中的body得到__VIEWSTATE和__EVENTVALIDATION, 并且通过__VIEWSTATE得到验证码ValidateCode的请求地址
 	VIEWSTATEvalue, EVENTVALIDATIONvalue, ValidateCodeSrc, err := findVEI(resp)
 	if err != nil {
 		return nil, err
 	}
 
-	//第二次请求(GET方法)
-	//请求验证码, 并接收图片和cookie
+	// 第二次请求(GET方法)
+	// 请求验证码, 并接收图片和cookie
 	req, err = http.NewRequest(http.MethodGet, INDEXPG+ValidateCodeSrc, nil)
 	if err != nil {
 		return nil, err
@@ -61,15 +61,15 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 		return nil, err
 	}
 
-	//从*http.Response中得到cookie和验证码图片, 并将验证码识别成字符串类型的数字
+	// 从*http.Response中得到cookie和验证码图片, 并将验证码识别成字符串类型的数字
 	IdentifyNum, cookie, err := findValidateCodeCookie(resp)
 	if err != nil {
 		return nil, err
 	}
 
-	//第三次请求(POST方法)
-	//登陆过程的最后一步, 就是把ValidateCode, UserName, PassWord, __VIEWSTATE, __EVENTVALIDATION
-	//这几个会改变的值一起post给哈理工研究生管理系统
+	// 第三次请求(POST方法)
+	// 登陆过程的最后一步, 就是把ValidateCode, UserName, PassWord, __VIEWSTATE, __EVENTVALIDATION
+	// 这几个会改变的值一起post给哈理工研究生管理系统
 	values := url.Values{}
 	values.Set("ScriptManager1", "UpdatePanel2|btLogin")
 	values.Set("__EVENTTARGET", "btLogin")
@@ -82,7 +82,7 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 	values.Set("ValidateCode", IdentifyNum)
 	values.Set("drpLoginType", "1")
 	values.Set("__ASYNCPOST", "true")
-	//构建请求体
+	// 构建请求体
 	req, _ = http.NewRequest(http.MethodPost, INDEXPG, strings.NewReader(values.Encode()))
 	req.Header.Add("cookie", cookie)
 	req.Header.Add("User-Agent", userAgent)
@@ -97,11 +97,11 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 		return nil, err
 	}
 
-	//判断登陆成功与否
+	// 判断登陆成功与否
 	if (len(ResBody) < 200 && len(ResBody) > 50) && (strings.Contains(string(ResBody), USERNAME)) {
-		//登陆成功
-		//fmt.Println("sign.SingInPg()登陆成功,消息体:" + string(ResBody))
-		//fmt.Println("登陆成功, cookie为: ", cookie)
+		// 登陆成功
+		// fmt.Println("sign.SingInPg()登陆成功,消息体:" + string(ResBody))
+		// fmt.Println("登陆成功, cookie为: ", cookie)
 		// cookie的样子是ASP.NET_SessionId=cjc3oisjjnenugay4cy0xa4m(; path=/; HttpOnly)这个被findValidateCodeCookie()函数去掉了
 		CookieParts := strings.Split(cookie, "=")
 		// 新建一个cookieJar
@@ -121,8 +121,8 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 		})
 		return cookieJar, nil
 	} else {
-		//登陆失败
-		//fmt.Println("sign.SingInPg()登陆失败:", string(ResBody[i-40:]))
+		// 登陆失败
+		// fmt.Println("sign.SingInPg()登陆失败:", string(ResBody[i-40:]))
 		switch {
 		case strings.Contains(string(ResBody), "密码输入错误"):
 			return nil, errors.New("密码输入错误")
@@ -135,7 +135,7 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 		}
 	}
 
-	//判断登陆成功与否
+	// 判断登陆成功与否
 	return nil, errors.New(string(ResBody[len(ResBody)-40:]))
 }
 
@@ -145,7 +145,7 @@ func findValidateCodeCookie(resp *http.Response) (IdentifyNum, cookieres string,
 	cookie := resp.Header["Set-Cookie"]
 	CookieParts := strings.Split(cookie[0], ";")
 	cookieres = CookieParts[0]
-	//从原生cookie的值解析出真正的cookie, 名为CookieParts
+	// 从原生cookie的值解析出真正的cookie, 名为CookieParts
 
 	imageBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -160,7 +160,7 @@ func findValidateCodeCookie(resp *http.Response) (IdentifyNum, cookieres string,
 	if err != nil {
 		return "0", "0", err
 	}
-	//调用百度的ocr接口识别验证码并返回结果
+	// 调用百度的ocr接口识别验证码并返回结果
 	return IdentifyNum, cookieres, nil
 }
 
@@ -178,8 +178,8 @@ func findVEI(resp *http.Response) (VIEWSTATEvalue, EVENTVALIDATIONvalue, Validat
 		return "0", "0", "0", err
 	}
 
-	//第一种方式
-	//解析响应体, 并找到__VIEWSTATE和__EVENTVALIDATION, ValidateCode链接的值
+	// 第一种方式
+	// 解析响应体, 并找到__VIEWSTATE和__EVENTVALIDATION, ValidateCode链接的值
 	VIEWSTATEvalue, ok := doc.Find("#__VIEWSTATE").Attr("value")
 	if !ok {
 		return "0", "0", "0", errors.New("not find __VIEWSTATE")

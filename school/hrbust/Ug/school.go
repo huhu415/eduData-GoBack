@@ -2,14 +2,15 @@ package hrbustUg
 
 import (
 	"context"
-	"eduData/repository"
-	school "eduData/school"
-	"eduData/school/pub"
 	"errors"
 	"net/http/cookiejar"
 	"strconv"
 	"sync"
 	"time"
+
+	"eduData/repository"
+	school "eduData/school"
+	"eduData/school/pub"
 
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
@@ -52,15 +53,19 @@ func (h *HrbustUg) SetCookie(c *cookiejar.Jar) {
 func (h *HrbustUg) SchoolName() pub.SchoolName {
 	return pub.HRBUST
 }
+
 func (h *HrbustUg) StuType() pub.StuType {
 	return pub.UG
 }
+
 func (h *HrbustUg) StuID() string {
 	return h.stuID
 }
+
 func (h *HrbustUg) PassWd() string {
 	return h.passWd
 }
+
 func (h *HrbustUg) Cookie() *cookiejar.Jar {
 	return h.cookie
 }
@@ -110,7 +115,7 @@ func (h *HrbustUg) GetGrade() ([]repository.CourseGrades, error) {
 					return errUg
 				}
 
-				//解析页面, 获得成绩
+				// 解析页面, 获得成绩
 				table, errUg := ParseDataSore(ugHTML, data.Year, data.Semester)
 				if errUg != nil {
 					return errUg

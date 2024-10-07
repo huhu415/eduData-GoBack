@@ -2,21 +2,21 @@ package hrbustUg
 
 import (
 	"bytes"
-	"eduData/school/pub"
 	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 
+	"eduData/repository"
+	"eduData/school/pub"
+
 	"github.com/PuerkitoBio/goquery"
 	"github.com/sirupsen/logrus"
-
-	"eduData/repository"
 )
 
 // ParseDataCrouseAll 给定一个学期的课表, 返回这个学期的所有课程, 解析本科生的
 func ParseDataCrouseAll(table *[]byte) ([]repository.Course, error) {
-	//创建返回的变量
+	// 创建返回的变量
 	var courses []repository.Course
 
 	// 使用 goquery 解析 HTML 表格
@@ -25,12 +25,12 @@ func ParseDataCrouseAll(table *[]byte) ([]repository.Course, error) {
 		return nil, err
 	}
 
-	//判断是否能找到课程信息
+	// 判断是否能找到课程信息
 	if doc.Find("table.infolist_tab tr.infolist_common").Length() == 0 {
 		return nil, errors.New("not find table.infolist_hr tr.infolist_common")
 	}
 
-	//创建一个课程
+	// 创建一个课程
 	course := repository.Course{
 		// 因为函数是解析本科生, 所以这是本科生
 		StuType: 1,
@@ -138,7 +138,7 @@ func ParseDataCrouseAll(table *[]byte) ([]repository.Course, error) {
 							courses = append(courses, course)
 							// 没有时间或地点的课程, 就不用上色了, 有默认颜色#c1d1e0
 						} else {
-							//根据单双周, 添加到切片结构体里, 并且有课程, 需要上色
+							// 根据单双周, 添加到切片结构体里, 并且有课程, 需要上色
 							course.Color = color
 							for i := startWeek; i <= endWeek; i++ {
 								// 如果是单双周, 则判断是否符合
@@ -185,7 +185,7 @@ func ParseDataCrouseAll(table *[]byte) ([]repository.Course, error) {
 
 // ParseDataCrouseByWeek 给定一个学期的课表和某一周, 返回这个学期的这周的课程, 解析本科生的
 func ParseDataCrouseByWeek(table *[]byte, week int) ([]repository.Course, error) {
-	//创建返回的变量
+	// 创建返回的变量
 	var courses []repository.Course
 
 	// 使用 goquery 解析 HTML 表格
@@ -194,12 +194,12 @@ func ParseDataCrouseByWeek(table *[]byte, week int) ([]repository.Course, error)
 		return nil, err
 	}
 
-	//判断是否能找到课程信息
+	// 判断是否能找到课程信息
 	if doc.Find("table.infolist_tab tbody tr.infolist_common").Length() == 0 {
 		return nil, errors.New("not find table.infolist_hr tbody tr.infolist_common")
 	}
 
-	//创建一个课程
+	// 创建一个课程
 	course := repository.Course{
 		// 因为函数是解析本科生, 所以这是本科生
 		StuType: 1,
@@ -307,7 +307,7 @@ func ParseDataCrouseByWeek(table *[]byte, week int) ([]repository.Course, error)
 							courses = append(courses, course)
 							// 没有时间或地点的课程, 就不用上色了, 有默认颜色#c1d1e0
 						} else {
-							//根据单双周, 添加到切片结构体里, 并且有课程, 需要上色
+							// 根据单双周, 添加到切片结构体里, 并且有课程, 需要上色
 							course.Color = color
 							if week >= startWeek && week <= endWeek {
 								if evenOrOdd != 5 {
@@ -347,7 +347,7 @@ func ParseDataCrouseByWeek(table *[]byte, week int) ([]repository.Course, error)
 			}
 		})
 		// debug用
-		//fmt.Println()
+		// fmt.Println()
 	})
 	return courses, nil
 }
@@ -404,7 +404,7 @@ func ParseDataSore(table *[]byte, year, term string) ([]repository.CourseGrades,
 				courseGrade.CourseGrade = grade
 			}
 
-			//学分
+			// 学分
 			if tdIndex == 7 {
 				credit, err := strconv.ParseFloat(text, 64)
 				if err != nil {

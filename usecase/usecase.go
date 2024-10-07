@@ -1,12 +1,13 @@
 package usecase
 
 import (
-	"eduData/repository"
-	"eduData/school"
 	"fmt"
 	"net/http/cookiejar"
 	"strconv"
 	"time"
+
+	"eduData/repository"
+	"eduData/school"
 
 	"github.com/patrickmn/go-cache"
 	"github.com/sirupsen/logrus"

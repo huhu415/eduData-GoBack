@@ -2,22 +2,21 @@ package neauUg
 
 import (
 	"bytes"
+	"crypto/aes"
+	"crypto/cipher"
+	"encoding/base64"
 	"errors"
 	"io"
 	"math/rand"
 	"net/http"
+	"net/http/cookiejar"
 	"net/url"
 	"strings"
 	"time"
 
-	"crypto/aes"
-	"crypto/cipher"
-	"encoding/base64"
-	"net/http/cookiejar"
+	"eduData/bootstrap"
 
 	"github.com/PuerkitoBio/goquery"
-
-	"eduData/bootstrap"
 )
 
 // encryptPassword 加密密码
@@ -78,7 +77,7 @@ func Signin(username, password string) (*cookiejar.Jar, error) {
 		return nil, err
 	}
 
-	//新建一个客户端
+	// 新建一个客户端
 	client := &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			// 允许重定向

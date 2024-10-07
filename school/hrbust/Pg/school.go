@@ -1,11 +1,12 @@
 package hrbustPg
 
 import (
+	"errors"
+	"net/http/cookiejar"
+
 	"eduData/repository"
 	"eduData/school"
 	"eduData/school/pub"
-	"errors"
-	"net/http/cookiejar"
 )
 
 const LEFTCORUSEALL = "Course/StuCourseQuery.aspx?EID=pLiWBm!3y8J!emOuKhzHa3uED3OEJzAvyCpKfhbkdg9RKe9VDAjrUw==&UID="
@@ -34,15 +35,19 @@ func (h *HrbustPg) SetCookie(c *cookiejar.Jar) {
 func (h *HrbustPg) Cookie() *cookiejar.Jar {
 	return h.cookie
 }
+
 func (h *HrbustPg) SchoolName() pub.SchoolName {
 	return pub.HRBUST
 }
+
 func (h *HrbustPg) StuType() pub.StuType {
 	return pub.PG
 }
+
 func (h *HrbustPg) StuID() string {
 	return h.stuID
 }
+
 func (h *HrbustPg) PassWd() string {
 	return h.passWd
 }

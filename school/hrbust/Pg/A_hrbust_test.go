@@ -13,13 +13,13 @@ const (
 	PASSWORD string = ""
 
 	// 研究生不同的登陆页面
-	//登陆后成功后跳转的页面
+	// 登陆后成功后跳转的页面
 	DEFAULT string = "Default.aspx?UID="
-	//左边菜单
+	// 左边菜单
 	LEFTMENU string = "leftmenu.aspx?UID="
-	//学期课表
+	// 学期课表
 	LEFTTERM string = "Course/StuCourseQuery.aspx?EID=pLiWBm!3y8J!emOuKhzHa3uED3OEJzAvyCpKfhbkdg9RKe9VDAjrUw==&UID="
-	//某一周课表
+	// 某一周课表
 	LEFETTHISWEEK string = "Course/StuCourseWeekQuery.aspx?EID=vB5Ke2TxFzG4yVM8zgJqaQowdgBb6XLK0loEdeh1pyPrNQM0n6oBLQ==&UID="
 )
 

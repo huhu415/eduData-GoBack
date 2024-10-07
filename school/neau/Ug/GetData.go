@@ -1,17 +1,18 @@
 package neauUg
 
 import (
-	"eduData/bootstrap"
 	"io"
 	"net/http"
 	"net/http/cookiejar"
+
+	"eduData/bootstrap"
 )
 
 // GetData 获取课表json
 // 2023-2024-2-1(23-24学年第二学期)
 // 2024-2025-1-1(24-25学年第一学期)
 func GetData(cookieJar *cookiejar.Jar, data string) (*[]byte, error) {
-	//新建一个客户端, 运行重定向, 设置cookie
+	// 新建一个客户端, 运行重定向, 设置cookie
 	client := &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			// 允许重定向

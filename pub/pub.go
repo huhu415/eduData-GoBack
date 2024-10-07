@@ -1,14 +1,15 @@
 package pub
 
 import (
+	"errors"
+	"fmt"
+
 	"eduData/domain"
 	"eduData/repository"
 	"eduData/school"
 	hljuUg "eduData/school/hlju/Ug"
 	hrbustUg "eduData/school/hrbust/Ug"
 	neauUg "eduData/school/neau/Ug"
-	"errors"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"

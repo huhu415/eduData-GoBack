@@ -1,16 +1,16 @@
 package middleware
 
 import (
-	"eduData/school"
 	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
-
 	"eduData/domain"
 	"eduData/pub"
+	"eduData/school"
+
+	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 // Logger 日志中间件

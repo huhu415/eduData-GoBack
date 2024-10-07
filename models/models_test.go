@@ -1,9 +1,10 @@
 package models
 
 import (
+	"testing"
+
 	"eduData/bootstrap"
 	"eduData/repository"
-	"testing"
 
 	"github.com/stretchr/testify/assert"
 )

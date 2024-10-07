@@ -5,11 +5,10 @@ package identimage
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
-
-	"encoding/json"
 	"net/http"
 
 	"eduData/bootstrap"
@@ -33,7 +32,7 @@ func (j *JfbymOcr) Identify(image *string) (string, error) {
 	CustomUrl := bootstrap.C.JfymRequestUrl
 	Token := bootstrap.C.JfymToken
 
-	//通用数英1~6位plus 10103
+	// 通用数英1~6位plus 10103
 	config := map[string]any{}
 	config["image"] = *image
 	config["type"] = "10103"

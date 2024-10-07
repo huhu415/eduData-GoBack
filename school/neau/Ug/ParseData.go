@@ -1,12 +1,11 @@
 package neauUg
 
 import (
-	"eduData/school/pub"
+	"encoding/json"
 	"strings"
 
-	"encoding/json"
-
 	"eduData/repository"
+	"eduData/school/pub"
 )
 
 type TimeAndPlace struct {
@@ -133,7 +132,6 @@ func ParseData(jsonInfo *[]byte) ([]repository.Course, error) {
 						course.Week = i
 						courses = append(courses, course)
 					}
-
 				}
 			}
 		}

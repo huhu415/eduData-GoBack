@@ -2,13 +2,14 @@ package hljuUg
 
 import (
 	"bytes"
-	"eduData/repository"
-	"eduData/school/pub"
 	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"eduData/repository"
+	"eduData/school/pub"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/sirupsen/logrus"
@@ -44,7 +45,7 @@ func ParseData(data *[]byte) ([]repository.Course, error) {
 		return nil, err
 	}
 
-	//判断是否能找到课程信息
+	// 判断是否能找到课程信息
 	if doc.Find("table.ui_table").Length() == 0 {
 		return nil, errors.New("not find table.ui_table")
 	}
@@ -131,7 +132,7 @@ func ParseData(data *[]byte) ([]repository.Course, error) {
 					}
 				}
 			case 6:
-				//地点
+				// 地点
 				rawHTML, err := sm.Find("span").Html()
 				if err != nil {
 					logrus.Error(err)
@@ -152,7 +153,7 @@ func ParseData(data *[]byte) ([]repository.Course, error) {
 					}
 				}
 			case 7:
-				//老师
+				// 老师
 				class.teacher = sm.Text()
 			case 8:
 				// 校本部
@@ -197,7 +198,6 @@ func ParseData(data *[]byte) ([]repository.Course, error) {
 				}
 			}
 		}
-
 	})
 	// for _, c := range courses {
 	// 	fmt.Printf("%+v\n\n", c)

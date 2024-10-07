@@ -43,9 +43,9 @@ func ExtractWeekRange(text string) (startWeek, endWeek, evenOrOdd int, err error
 			err = fmt.Errorf("形式 第x周 无法解析起始周: %v", err)
 			return
 		}
-		//如果是这种形式, 那么起始周与结束周都是这个数字
+		// 如果是这种形式, 那么起始周与结束周都是这个数字
 		startWeek, endWeek = atoi, atoi
-		//fmt.Println("起始周-结束周", startWeek, "-", endWeek)
+		// fmt.Println("起始周-结束周", startWeek, "-", endWeek)
 	} else {
 		// 匹配形式 : 1-15周 或 1-15单周
 		matchWeekRange := regexp.MustCompile(`(\d+)-(\d+)`).FindStringSubmatch(text)
@@ -72,7 +72,7 @@ func ExtractWeekRange(text string) (startWeek, endWeek, evenOrOdd int, err error
 		case strings.Contains(text, "双"):
 			evenOrOdd = 0
 		}
-		//fmt.Println("起始周-结束周", startWeek, "-", endWeek)
+		// fmt.Println("起始周-结束周", startWeek, "-", endWeek)
 	}
 	return
 }

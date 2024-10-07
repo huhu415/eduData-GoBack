@@ -4,33 +4,32 @@ import (
 	"fmt"
 	"io"
 	"math/rand"
+	"net/http"
+	"net/http/cookiejar"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
 
-	"net/http"
-	"net/http/cookiejar"
-	"net/url"
+	"eduData/bootstrap"
 
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
-
-	"eduData/bootstrap"
 )
 
 // GetData 获取原始的各种侧边栏内容, moduleId=2020是成绩查询, 2000是本学期课表, 但2020的成绩页面是空的, 没有成绩, 只有查询按钮
 func GetData(cookieJar *cookiejar.Jar, moduleId string) (*[]byte, error) {
 	// 从setting中获取UserAgent
-	var userAgent = bootstrap.C.UserAgent
+	userAgent := bootstrap.C.UserAgent
 
-	//新建一个客户端
+	// 新建一个客户端
 	client := &http.Client{
 		Jar: cookieJar,
 	}
 	defer client.CloseIdleConnections()
 
-	//http://jwzx.hrbust.edu.cn/academic/accessModule.do?moduleId=2000&groupId=&randomString=20240221153427x91KU5
-	//http://jwzx.hrbust.edu.cn/academic/accessModule.do?moduleId=2020&groupId=&randomString=20240304095909VGZjoo
+	// http://jwzx.hrbust.edu.cn/academic/accessModule.do?moduleId=2000&groupId=&randomString=20240221153427x91KU5
+	// http://jwzx.hrbust.edu.cn/academic/accessModule.do?moduleId=2020&groupId=&randomString=20240304095909VGZjoo
 	// 第三次请求, 请求课表
 	newQuery := url.Values{}
 	newQuery.Set("moduleId", moduleId)
@@ -44,7 +43,7 @@ func GetData(cookieJar *cookiejar.Jar, moduleId string) (*[]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	//发送请求, 并接收响应, 同时defer关闭响应体
+	// 发送请求, 并接收响应, 同时defer关闭响应体
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
 		if err != nil {
@@ -74,16 +73,16 @@ func GetData(cookieJar *cookiejar.Jar, moduleId string) (*[]byte, error) {
 // term: 1是春, 2是秋. 例如: 要获取24年9月的课程, 就是44,2
 func GetCourseByTime(cookieJar *cookiejar.Jar, year, term string) (*[]byte, error) {
 	// 从setting中获取UserAgent
-	var userAgent = bootstrap.C.UserAgent
+	userAgent := bootstrap.C.UserAgent
 
-	//新建一个客户端
+	// 新建一个客户端
 	client := &http.Client{
 		Jar: cookieJar,
 	}
 	defer client.CloseIdleConnections()
 
-	//http://jwzx.hrbust.edu.cn/academic/accessModule.do?moduleId=2000&groupId=&randomString=20240221153427x91KU5
-	//http://jwzx.hrbust.edu.cn/academic/accessModule.do?moduleId=2020&groupId=&randomString=20240304095909VGZjoo
+	// http://jwzx.hrbust.edu.cn/academic/accessModule.do?moduleId=2000&groupId=&randomString=20240221153427x91KU5
+	// http://jwzx.hrbust.edu.cn/academic/accessModule.do?moduleId=2020&groupId=&randomString=20240304095909VGZjoo
 	// 第三次请求, 请求课表
 	newQuery := url.Values{}
 	newQuery.Set("year", year)
@@ -97,7 +96,7 @@ func GetCourseByTime(cookieJar *cookiejar.Jar, year, term string) (*[]byte, erro
 	if err != nil {
 		return nil, err
 	}
-	//发送请求, 并接收响应, 同时defer关闭响应体
+	// 发送请求, 并接收响应, 同时defer关闭响应体
 	defer resp.Body.Close()
 
 	// 读取课表
@@ -123,7 +122,7 @@ func GetCourseByTime(cookieJar *cookiejar.Jar, year, term string) (*[]byte, erro
 // GetDataScore 获取原始的本学期html成绩表(个人成绩查询), year, term为当前年和学期, 要自己去html中查看
 // term: 1是春, 2是秋
 func GetDataScore(cookieJar *cookiejar.Jar, year, term string) (*[]byte, error) {
-	//新建一个客户端
+	// 新建一个客户端
 	client := &http.Client{
 		Jar: cookieJar,
 	}
@@ -141,7 +140,7 @@ func GetDataScore(cookieJar *cookiejar.Jar, year, term string) (*[]byte, error) 
 	values.Set("para", "0")
 	values.Set("submit", "查询")
 
-	//新建一个客户端请求
+	// 新建一个客户端请求
 	req, err := http.NewRequest(http.MethodPost, "http://jwzx.hrbust.edu.cn/academic/manager/score/studentOwnScore.do?"+newQuery.Encode(), strings.NewReader(values.Encode()))
 	if err != nil {
 		return nil, err
@@ -153,7 +152,7 @@ func GetDataScore(cookieJar *cookiejar.Jar, year, term string) (*[]byte, error) 
 	if err != nil {
 		return nil, err
 	}
-	//发送请求, 并接收响应, 同时defer关闭响应体
+	// 发送请求, 并接收响应, 同时defer关闭响应体
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
 		if err != nil {

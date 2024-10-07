@@ -12,15 +12,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/spf13/viper"
-
-	"gorm.io/gorm"
+	"eduData/api/middleware"
+	"eduData/bootstrap"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-
-	"eduData/api/middleware"
-	"eduData/bootstrap"
+	"github.com/spf13/viper"
+	"gorm.io/gorm"
 )
 
 func SetupAndRun(db *gorm.DB) {
@@ -32,7 +30,7 @@ func SetupAndRun(db *gorm.DB) {
 
 	// 日志记录
 	gin.ForceConsoleColor()
-	f, err := os.OpenFile("eduData.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	f, err := os.OpenFile("eduData.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0o644)
 	if err != nil {
 		log.Fatal(err)
 	}

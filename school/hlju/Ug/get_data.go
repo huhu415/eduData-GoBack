@@ -1,16 +1,17 @@
 package hljuUg
 
 import (
-	"eduData/bootstrap"
 	"io"
 	"net/http"
 	"net/http/cookiejar"
+
+	"eduData/bootstrap"
 )
 
 func GetData(cookie *cookiejar.Jar) (*[]byte, error) {
-	var userAgent = bootstrap.C.UserAgent
+	userAgent := bootstrap.C.UserAgent
 
-	//新建一个客户端
+	// 新建一个客户端
 	client := &http.Client{
 		Jar: cookie,
 	}

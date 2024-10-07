@@ -4,9 +4,8 @@ package hrbustPg
 import (
 	"fmt"
 	"io"
-	"net/http/cookiejar"
-
 	"net/http"
+	"net/http/cookiejar"
 
 	"eduData/bootstrap"
 )
@@ -21,15 +20,15 @@ const (
 // CookieAppend = DropDownListWeeks=DropDownListWeeks=13*/
 func GetData(cookie *cookiejar.Jar, username, LeftChidUrl string, CookieAppend ...any) (*[]byte, error) {
 	// 从setting中获取UserAgent
-	var userAgent = bootstrap.C.UserAgent
+	userAgent := bootstrap.C.UserAgent
 
-	//解析参数
+	// 解析参数
 	var CookieAppendRes string
 	for _, v := range CookieAppend {
 		CookieAppendRes += "; " + v.(string)
 	}
 
-	//新建一个客户端
+	// 新建一个客户端
 	client := &http.Client{
 		Jar: cookie,
 	}
@@ -39,7 +38,7 @@ func GetData(cookie *cookiejar.Jar, username, LeftChidUrl string, CookieAppend .
 		return nil, err
 	}
 	// 注释取消就可以获取某一周课表, 但cookie要是string的
-	//req.Header.Add("cookie", cookie+"; LoginType=LoginType=1"+CookieAppendRes)
+	// req.Header.Add("cookie", cookie+"; LoginType=LoginType=1"+CookieAppendRes)
 	req.Header.Add("Host", HOST)
 	req.Header.Add("Connection", "keep-alive")
 	req.Header.Add("Referer", HTTPHOST)
@@ -54,13 +53,13 @@ func GetData(cookie *cookiejar.Jar, username, LeftChidUrl string, CookieAppend .
 			fmt.Println(err)
 		}
 	}(resp.Body)
-	//发送请求, 并接收响应, 同时defer关闭响应体
+	// 发送请求, 并接收响应, 同时defer关闭响应体
 
 	readAllBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
-	//fmt.Println(string(readAllBody))
+	// fmt.Println(string(readAllBody))
 
 	return &readAllBody, nil
 }

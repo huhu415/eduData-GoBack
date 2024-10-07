@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
-
 	"eduData/bootstrap"
 	"eduData/domain"
 	"eduData/pub"
+
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type JWT struct {
@@ -45,7 +45,7 @@ func RequireAuthJwt() gin.HandlerFunc {
 			return
 		}
 
-		//找到Authorization
+		// 找到Authorization
 		tokenString, err := c.Cookie("authentication")
 		if err != nil {
 			le.WithError(err).Error("jwt: missing Authorization cookie")
@@ -56,7 +56,7 @@ func RequireAuthJwt() gin.HandlerFunc {
 			return
 		}
 
-		//验证Authorization token
+		// 验证Authorization token
 		j := NewJWT()
 		if token, err := j.ParseToken(tokenString); err == nil &&
 			token.Valid &&
