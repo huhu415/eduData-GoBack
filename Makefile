@@ -30,4 +30,8 @@ debug:
 	@brew services start postgresql@17
 	@CompileDaemon -build="make build" -command="./eduData --debug"
 
-.PHONY: build cbuild
+check:
+	gofumpt -l -w .
+	golangci-lint run
+
+.PHONY: build cbuild check

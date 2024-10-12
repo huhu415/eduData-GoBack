@@ -14,20 +14,20 @@ import (
 )
 
 type Usecase struct {
-	Repository *repository.Repository
-	Cache      *cache.Cache
+	repository *repository.Repository
+	cache      *cache.Cache
 }
 
 func NewUsecase(r *repository.Repository) *Usecase {
 	return &Usecase{
-		Repository: r,
-		Cache:      cache.New(10*time.Minute, 15*time.Minute),
+		repository: r,
+		cache:      cache.New(10*time.Minute, 15*time.Minute),
 	}
 }
 
 func (u *Usecase) GetAndUpdataCache(s school.School) error {
 	stuInfo := fmt.Sprintf("%s-%d-%s", s.SchoolName(), s.StuType(), s.StuID())
-	cookie, ok := u.Cache.Get(stuInfo)
+	cookie, ok := u.cache.Get(stuInfo)
 	if ok {
 		logrus.Debugf("从缓存中获取到cookie, syuInfo:%s", stuInfo)
 		s.SetCookie(cookie.(*cookiejar.Jar))
@@ -35,14 +35,14 @@ func (u *Usecase) GetAndUpdataCache(s school.School) error {
 		if err := s.Signin(); err != nil {
 			return err
 		}
-		u.Cache.Set(stuInfo, s.Cookie(), cache.DefaultExpiration)
+		u.cache.Set(stuInfo, s.Cookie(), cache.DefaultExpiration)
 	}
 	return nil
 }
 
 func (u *Usecase) CleanCache(s school.School) {
 	stuInfo := fmt.Sprintf("%s-%d-%s", s.SchoolName(), s.StuType(), s.StuID())
-	u.Cache.Delete(stuInfo)
+	u.cache.Delete(stuInfo)
 }
 
 func (u *Usecase) SigninAndSetCache(s school.School) error {
@@ -50,7 +50,7 @@ func (u *Usecase) SigninAndSetCache(s school.School) error {
 		return err
 	}
 	stuInfo := fmt.Sprintf("%s-%d-%s", s.SchoolName(), s.StuType(), s.StuID())
-	u.Cache.Set(stuInfo, s.Cookie(), cache.DefaultExpiration)
+	u.cache.Set(stuInfo, s.Cookie(), cache.DefaultExpiration)
 	return nil
 }
 
@@ -60,7 +60,7 @@ func (u *Usecase) DeleteAndCreateCourse(Course []repository.Course, school schoo
 		Course[i].School = school.SchoolName()
 		Course[i].StuType = school.StuType()
 	}
-	return u.Repository.DeleteAndCreateCourse(Course)
+	return u.repository.DeleteAndCreateCourse(Course)
 }
 
 func (u *Usecase) DeleteAndCreateGrade(CourseGrades []repository.CourseGrades, school school.School) error {
@@ -69,7 +69,7 @@ func (u *Usecase) DeleteAndCreateGrade(CourseGrades []repository.CourseGrades, s
 		CourseGrades[i].School = school.SchoolName()
 		CourseGrades[i].StuType = school.StuType()
 	}
-	return u.Repository.DeleteAndAddCourseGrades(CourseGrades)
+	return u.repository.DeleteAndAddCourseGrades(CourseGrades)
 }
 
 func (u *Usecase) GetCourseByWeek(school school.School, week string) ([]repository.Course, error) {
@@ -79,17 +79,17 @@ func (u *Usecase) GetCourseByWeek(school school.School, week string) ([]reposito
 	} else if !(weekInt >= 0 && weekInt <= 30) {
 		return nil, fmt.Errorf("周数必须在0-30之间")
 	}
-	return u.Repository.CourseByWeekUsername(school.StuID(), school.SchoolName(), weekInt)
+	return u.repository.CourseByWeekUsername(school.StuID(), school.SchoolName(), weekInt)
 }
 
 func (u *Usecase) GetGrade(school school.School) ([]repository.CourseGrades, []repository.CourseGrades, float64, float64) {
-	courseGrades, courseGradesPrompt := u.Repository.CourseGradesByUsername(school.StuID(), school.StuType(), school.SchoolName())
-	WeightedAverage, AcademicCredits := u.Repository.WeightedAverage(school.StuID(), school.SchoolName(), school.StuType())
+	courseGrades, courseGradesPrompt := u.repository.CourseGradesByUsername(school.StuID(), school.StuType(), school.SchoolName())
+	WeightedAverage, AcademicCredits := u.repository.WeightedAverage(school.StuID(), school.SchoolName(), school.StuType())
 	return courseGrades, courseGradesPrompt, WeightedAverage, AcademicCredits
 }
 
 func (u *Usecase) GetTimeTable(school school.School) ([]repository.TimeTable, error) {
-	return u.Repository.GetTimeTable(school.SchoolName())
+	return u.repository.GetTimeTable(school.SchoolName())
 }
 
 func (u *Usecase) AddCourse(Course []repository.Course, school school.School) error {
@@ -98,5 +98,5 @@ func (u *Usecase) AddCourse(Course []repository.Course, school school.School) er
 		Course[index].School = school.SchoolName()
 		Course[index].StuType = school.StuType()
 	}
-	return u.Repository.AddCourse(Course)
+	return u.repository.AddCourse(Course)
 }

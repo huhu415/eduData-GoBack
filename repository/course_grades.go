@@ -22,6 +22,9 @@ type CourseGrades struct {
 
 // 利用事务, 删除并更新学生成绩
 func (r *Repository) DeleteAndAddCourseGrades(courseGrades []CourseGrades) error {
+	if len(courseGrades) == 0 {
+		return nil
+	}
 	return r.database.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Where("stu_id = ? AND school = ?", courseGrades[0].StuID, courseGrades[0].School).
 			Delete(&CourseGrades{}).Error; err != nil {

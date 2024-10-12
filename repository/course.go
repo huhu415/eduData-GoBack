@@ -40,6 +40,9 @@ func (r *Repository) CourseByWeekUsername(username string, school pub.SchoolName
 
 // 利用事务删除用户的所有课程, 并且添加新的课程
 func (r *Repository) DeleteAndCreateCourse(course []Course) error {
+	if len(course) == 0 {
+		return nil
+	}
 	return r.database.Transaction(func(tx *gorm.DB) error {
 		if err := tx.
 			Where("stu_id = ? AND school = ?", course[0].StuID, course[0].School).
