@@ -54,7 +54,7 @@ func (lc *SigninController) LogIn(c *gin.Context) {
 	}
 
 	// 返回给前端结果
-	c.SetCookie("authentication", tokenString, 3600*24*30, "", "", false, true)
+	c.SetCookie("authentication", tokenString, 3600*24*30, "/", "", false, true)
 	c.JSON(http.StatusOK, domain.Response{
 		Status: domain.SUCCESS,
 		Msg:    "登陆成功",

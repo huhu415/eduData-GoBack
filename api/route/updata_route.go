@@ -20,6 +20,7 @@ func NewUpDataRouter(db *gorm.DB, group *gin.RouterGroup) {
 	group.POST("/signin", lc.LogIn)
 
 	// 需要认证的路由组
+	// authGroup := group.Use()
 	authGroup := group.Use(middleware.RequireAuthJwt())
 	{
 		// 课程相关路由
