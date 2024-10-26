@@ -33,6 +33,7 @@ type Config struct {
 	JwtKey     string `mapstructure:"jwt_key"`
 	ListenPort string `mapstructure:"listen_port"`
 	UserAgent  string `mapstructure:"user_agent"`
+	GrpcAddr   string `mapstructure:"grpc_address"`
 }
 
 var C Config

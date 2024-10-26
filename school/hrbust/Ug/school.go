@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"eduData/bootstrap"
 	pb "eduData/grpc"
 	"eduData/repository"
 	school "eduData/school"
@@ -75,7 +76,7 @@ func (h *HrbustUg) Cookie() *cookiejar.Jar {
 }
 
 func (h *HrbustUg) Signin() error {
-	conn, err := grpc.NewClient("localhost:50055", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(bootstrap.C.GrpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -106,7 +107,7 @@ func (h *HrbustUg) Signin() error {
 func (h *HrbustUg) GetCourse() ([]repository.Course, error) {
 	y, t := h.getYearTerm()
 
-	conn, err := grpc.NewClient("localhost:50055", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(bootstrap.C.GrpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
