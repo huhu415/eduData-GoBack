@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+option go_package = "/Users/hello/Projects/eduData-GoBack/school/hrbust/Ug/grpc";
+
+package grpc;
+
+// 定义 AuthService 服务
+service AuthService {
+  rpc Signin(SigninRequest) returns (SigninResponse);
+  rpc GetData(GetDataRequest) returns (GetDataResponse);
+}
+
+// Signin 请求消息
+message SigninRequest {
+  string username = 1;
+  string password = 2;
+}
+
+// Signin 响应消息
+message SigninResponse {
+  bytes cookie_jar = 1;
+  string error_message = 2;
+  bool success = 3;
+}
+
+// GetData 请求消息
+message GetDataRequest {
+  bytes cookie_jar = 1;  // 可以用序列化后的字符串表示
+  string module_id = 2;
+}
+
+// GetData 响应消息
+message GetDataResponse {
+  bytes data = 1;
+  string error_message = 2;
+  bool success = 3;
+}
