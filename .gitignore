@@ -18,3 +18,5 @@ config.yaml
 docker-compose.yml
 eduData
 eduData.log
+grpc_server
+grpc_client
