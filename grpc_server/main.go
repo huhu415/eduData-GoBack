@@ -5,8 +5,11 @@ import (
 	"log"
 	"net"
 
+	"eduData/bootstrap"
 	pb "eduData/grpc"
+	hrbustUg "eduData/school/hrbust/Ug"
 
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
 
@@ -17,10 +20,28 @@ type server struct {
 
 // Signin 实现
 func (s *server) Signin(ctx context.Context, req *pb.SigninRequest) (*pb.SigninResponse, error) {
-	// 在这里实现您的登录逻辑
-	// 这是一个示例响应
+	logrus.Debugf("Signin request: %v", req)
+
+	cookiej, err := hrbustUg.Signin(req.Username, req.Password)
+	if err != nil {
+		return &pb.SigninResponse{
+			CookieJar:    []byte(""),
+			ErrorMessage: err.Error(),
+			Success:      false,
+		}, nil
+	}
+
+	scj, err := pb.SerializeCookieJar(cookiej)
+	if err != nil {
+		return &pb.SigninResponse{
+			CookieJar:    []byte(""),
+			ErrorMessage: err.Error(),
+			Success:      false,
+		}, nil
+	}
+
 	return &pb.SigninResponse{
-		CookieJar:    []byte("example_cookie"),
+		CookieJar:    scj,
 		ErrorMessage: "",
 		Success:      true,
 	}, nil
@@ -28,16 +49,36 @@ func (s *server) Signin(ctx context.Context, req *pb.SigninRequest) (*pb.SigninR
 
 // GetData 实现
 func (s *server) GetData(ctx context.Context, req *pb.GetDataRequest) (*pb.GetDataResponse, error) {
-	// 在这里实现您的获取数据逻辑
-	// 这是一个示例响应
+	logrus.Debugf("GetData request: %v", req)
+
+	cookiej, err := pb.DeserializeCookieJar(req.CookieJar)
+	if err != nil {
+		return &pb.GetDataResponse{
+			Data:         []byte(""),
+			ErrorMessage: err.Error(),
+			Success:      false,
+		}, nil
+	}
+
+	cData, err := hrbustUg.GetCourseByTime(cookiej, req.Year, req.Term)
+	if err != nil {
+		return &pb.GetDataResponse{
+			Data:         []byte(""),
+			ErrorMessage: err.Error(),
+			Success:      false,
+		}, nil
+	}
+
 	return &pb.GetDataResponse{
-		Data:         []byte("example_data"),
+		Data:         *cData,
 		ErrorMessage: "",
 		Success:      true,
 	}, nil
 }
 
 func main() {
+	bootstrap.Loadconfig()
+	logrus.SetLevel(logrus.DebugLevel)
 	lis, err := net.Listen("tcp", ":50055")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)

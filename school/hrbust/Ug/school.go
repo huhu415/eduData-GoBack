@@ -3,17 +3,21 @@ package hrbustUg
 import (
 	"context"
 	"errors"
+	"log"
 	"net/http/cookiejar"
 	"strconv"
 	"sync"
 	"time"
 
+	pb "eduData/grpc"
 	"eduData/repository"
 	school "eduData/school"
 	"eduData/school/pub"
 
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func (h *HrbustUg) getYearTerm() (year, term string) {
@@ -71,22 +75,62 @@ func (h *HrbustUg) Cookie() *cookiejar.Jar {
 }
 
 func (h *HrbustUg) Signin() error {
-	c, err := Signin(h.stuID, h.passWd)
+	conn, err := grpc.NewClient("localhost:50055", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+
+	pc := pb.NewAuthServiceClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	c, err := pc.Signin(ctx, &pb.SigninRequest{Username: h.stuID, Password: h.passWd})
 	if err != nil {
 		return err
 	}
-	h.cookie = c
+	if !c.Success {
+		return errors.New(c.ErrorMessage)
+	}
+
+	logrus.Debugf("Signin rpc response: %v", c)
+	cookiejar, err := pb.DeserializeCookieJar(c.CookieJar)
+	if err != nil {
+		return err
+	}
+	h.cookie = cookiejar
 	return nil
 }
 
 func (h *HrbustUg) GetCourse() ([]repository.Course, error) {
 	y, t := h.getYearTerm()
-	b, err := GetCourseByTime(h.cookie, y, t)
+
+	conn, err := grpc.NewClient("localhost:50055", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+
+	pc := pb.NewAuthServiceClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	scj, err := pb.SerializeCookieJar(h.cookie)
 	if err != nil {
 		return nil, err
 	}
 
-	return ParseDataCrouseAll(b)
+	rpcStr, err := pc.GetData(ctx, &pb.GetDataRequest{CookieJar: scj, Year: y, Term: t})
+	if err != nil {
+		return nil, err
+	}
+	if !rpcStr.Success {
+		return nil, errors.New(rpcStr.ErrorMessage)
+	}
+
+	return ParseDataCrouseAll(&rpcStr.Data)
 }
 
 // YearSemester 年与学期的结构体

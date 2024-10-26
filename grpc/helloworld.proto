@@ -26,7 +26,8 @@ message SigninResponse {
 // GetData 请求消息
 message GetDataRequest {
   bytes cookie_jar = 1;  // 可以用序列化后的字符串表示
-  string module_id = 2;
+  string year = 2;
+  string term = 3;
 }
 
 // GetData 响应消息

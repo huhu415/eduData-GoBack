@@ -2,37 +2,44 @@ package main
 
 import (
 	"context"
-	"log"
 	"time"
 
-	pb "eduData/grpc" // 替换为生成的 pb.go 和 _grpc.pb.go 文件的实际路径
+	"eduData/bootstrap"
+	pb "eduData/grpc"
 
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
 
 func main() {
+	bootstrap.Loadconfig()
+
+	logrus.SetLevel(logrus.DebugLevel)
 	conn, err := grpc.Dial("localhost:50055", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		logrus.Errorf("did not connect: %v", err)
 	}
 	defer conn.Close()
 
 	c := pb.NewAuthServiceClient(conn)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	// 调用 Signin 方法
-	signinResp, err := c.Signin(ctx, &pb.SigninRequest{Username: "test", Password: "password"})
+	signinResp, err := c.Signin(ctx, &pb.SigninRequest{Username: "2204010417", Password: "13737826060a@Hlg10214"})
 	if err != nil {
-		log.Fatalf("could not signin: %v", err)
+		logrus.Errorf("could not signin: %v", err)
 	}
-	log.Printf("Signin response: %v", signinResp)
+	if !signinResp.Success {
+		logrus.Errorf("could not signin: %v", signinResp.ErrorMessage)
+	}
+	logrus.Debugf("Signin response: %v", signinResp)
 
 	// 调用 GetData 方法
-	getDataResp, err := c.GetData(ctx, &pb.GetDataRequest{CookieJar: signinResp.CookieJar, ModuleId: "module1"})
+	getDataResp, err := c.GetData(ctx, &pb.GetDataRequest{CookieJar: signinResp.CookieJar, Year: "44", Term: "2"})
 	if err != nil {
-		log.Fatalf("could not get data: %v", err)
+		logrus.Errorf("could not get data: %v", err)
 	}
-	log.Printf("GetData response: %v", getDataResp)
+	logrus.Debugf("GetData response: %v", getDataResp)
 }
