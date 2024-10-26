@@ -9,13 +9,14 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
 	bootstrap.Loadconfig()
 
 	logrus.SetLevel(logrus.DebugLevel)
-	conn, err := grpc.Dial("localhost:50055", grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.NewClient("localhost:50055", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		logrus.Errorf("did not connect: %v", err)
 	}

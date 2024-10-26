@@ -21,7 +21,6 @@ type server struct {
 // Signin 实现
 func (s *server) Signin(ctx context.Context, req *pb.SigninRequest) (*pb.SigninResponse, error) {
 	logrus.Debugf("Signin request: %v", req)
-
 	cookiej, err := hrbustUg.Signin(req.Username, req.Password)
 	if err != nil {
 		return &pb.SigninResponse{

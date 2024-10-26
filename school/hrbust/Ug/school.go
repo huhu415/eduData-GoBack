@@ -83,7 +83,7 @@ func (h *HrbustUg) Signin() error {
 
 	pc := pb.NewAuthServiceClient(conn)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
 	c, err := pc.Signin(ctx, &pb.SigninRequest{Username: h.stuID, Password: h.passWd})
@@ -114,7 +114,7 @@ func (h *HrbustUg) GetCourse() ([]repository.Course, error) {
 
 	pc := pb.NewAuthServiceClient(conn)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
 	scj, err := pb.SerializeCookieJar(h.cookie)
