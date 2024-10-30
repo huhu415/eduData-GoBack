@@ -144,6 +144,22 @@ func (h *HrbustUg) GetGrade() ([]repository.CourseGrades, error) {
 	if h.cookie == nil {
 		return nil, errors.New("not found the cookie")
 	}
+
+	conn, err := grpc.NewClient(bootstrap.C.GrpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	pc := pb.NewAuthServiceClient(conn)
+
+	ctxRpc, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	scj, err := pb.SerializeCookieJar(h.cookie)
+	if err != nil {
+		return nil, err
+	}
+
 	// 3个协程获取成绩
 	var grade []repository.CourseGrades
 	ctx, cancel := context.WithCancel(context.Background())
@@ -155,10 +171,14 @@ func (h *HrbustUg) GetGrade() ([]repository.CourseGrades, error) {
 		errs.Go(func() error {
 			for data := range msg {
 				// 获取页面
-				ugHTML, errUg := GetDataScore(h.cookie, data.Year, data.Semester)
-				if errUg != nil {
-					return errUg
+				rpcStr, err := pc.GetGrades(ctxRpc, &pb.GetDataRequest{CookieJar: scj, Year: data.Year, Term: data.Semester})
+				if err != nil {
+					return err
 				}
+				if !rpcStr.Success {
+					return errors.New(rpcStr.ErrorMessage)
+				}
+				ugHTML := &rpcStr.Data
 
 				// 解析页面, 获得成绩
 				table, errUg := ParseDataSore(ugHTML, data.Year, data.Semester)

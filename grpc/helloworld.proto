@@ -8,6 +8,7 @@ package grpc;
 service AuthService {
   rpc Signin(SigninRequest) returns (SigninResponse);
   rpc GetData(GetDataRequest) returns (GetDataResponse);
+  rpc GetGrades(GetDataRequest) returns (GetDataResponse);
 }
 
 // Signin 请求消息

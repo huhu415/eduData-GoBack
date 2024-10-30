@@ -75,10 +75,39 @@ func (s *server) GetData(ctx context.Context, req *pb.GetDataRequest) (*pb.GetDa
 	}, nil
 }
 
+// GetGrades 实现
+func (s *server) GetGrades(ctx context.Context, req *pb.GetDataRequest) (*pb.GetDataResponse, error) {
+	logrus.Debugf("GetGrades request: %v", req)
+
+	cookiej, err := pb.DeserializeCookieJar(req.CookieJar)
+	if err != nil {
+		return &pb.GetDataResponse{
+			Data:         []byte(""),
+			ErrorMessage: err.Error(),
+			Success:      false,
+		}, nil
+	}
+
+	gData, err := hrbustUg.GetDataScore(cookiej, req.Year, req.Term)
+	if err != nil {
+		return &pb.GetDataResponse{
+			Data:         []byte(""),
+			ErrorMessage: err.Error(),
+			Success:      false,
+		}, nil
+	}
+
+	return &pb.GetDataResponse{
+		Data:         *gData,
+		ErrorMessage: "",
+		Success:      true,
+	}, nil
+}
+
 func main() {
 	bootstrap.Loadconfig()
-	logrus.SetLevel(logrus.DebugLevel)
-	lis, err := net.Listen("tcp", ":50055")
+
+	lis, err := net.Listen("tcp", bootstrap.C.GrpcAddr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

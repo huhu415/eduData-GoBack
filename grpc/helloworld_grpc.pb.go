@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthService_Signin_FullMethodName  = "/grpc.AuthService/Signin"
-	AuthService_GetData_FullMethodName = "/grpc.AuthService/GetData"
+	AuthService_Signin_FullMethodName    = "/grpc.AuthService/Signin"
+	AuthService_GetData_FullMethodName   = "/grpc.AuthService/GetData"
+	AuthService_GetGrades_FullMethodName = "/grpc.AuthService/GetGrades"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -31,6 +32,7 @@ const (
 type AuthServiceClient interface {
 	Signin(ctx context.Context, in *SigninRequest, opts ...grpc.CallOption) (*SigninResponse, error)
 	GetData(ctx context.Context, in *GetDataRequest, opts ...grpc.CallOption) (*GetDataResponse, error)
+	GetGrades(ctx context.Context, in *GetDataRequest, opts ...grpc.CallOption) (*GetDataResponse, error)
 }
 
 type authServiceClient struct {
@@ -61,6 +63,16 @@ func (c *authServiceClient) GetData(ctx context.Context, in *GetDataRequest, opt
 	return out, nil
 }
 
+func (c *authServiceClient) GetGrades(ctx context.Context, in *GetDataRequest, opts ...grpc.CallOption) (*GetDataResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetDataResponse)
+	err := c.cc.Invoke(ctx, AuthService_GetGrades_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
@@ -69,6 +81,7 @@ func (c *authServiceClient) GetData(ctx context.Context, in *GetDataRequest, opt
 type AuthServiceServer interface {
 	Signin(context.Context, *SigninRequest) (*SigninResponse, error)
 	GetData(context.Context, *GetDataRequest) (*GetDataResponse, error)
+	GetGrades(context.Context, *GetDataRequest) (*GetDataResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -84,6 +97,9 @@ func (UnimplementedAuthServiceServer) Signin(context.Context, *SigninRequest) (*
 }
 func (UnimplementedAuthServiceServer) GetData(context.Context, *GetDataRequest) (*GetDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetData not implemented")
+}
+func (UnimplementedAuthServiceServer) GetGrades(context.Context, *GetDataRequest) (*GetDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGrades not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
@@ -142,6 +158,24 @@ func _AuthService_GetData_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_GetGrades_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetGrades(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_GetGrades_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetGrades(ctx, req.(*GetDataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -156,6 +190,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetData",
 			Handler:    _AuthService_GetData_Handler,
+		},
+		{
+			MethodName: "GetGrades",
+			Handler:    _AuthService_GetGrades_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
