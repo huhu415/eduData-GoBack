@@ -77,7 +77,7 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 			}
 		} else {
 			result := strings.Split(information, "\n")
-			logrus.Debugf("result: %v, len: %d", result, len(result))
+			logrus.Debugf("result: %v, result.len(): %d", result, len(result))
 			switch len(result) {
 			case 4:
 				//[高级语言程序设计（C语言） [马慧] [5-15周][汇文楼-437] 第9-10节]
@@ -85,8 +85,33 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 				// 提取周次
 				startWeek, endWeek, _, err := pub.ExtractWeekRange(weeksAndlocation)
 				if err != nil {
-					logrus.Errorf("解析周次失败: %s", err)
-					return nil, err
+					logrus.Errorf("解析周次失败, result-%v: %s", result, err)
+					end := strings.Index(weeksAndlocation, "]")
+					re := regexp.MustCompile(`\d+`)
+					logrus.Debugf("weeksAndlocation[:end]: %s", weeksAndlocation[:end])
+					matches := re.FindAllString(weeksAndlocation[:end], -1)
+
+					switch len(matches) {
+					case 1:
+						num, err := strconv.Atoi(matches[0])
+						if err != nil {
+							return nil, err
+						}
+						startWeek, endWeek = num, num
+					case 2:
+						num, err := strconv.Atoi(matches[0])
+						if err != nil {
+							return nil, err
+						}
+						startWeek = num
+
+						num, err = strconv.Atoi(matches[1])
+						if err != nil {
+							return nil, err
+						}
+						endWeek = num
+					}
+
 				}
 
 				// 提取地点
