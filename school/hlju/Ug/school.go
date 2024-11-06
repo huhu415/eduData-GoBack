@@ -1,7 +1,6 @@
 package hljuUg
 
 import (
-	"errors"
 	"net/http/cookiejar"
 	"time"
 
@@ -74,7 +73,11 @@ func (h *HljuUg) GetCourse() ([]repository.Course, error) {
 }
 
 func (h *HljuUg) GetGrade() ([]repository.CourseGrades, error) {
-	return nil, errors.New("hljuUg.GetGrade() not implement")
+	s, err := GetScore(h.cookie)
+	if err != nil {
+		return nil, err
+	}
+	return ParseScore(s)
 }
 
 func (h *HljuUg) getYearTerm() (int, int) {
