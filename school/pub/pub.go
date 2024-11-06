@@ -77,6 +77,30 @@ func ExtractWeekRange(text string) (startWeek, endWeek, evenOrOdd int, err error
 	return
 }
 
+// 提取第几节课
+func ExtractCoruse(text string) (start, end int, err error) {
+	// 匹配形式 : 1-15周 或 1-15单周
+	matchWeekRange := regexp.MustCompile(`(\d+)-(\d+)`).FindStringSubmatch(text)
+	if len(matchWeekRange) == 0 {
+		err = errors.New("无法匹配周数范围, x-x")
+		return
+	}
+	// 第一个数
+	start, err = strconv.Atoi(matchWeekRange[1])
+	if err != nil {
+		err = fmt.Errorf("形式 x-x周 无法解析起始周: %v", err)
+		return
+	}
+	// 第二个数
+	end, err = strconv.Atoi(matchWeekRange[2])
+	if err != nil {
+		err = fmt.Errorf("形式 x-x周 无法解析结束周: %v", err)
+		return
+	}
+
+	return
+}
+
 // NewColorList 初始化颜色队列, 用于给课程上色, 一共19个, 应该用不完
 func NewColorList() *list.List {
 	queue := list.New()

@@ -16,7 +16,7 @@ RUN apk add --no-cache git make
 RUN make build
 
 # 第二阶段：运行阶段
-FROM dockerproxy.cn/alpine
+FROM alpine:latest
 
 # 设置时区
 ENV TZ=Asia/Shanghai
