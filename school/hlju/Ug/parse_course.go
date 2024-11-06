@@ -46,7 +46,6 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 	var resCoures []repository.Course
 	for _, schedule := range schedules {
 		information := schedule.SKSJ
-		var course repository.Course
 
 		if schedule.KEY == "bz" {
 			pattern := `(?P<CourseName>.+?) \[(?P<Weeks>\d+-\d+周)\] (?P<Teacher>\S+) 备注:(?P<Remark>.*)`
@@ -60,7 +59,7 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 					logrus.Errorf("解析周次失败: %s", err)
 					return nil, err
 				}
-				course = repository.Course{
+				course := repository.Course{
 					School:                "hlju",
 					CourseContent:         courseName,
 					TeacherName:           teacher,
@@ -78,6 +77,7 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 			}
 		} else {
 			result := strings.Split(information, "\n")
+			logrus.Debugf("result: %v, len: %d", result, len(result))
 			switch len(result) {
 			case 4:
 				//[高级语言程序设计（C语言） [马慧] [5-15周][汇文楼-437] 第9-10节]
@@ -135,7 +135,7 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 
 				color := queue.Remove(queue.Front()).(string)
 				for i := startWeek; i <= endWeek; i++ {
-					course = repository.Course{
+					course := repository.Course{
 						School:                "hlju",
 						CourseContent:         className,
 						TeacherName:           teacherName,
@@ -180,7 +180,7 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 					logrus.Debugf("jc 后面的数字是: %s, conv: %d\n", matchbigCourse[1], bigCourse*2-1)
 				}
 
-				course = repository.Course{
+				course := repository.Course{
 					School:                "hlju",
 					CourseContent:         name + content,
 					TeacherName:           date + time,
@@ -197,7 +197,6 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 				return nil, errors.New("不存在的课程长度")
 			}
 		}
-		logrus.Debug(course)
 	}
 
 	return resCoures, nil

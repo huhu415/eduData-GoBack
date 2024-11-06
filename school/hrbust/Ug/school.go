@@ -180,8 +180,12 @@ func (h *HrbustUg) GetGrade() ([]repository.CourseGrades, error) {
 				}
 				ugHTML := &rpcStr.Data
 
+				// 从43变成2023这种形式
+				y, _ := strconv.Atoi(data.Year)
+				y = y - 20 + 2000
+
 				// 解析页面, 获得成绩
-				table, errUg := ParseDataSore(ugHTML, data.Year, data.Semester)
+				table, errUg := ParseDataSore(ugHTML, strconv.Itoa(y), data.Semester)
 				if errUg != nil {
 					return errUg
 				}

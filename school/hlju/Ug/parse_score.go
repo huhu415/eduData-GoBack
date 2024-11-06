@@ -112,10 +112,6 @@ func ParseScore(b *[]byte) ([]repository.CourseGrades, error) {
 		lenXnxq := len(course.Xnxq)
 		// 2020-20211 我要分离出最后一位
 		yearNum, semesterNum := course.Xnxq[:lenXnxq-1], course.Xnxq[lenXnxq-1]
-		logrus.Debugf("%s, %s", yearNum, string(semesterNum))
-		logrus.Debug(course.Xnxq)
-		yearNum = strings.Split(yearNum, "-")[0]
-
 		courseType := strings.TrimSuffix(course.Kcxz, "课")
 
 		grade := repository.CourseGrades{
