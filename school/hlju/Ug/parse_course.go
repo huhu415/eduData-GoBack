@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -29,7 +30,7 @@ type schedule struct {
 	SFFXEXW *string `json:"SFFXEXW"` // 是否为选修课，可以为 null
 	FILEURL *string `json:"FILEURL"` // 课程相关文件的 URL，可以为 null
 	SKSJ    string  `json:"SKSJ"`    // 课程时间和详情（中文）
-	XB      int     `json:"XB"`      // 课程标识符或代码
+	XB      int     `json:"XB"`      // 相同xb, 为同一门课程
 	SKSJ_EN *string `json:"SKSJ_EN"` // 课程时间和详情（英文），可以为 null
 	KEY     string  `json:"KEY"`     // 格式: 星期?_节次? or bz备注
 }
@@ -40,7 +41,14 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 		return nil, err
 	}
 
+	// xb排序
+	sort.Slice(schedules, func(i, j int) bool {
+		return schedules[i].XB < schedules[j].XB
+	})
+
 	// 初始化颜色队列, 用于给课程上色, 一共19个, 应该用不完
+	preXB := -999
+	color := ""
 	queue := pub.NewColorList()
 
 	var resCoures []repository.Course
@@ -85,7 +93,7 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 				// 提取周次
 				startWeek, endWeek, _, err := pub.ExtractWeekRange(weeksAndlocation)
 				if err != nil {
-					logrus.Errorf("解析周次失败, result-%v: %s", result, err)
+					logrus.Warnf("提取周次失败, result-%v: %s", result, err)
 					end := strings.Index(weeksAndlocation, "]")
 					re := regexp.MustCompile(`\d+`)
 					logrus.Debugf("weeksAndlocation[:end]: %s", weeksAndlocation[:end])
@@ -158,7 +166,12 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 					logrus.Debugf("xq 后面的数字是: %s, conv: %d\n", matchweekDay[1], weekDay)
 				}
 
-				color := queue.Remove(queue.Front()).(string)
+				// 如果和上一次的XB不一样, 那么就从队列中取出新的颜色
+				if schedule.XB != preXB {
+					preXB = schedule.XB
+					color = queue.Remove(queue.Front()).(string)
+				}
+
 				for i := startWeek; i <= endWeek; i++ {
 					course := repository.Course{
 						School:                "hlju",
