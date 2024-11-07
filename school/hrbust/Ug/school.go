@@ -164,7 +164,7 @@ func (h *HrbustUg) GetGrade() ([]repository.CourseGrades, error) {
 	var grade []repository.CourseGrades
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	errs, ctx := errgroup.WithContext(ctx)
+	errs, _ := errgroup.WithContext(ctx)
 	msg := make(chan yearSemester, 10)
 	var mutex sync.Mutex
 	for i := 0; i < 3; i++ {

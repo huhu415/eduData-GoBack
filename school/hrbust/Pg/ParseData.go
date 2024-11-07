@@ -63,7 +63,7 @@ func ParseDataCoures1D(table *[]byte, args ...any) ([]repository.Course, error) 
 			// 上面语句debug用
 
 			// 找到第一个没有被占用的位置, 来更新colIndexOwn, 因为colIndex有的时候会少, 因为合并的原因, 所以要一个标准的colIndexOwn
-			for MapMaker[rowIndex][colIndexOwn] == true {
+			for MapMaker[rowIndex][colIndexOwn] {
 				colIndexOwn++
 			}
 			if len(Value) > 0 {
@@ -189,7 +189,7 @@ func ParseDataCouresAll(table *[]byte) ([]repository.Course, error) {
 			// 上面语句debug用
 
 			// 找到第一个没有被占用的位置, 来更新colIndexOwn, 因为colIndex有的时候会少, 因为合并的原因, 所以要一个标准的colIndexOwn
-			for MapMaker[rowIndex][colIndexOwn] == true {
+			for MapMaker[rowIndex][colIndexOwn] {
 				colIndexOwn++
 			}
 			if len(Value) > 0 {

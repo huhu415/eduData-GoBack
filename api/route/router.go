@@ -59,7 +59,7 @@ func runServer(srv *http.Server) {
 	go func() {
 		logrus.Infof("\u001B[1;32m Server start listening at%s! \u001B[0m", srv.Addr)
 		logrus.SetReportCaller(true)
-		if err := srv.ListenAndServe(); err != nil || errors.Is(http.ErrServerClosed, err) {
+		if err := srv.ListenAndServe(); err != nil || errors.Is(err, http.ErrServerClosed) {
 			logrus.Fatalf("listen: %s\n", err)
 		}
 	}()

@@ -5,6 +5,7 @@ import (
 
 	"eduData/bootstrap"
 	"eduData/repository"
+	"eduData/school/pub"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -22,25 +23,14 @@ func TestDatabase(t *testing.T) {
 	})
 
 	t.Run("查询课程", func(t *testing.T) {
-		courses, err := ur.CourseByWeekUsername(1, "1234567", "hrbust")
+		_, err := ur.CourseByWeekUsername("1234567", pub.HRBUST, 1)
 		assert.Nil(t, err, "查询课程失败")
 	})
 
 	t.Run("查询成绩", func(t *testing.T) {
-		gpa1, gpa2, err := ur.WeightedAverage("2204010417", "hrbust", 1)
+		gpa1, gpa2 := ur.WeightedAverage("2204010417", pub.HRBUST, pub.UG)
 		assert.Nil(t, err, "查询成绩失败")
 		t.Log(gpa1, gpa2)
-	})
-
-	t.Run("更新/添加个人信息", func(t *testing.T) {
-		stu := &repository.StuInfo{
-			StuID:   "2306070112",
-			School:  "hrbust",
-			StuType: 1,
-		}
-		err := stu.CreateAndUpdateStuInfo()
-		assert.Nil(t, err, "更新个人信息失败")
-		t.Log(stu)
 	})
 
 	t.Run("添加时间表", func(t *testing.T) {
@@ -53,7 +43,7 @@ func TestDatabase(t *testing.T) {
 				EndTime:   v.endTime,
 			})
 		}
-		assert.Nil(t, AddTimeTable(&times), "添加时间表失败")
+		assert.Nil(t, ur.AddTimeTable(&times), "添加时间表失败")
 	})
 }
 
@@ -75,4 +65,5 @@ var courses = []course{
 	{"18:30", "19:15"},
 	{"19:20", "20:05"},
 	{"20:10", "20:55"},
+	{"21:00", "21:45"},
 }

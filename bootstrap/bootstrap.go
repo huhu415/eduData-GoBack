@@ -90,7 +90,6 @@ func Loadconfig() {
 	}
 
 	log.Info("\033[1;34m*****************Init flag/env/config success!*****************\033[0m")
-	return
 }
 
 func parseFlag() {
