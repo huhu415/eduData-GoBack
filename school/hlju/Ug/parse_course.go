@@ -2,7 +2,6 @@ package hljuUg
 
 import (
 	"encoding/json"
-	"errors"
 	"regexp"
 	"sort"
 	"strconv"
@@ -56,186 +55,194 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 		information := schedule.SKSJ
 
 		if schedule.KEY == "bz" {
+			// 官方备注信息, 意思是显示在官方网页中
 			pattern := `(?P<CourseName>.+?) \[(?P<Weeks>\d+-\d+周)\] (?P<Teacher>\S+) 备注:(?P<Remark>.*)`
 			re := regexp.MustCompile(pattern)
-			if match := re.FindStringSubmatch(information); match != nil {
-				// courseName, weeks, teacher, remark := match[1], match[2], match[3], match[4]
-				courseName, weeks, teacher, _ := match[1], match[2], match[3], match[4]
-
-				startWeek, endWeek, _, err := pub.ExtractWeekRange(weeks)
-				if err != nil {
-					logrus.Errorf("解析周次失败: %s", err)
-					return nil, err
-				}
-				course := repository.Course{
-					School:                "hlju",
-					CourseContent:         courseName,
-					TeacherName:           teacher,
-					Week:                  0,
-					WeekDay:               0,
-					NumberOfLessons:       0,
-					NumberOfLessonsLength: 0,
-					BeginWeek:             startWeek,
-					EndWeek:               endWeek,
-				}
-				resCoures = append(resCoures, course)
-			} else {
-				logrus.Warnf("课程信息解析失败: %s", information)
-				return nil, errors.New("课程信息解析失败")
+			match := re.FindStringSubmatch(information)
+			if match == nil {
+				logrus.Errorf("备注信息解析失败: %s", information)
+				continue
 			}
-		} else {
-			result := strings.Split(information, "\n")
-			logrus.Debugf("result: %v, result.len(): %d", result, len(result))
-			switch len(result) {
-			case 4:
-				//[高级语言程序设计（C语言） [马慧] [5-15周][汇文楼-437] 第9-10节]
-				className, teacherName, weeksAndlocation, Time := result[0], result[1], result[2], result[3]
-				// 提取周次
-				startWeek, endWeek, _, err := pub.ExtractWeekRange(weeksAndlocation)
+
+			// courseName, weeks, teacher, remark := match[1], match[2], match[3], match[4]
+			courseName, weeks, teacher, _ := match[1], match[2], match[3], match[4]
+
+			startWeek, endWeek, _, err := pub.ExtractWeekRange(weeks)
+			if err != nil {
+				// todo 这个可能不是几-几
+				logrus.Errorf("解析周次失败: %s", err)
+				return nil, err
+			}
+			course := repository.Course{
+				School:                "hlju",
+				CourseContent:         courseName,
+				TeacherName:           teacher,
+				Week:                  0,
+				WeekDay:               0,
+				NumberOfLessons:       0,
+				NumberOfLessonsLength: 0,
+				BeginWeek:             startWeek,
+				EndWeek:               endWeek,
+			}
+			resCoures = append(resCoures, course)
+			continue
+		}
+
+		result := strings.Split(information, "\n")
+		logrus.Debugln()
+		logrus.Debugf("result: %v, result.len(): %d", result, len(result))
+
+		if !strings.Contains(information, "][") {
+			// [【2024秋期初补缓考考试】 运动控制 9月27日 18:00-20:00 汇文楼-325]
+			name, content, date, time, location := result[0], result[1], result[2], result[3], result[4]
+
+			// 提取星期几***
+			var err error
+			var weekDay int
+			reWeekDay := regexp.MustCompile(`xq(\d+)`)
+			matchweekDay := reWeekDay.FindStringSubmatch(schedule.KEY)
+			if len(matchweekDay) > 1 {
+				weekDay, err = strconv.Atoi(matchweekDay[1])
 				if err != nil {
-					logrus.Warnf("提取周次失败, result-%v: %s", result, err)
-					end := strings.Index(weeksAndlocation, "]")
-					re := regexp.MustCompile(`\d+`)
-					logrus.Debugf("weeksAndlocation[:end]: %s", weeksAndlocation[:end])
-					matches := re.FindAllString(weeksAndlocation[:end], -1)
-
-					switch len(matches) {
-					case 1:
-						num, err := strconv.Atoi(matches[0])
-						if err != nil {
-							return nil, err
-						}
-						startWeek, endWeek = num, num
-					case 2:
-						num, err := strconv.Atoi(matches[0])
-						if err != nil {
-							return nil, err
-						}
-						startWeek = num
-
-						num, err = strconv.Atoi(matches[1])
-						if err != nil {
-							return nil, err
-						}
-						endWeek = num
-					}
-
+					logrus.Warn("没找到xq后面的数字")
 				}
+				logrus.Debugf("xq 后面的数字是: %s, conv: %d\n", matchweekDay[1], weekDay)
+			}
 
-				// 提取地点
-				location := ""
-				start := strings.LastIndex(weeksAndlocation, "[")
-				end := strings.LastIndex(weeksAndlocation, "]")
-				if start != -1 && end != -1 && start < end && strings.Count(weeksAndlocation, "[") >= 2 {
-					location = weeksAndlocation[start+1 : end]
-				} else {
-					logrus.Warnf("解析地点失败: %s, 没有第二个[]", weeksAndlocation)
-				}
-
-				// 提取课程节数
-				startCourse, endCourse, err := pub.ExtractCoruse(Time)
+			// 提取第几大节课***
+			// todo 观望一下, 没问题就可以删了
+			var bigCourse int
+			reBigCourse := regexp.MustCompile(`jc(\d+)`)
+			matchbigCourse := reBigCourse.FindStringSubmatch(schedule.KEY)
+			if len(matchbigCourse) > 1 {
+				bigCourse, err = strconv.Atoi(matchbigCourse[1])
 				if err != nil {
-					logrus.Errorf("解析课程节数失败: %s", err)
+					logrus.Warn("没找到jc后面的数字")
+				}
+				logrus.Debugf("考试: jc 后面的数字是: %s, conv: %d\n", matchbigCourse[1], bigCourse*2-1)
+			}
+
+			course := repository.Course{
+				School:                "hlju",
+				CourseContent:         name + content,
+				TeacherName:           date + time,
+				CourseLocation:        location,
+				WeekDay:               weekDay,
+				NumberOfLessons:       bigCourse*2 - 1,
+				NumberOfLessonsLength: bigCourse * 2,
+				// Week                  int
+				// Color                 string
+			}
+			resCoures = append(resCoures, course)
+			continue
+		}
+
+		//[高级语言程序设计（C语言） [马慧] [5-15周][汇文楼-437] 第9-10节]
+		className, teacherName, weeksAndlocation, Time := result[len(result)-4], result[len(result)-3], result[len(result)-2], result[len(result)-1]
+		t := ""
+		for i := 0; i < len(result)-4; i++ {
+			t += result[i]
+		}
+		className = t + className
+		logrus.Debugf("课程名称:%s, 老师名称%s", className, teacherName)
+
+		// 提取周次, [5-15周][汇文楼-437]中的第一个[]中的内容
+		startWeek, endWeek, _, err := pub.ExtractWeekRange(weeksAndlocation)
+		if err != nil {
+			logrus.Warnf("提取num-num周次失败, weeksAndlocation is %v, err:%s", weeksAndlocation, err)
+			end := strings.Index(weeksAndlocation, "]")
+			re := regexp.MustCompile(`\d+`)
+			matches := re.FindAllString(weeksAndlocation[:end], -1)
+
+			switch len(matches) {
+			case 1:
+				num, err := strconv.Atoi(matches[0])
+				if err != nil {
 					return nil, err
 				}
-				logrus.Debugf("time: %s", Time)
-				logrus.Debugf("课程节数: %d-%d", startCourse, endCourse)
-
-				// 提取第几大节课***
-				// todo 观望一下, 没问题就可以删了
-				var bigCourse int
-				reBigCourse := regexp.MustCompile(`jc(\d+)`)
-				matchbigCourse := reBigCourse.FindStringSubmatch(schedule.KEY)
-				if len(matchbigCourse) > 1 {
-					bigCourse, _ = strconv.Atoi(matchbigCourse[1])
-					logrus.Debugf("jc 后面的数字是: %s, conv: %d\n", matchbigCourse[1], bigCourse*2-1)
-					if bigCourse*2-1 != startCourse {
-						logrus.Warnf("jc 后面的数字和课程节数不匹配")
-					}
+				startWeek, endWeek = num, num
+			case 2:
+				num, err := strconv.Atoi(matches[0])
+				if err != nil {
+					return nil, err
 				}
+				startWeek = num
 
-				// 提取星期几***
-				var weekDay int
-				reWeekDay := regexp.MustCompile(`xq(\d+)`)
-				matchweekDay := reWeekDay.FindStringSubmatch(schedule.KEY)
-				if len(matchweekDay) > 1 {
-					weekDay, err = strconv.Atoi(matchweekDay[1])
-					if err != nil {
-						logrus.Warn("没找到xq后面的数字")
-					}
-					logrus.Debugf("xq 后面的数字是: %s, conv: %d\n", matchweekDay[1], weekDay)
+				num, err = strconv.Atoi(matches[1])
+				if err != nil {
+					return nil, err
 				}
-
-				// 如果和上一次的XB不一样, 那么就从队列中取出新的颜色
-				if schedule.XB != preXB {
-					preXB = schedule.XB
-					color = queue.Remove(queue.Front()).(string)
-				}
-
-				for i := startWeek; i <= endWeek; i++ {
-					course := repository.Course{
-						School:                "hlju",
-						CourseContent:         className,
-						TeacherName:           teacherName,
-						CourseLocation:        location,
-						NumberOfLessons:       startCourse,
-						NumberOfLessonsLength: endCourse - startCourse + 1,
-						BeginWeek:             startWeek,
-						EndWeek:               endWeek,
-						Week:                  i,
-						WeekDay:               weekDay,
-						Color:                 color,
-					}
-					resCoures = append(resCoures, course)
-				}
-			case 5:
-				// [【2024秋期初补缓考考试】 运动控制 9月27日 18:00-20:00 汇文楼-325]
-				name, content, date, time, location := result[0], result[1], result[2], result[3], result[4]
-
-				// 提取星期几***
-				var err error
-				var weekDay int
-				reWeekDay := regexp.MustCompile(`xq(\d+)`)
-				matchweekDay := reWeekDay.FindStringSubmatch(schedule.KEY)
-				if len(matchweekDay) > 1 {
-					weekDay, err = strconv.Atoi(matchweekDay[1])
-					if err != nil {
-						logrus.Warn("没找到xq后面的数字")
-					}
-					logrus.Debugf("xq 后面的数字是: %s, conv: %d\n", matchweekDay[1], weekDay)
-				}
-
-				// 提取第几大节课***
-				// todo 观望一下, 没问题就可以删了
-				var bigCourse int
-				reBigCourse := regexp.MustCompile(`jc(\d+)`)
-				matchbigCourse := reBigCourse.FindStringSubmatch(schedule.KEY)
-				if len(matchbigCourse) > 1 {
-					bigCourse, err = strconv.Atoi(matchbigCourse[1])
-					if err != nil {
-						logrus.Warn("没找到jc后面的数字")
-					}
-					logrus.Debugf("jc 后面的数字是: %s, conv: %d\n", matchbigCourse[1], bigCourse*2-1)
-				}
-
-				course := repository.Course{
-					School:                "hlju",
-					CourseContent:         name + content,
-					TeacherName:           date + time,
-					CourseLocation:        location,
-					WeekDay:               weekDay,
-					NumberOfLessons:       bigCourse*2 - 1,
-					NumberOfLessonsLength: bigCourse * 2,
-					// Week                  int
-					// Color                 string
-				}
-				resCoures = append(resCoures, course)
-			default:
-				logrus.Warnf("不存在的课程长度: %s", information)
-				return nil, errors.New("不存在的课程长度")
+				endWeek = num
 			}
 		}
-	}
+		logrus.Debugf("最终提取出来的第几周, startWeek:%d, endWeek: %d", startWeek, endWeek)
 
+		// 提取地点
+		location := ""
+		start := strings.LastIndex(weeksAndlocation, "[")
+		end := strings.LastIndex(weeksAndlocation, "]")
+		if start != -1 && end != -1 && start < end && strings.Count(weeksAndlocation, "[") >= 2 {
+			location = weeksAndlocation[start+1 : end]
+			logrus.Debugf("提取出来的地点: %s", location)
+		} else {
+			logrus.Warnf("解析地点失败: %s, 没有第二个[]", weeksAndlocation)
+		}
+
+		// 提取课程节数
+		startCourse, endCourse, err := pub.ExtractCoruse(Time)
+		if err != nil {
+			logrus.Errorf("解析课程节数失败: %s", err)
+			return nil, err
+		}
+		logrus.Debugf("待解析节数: %s, 解析后: %d-%d", Time, startCourse, endCourse)
+
+		// // 提取第几大节课***
+		// // todo 观望一下, 没问题就可以删了
+		// var bigCourse int
+		// reBigCourse := regexp.MustCompile(`jc(\d+)`)
+		// matchbigCourse := reBigCourse.FindStringSubmatch(schedule.KEY)
+		// if len(matchbigCourse) > 1 {
+		// 	bigCourse, _ = strconv.Atoi(matchbigCourse[1])
+		// 	logrus.Debugf("jc 后面的数字是: %s, conv: %d\n", matchbigCourse[1], bigCourse*2-1)
+		// 	if bigCourse*2-1 != startCourse {
+		// 		logrus.Warnf("jc 后面的数字和课程节数不匹配, bigCourse:%d, startCourse:%d", bigCourse, startCourse)
+		// 	}
+		// }
+
+		// 提取星期几***
+		var weekDay int
+		reWeekDay := regexp.MustCompile(`xq(\d+)`)
+		matchweekDay := reWeekDay.FindStringSubmatch(schedule.KEY)
+		if len(matchweekDay) > 1 {
+			weekDay, _ = strconv.Atoi(matchweekDay[1])
+			logrus.Debugf("schedule.KEY: %s, 提取出来的是星期:%d\n", schedule.KEY, weekDay)
+		} else {
+			logrus.Warn("没找到xq后面的数字, 也就是说没有星期几")
+		}
+
+		// 如果和上一次的XB不一样, 那么就从队列中取出新的颜色
+		if schedule.XB != preXB {
+			preXB = schedule.XB
+			color = queue.Remove(queue.Front()).(string)
+		}
+
+		for i := startWeek; i <= endWeek; i++ {
+			course := repository.Course{
+				School:                "hlju",
+				CourseContent:         className,
+				TeacherName:           teacherName,
+				CourseLocation:        location,
+				NumberOfLessons:       startCourse,
+				NumberOfLessonsLength: endCourse - startCourse + 1,
+				BeginWeek:             startWeek,
+				EndWeek:               endWeek,
+				Week:                  i,
+				WeekDay:               weekDay,
+				Color:                 color,
+			}
+			resCoures = append(resCoures, course)
+		}
+
+	}
 	return resCoures, nil
 }
