@@ -66,13 +66,13 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 
 			// courseName, weeks, teacher, remark := match[1], match[2], match[3], match[4]
 			courseName, weeks, teacher, _ := match[1], match[2], match[3], match[4]
-
-			startWeek, endWeek, _, err := pub.ExtractWeekRange(weeks)
+			wRange, err := pub.ExtractRange(weeks)
 			if err != nil {
-				// todo 这个可能不是几-几
-				logrus.Errorf("解析周次失败: %s", err)
+				logrus.Errorf("解析课程节数失败: %s", err)
 				return nil, err
 			}
+			startWeek, endWeek := wRange[0], wRange[len(wRange)-1]
+
 			course := repository.Course{
 				School:                "hlju",
 				CourseContent:         courseName,
@@ -147,40 +147,19 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 		logrus.Debugf("课程名称:%s, 老师名称%s", className, teacherName)
 
 		// 提取周次, [5-15周][汇文楼-437]中的第一个[]中的内容
-		startWeek, endWeek, _, err := pub.ExtractWeekRange(weeksAndlocation)
+		end := strings.Index(weeksAndlocation, "]")
+		weeks := weeksAndlocation[:end+1]
+		weekRange, err := pub.ExtractRange(weeks)
 		if err != nil {
-			logrus.Warnf("提取num-num周次失败, weeksAndlocation is %v, err:%s", weeksAndlocation, err)
-			end := strings.Index(weeksAndlocation, "]")
-			re := regexp.MustCompile(`\d+`)
-			matches := re.FindAllString(weeksAndlocation[:end], -1)
-
-			switch len(matches) {
-			case 1:
-				num, err := strconv.Atoi(matches[0])
-				if err != nil {
-					return nil, err
-				}
-				startWeek, endWeek = num, num
-			case 2:
-				num, err := strconv.Atoi(matches[0])
-				if err != nil {
-					return nil, err
-				}
-				startWeek = num
-
-				num, err = strconv.Atoi(matches[1])
-				if err != nil {
-					return nil, err
-				}
-				endWeek = num
-			}
+			logrus.Warnf("提取num-num周次失败, weeksAndlocation is %v, err:%s", weeks, err)
+			continue
 		}
-		logrus.Debugf("最终提取出来的第几周, startWeek:%d, endWeek: %d", startWeek, endWeek)
+		logrus.Debugf("最终提取出来的rangeWeek, %v", weekRange)
 
 		// 提取地点
 		location := ""
 		start := strings.LastIndex(weeksAndlocation, "[")
-		end := strings.LastIndex(weeksAndlocation, "]")
+		end = strings.LastIndex(weeksAndlocation, "]")
 		if start != -1 && end != -1 && start < end && strings.Count(weeksAndlocation, "[") >= 2 {
 			location = weeksAndlocation[start+1 : end]
 			logrus.Debugf("提取出来的地点: %s", location)
@@ -189,11 +168,12 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 		}
 
 		// 提取课程节数
-		startCourse, endCourse, err := pub.ExtractCoruse(Time)
+		courseRange, err := pub.ExtractRange(Time)
 		if err != nil {
 			logrus.Errorf("解析课程节数失败: %s", err)
 			return nil, err
 		}
+		startCourse, endCourse := courseRange[0], courseRange[len(courseRange)-1]
 		logrus.Debugf("待解析节数: %s, 解析后: %d-%d", Time, startCourse, endCourse)
 
 		// // 提取第几大节课***
@@ -226,7 +206,7 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 			color = queue.Remove(queue.Front()).(string)
 		}
 
-		for i := startWeek; i <= endWeek; i++ {
+		for _, i := range weekRange {
 			course := repository.Course{
 				School:                "hlju",
 				CourseContent:         className,
@@ -234,11 +214,11 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 				CourseLocation:        location,
 				NumberOfLessons:       startCourse,
 				NumberOfLessonsLength: endCourse - startCourse + 1,
-				BeginWeek:             startWeek,
-				EndWeek:               endWeek,
-				Week:                  i,
-				WeekDay:               weekDay,
-				Color:                 color,
+				// BeginWeek:             startWeek,
+				// EndWeek:               endWeek,
+				Week:    i,
+				WeekDay: weekDay,
+				Color:   color,
 			}
 			resCoures = append(resCoures, course)
 		}

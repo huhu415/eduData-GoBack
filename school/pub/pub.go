@@ -8,6 +8,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/sirupsen/logrus"
 )
 
 type StuType int
@@ -77,28 +79,81 @@ func ExtractWeekRange(text string) (startWeek, endWeek, evenOrOdd int, err error
 	return
 }
 
-// 提取第几节课
-func ExtractCoruse(text string) (start, end int, err error) {
-	// 匹配形式 : 1-15周 或 1-15单周
-	matchWeekRange := regexp.MustCompile(`(\d+)-(\d+)`).FindStringSubmatch(text)
-	if len(matchWeekRange) == 0 {
-		err = errors.New("无法匹配周数范围, x-x")
-		return
-	}
-	// 第一个数
-	start, err = strconv.Atoi(matchWeekRange[1])
-	if err != nil {
-		err = fmt.Errorf("形式 x-x周 无法解析起始周: %v", err)
-		return
-	}
-	// 第二个数
-	end, err = strconv.Atoi(matchWeekRange[2])
-	if err != nil {
-		err = fmt.Errorf("形式 x-x周 无法解析结束周: %v", err)
-		return
-	}
+// ExtractRange 从字符串中提取数字范围
+// 支持两种格式：
+// 1. 单个数字: "1", "2", "3"
+// 2. 数字范围: "1-3", "4-6"
+//
+// 输入示例:
+//
+//	  "1-3, 5, 7-9" 将返回 [1,2,3,5,7,8,9]
+//	  "1，3-5，7" 将返回 [1,3,4,5,7]
+//		 "xxx1x---x3x, uie4kjdf,   ---88---" 将返回 [1,2,3,4,88]
+//
+// 参数:
+//
+//	input: 包含数字和范围的字符串，以逗号分隔
+//
+// 返回:
+//
+//	[]int: 解析后的数字切片
+//	error: 错误信息，如果解析成功则为 nil
+//
+// 函数会忽略无法解析的段落并继续处理其他有效输入
+func ExtractRange(input string) ([]int, error) {
+	result := make([]int, 0, 10)
+	segments := strings.Split(input, ",")
 
-	return
+	for _, segment := range segments {
+		// 去除两端空格和 循环去掉横杠
+		segment = strings.TrimSpace(segment)
+		for strings.HasPrefix(segment, "-") || strings.HasSuffix(segment, "-") {
+			segment = strings.TrimPrefix(segment, "-")
+			segment = strings.TrimSuffix(segment, "-")
+		}
+		segment = strings.TrimSpace(segment)
+
+		// range
+		if strings.Contains(segment, "-") {
+			pattern := `(\d+)[^\d]*-[^\d]*(\d+)`
+			matchWeekRange := regexp.MustCompile(pattern).FindStringSubmatch(segment)
+			if len(matchWeekRange) != 3 {
+				logrus.Warnf("无法匹配周数范围, %s", segment)
+				continue
+			}
+			start, err := strconv.Atoi(matchWeekRange[1])
+			if err != nil {
+				logrus.Warnf("无法解析, 格式: %s, err: %v", matchWeekRange[1], err)
+				continue
+			}
+			end, err := strconv.Atoi(matchWeekRange[2])
+			if err != nil {
+				logrus.Warnf("无法解析, 格式: %s, err: %v", matchWeekRange[2], err)
+				continue
+			}
+			for i := start; i <= end; i++ {
+				result = append(result, i)
+			}
+			continue
+		}
+
+		// single
+		pattern := `[^\d]*(\d+)[^\d]*`
+		matchWeekSingle := regexp.MustCompile(pattern).FindStringSubmatch(segment)
+		if len(matchWeekSingle) != 2 {
+			logrus.Warnf("无法匹配周数范围, %s", segment)
+			continue
+		}
+		atoi, err := strconv.Atoi(matchWeekSingle[1])
+		if err != nil {
+			logrus.Warnf("无法解析, 格式: %s, err: %v", matchWeekSingle[1], err)
+			continue
+		}
+		logrus.Debugf("atoi: %v", atoi)
+		result = append(result, atoi)
+
+	}
+	return result, nil
 }
 
 // NewColorList 初始化颜色队列, 用于给课程上色, 一共19个, 应该用不完
