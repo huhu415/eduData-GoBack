@@ -1,12 +1,13 @@
 module eduData
 
-go 1.21
+go 1.23
 
 require (
 	github.com/PuerkitoBio/goquery v1.9.1
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/huhu415/gorange v0.0.0-20241114053129-2cb0f86aa5dc
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/pflag v1.0.5

@@ -10,6 +10,7 @@ import (
 	"eduData/repository"
 	"eduData/school/pub"
 
+	"github.com/huhu415/gorange"
 	"github.com/sirupsen/logrus"
 )
 
@@ -66,7 +67,7 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 
 			// courseName, weeks, teacher, remark := match[1], match[2], match[3], match[4]
 			courseName, weeks, teacher, _ := match[1], match[2], match[3], match[4]
-			wRange, err := pub.ExtractRange(weeks)
+			wRange, err := gorange.ExtractRange(weeks)
 			if err != nil {
 				logrus.Errorf("解析课程节数失败: %s", err)
 				return nil, err
@@ -149,7 +150,7 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 		// 提取周次, [5-15周][汇文楼-437]中的第一个[]中的内容
 		end := strings.Index(weeksAndlocation, "]")
 		weeks := weeksAndlocation[:end+1]
-		weekRange, err := pub.ExtractRange(weeks)
+		weekRange, err := gorange.ExtractRange(weeks)
 		if err != nil {
 			logrus.Warnf("提取num-num周次失败, weeksAndlocation is %v, err:%s", weeks, err)
 			continue
@@ -168,7 +169,7 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 		}
 
 		// 提取课程节数
-		courseRange, err := pub.ExtractRange(Time)
+		courseRange, err := gorange.ExtractRange(Time)
 		if err != nil {
 			logrus.Errorf("解析课程节数失败: %s", err)
 			return nil, err
