@@ -2,6 +2,7 @@ package hljuUg
 
 import (
 	"encoding/json"
+	"errors"
 	"regexp"
 	"sort"
 	"strconv"
@@ -138,8 +139,21 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 			continue
 		}
 
-		//[高级语言程序设计（C语言） [马慧] [5-15周][汇文楼-437] 第9-10节]
-		className, teacherName, weeksAndlocation, Time := result[len(result)-4], result[len(result)-3], result[len(result)-2], result[len(result)-1]
+		logrus.Debug(result)
+		// [大学体育A（Ⅰ） 身体素质练习 [韩洋] [5-17周][田径场-田径场（2号田径场）] 第5-6节]  len-5
+		// [高级语言程序设计（C语言） [马慧] [5-15周][汇文楼-437] 第9-10节]					len-4
+		// [新生研讨课【01】 [关秀娟] [8周][汇文楼-466]]									len-3
+		className, teacherName, weeksAndlocation, Time := "", "", "", ""
+		lenResult := len(result)
+		switch {
+		case lenResult == 3:
+			className, teacherName, weeksAndlocation = result[lenResult-3], result[lenResult-2], result[lenResult-1]
+			Time = "" // 如果只有3个元素，Time设为空字符串
+		case lenResult >= 4:
+			className, teacherName, weeksAndlocation, Time = result[lenResult-4], result[lenResult-3], result[lenResult-2], result[lenResult-1]
+		default:
+			return nil, errors.New("课程信息解析失败")
+		}
 		t := ""
 		for i := 0; i < len(result)-4; i++ {
 			t += result[i]
@@ -169,13 +183,16 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 		}
 
 		// 提取课程节数
-		courseRange, err := gorange.ExtractRange(Time)
-		if err != nil {
-			logrus.Errorf("解析课程节数失败: %s", err)
-			return nil, err
+		startCourse, endCourse := 0, 0
+		if Time != "" {
+			courseRange, err := gorange.ExtractRange(Time)
+			if err != nil {
+				logrus.Errorf("解析课程节数失败: %s", err)
+				return nil, err
+			}
+			startCourse, endCourse = courseRange[0], courseRange[len(courseRange)-1]
+			logrus.Debugf("待解析节数: %s, 解析后: %d-%d", Time, startCourse, endCourse)
 		}
-		startCourse, endCourse := courseRange[0], courseRange[len(courseRange)-1]
-		logrus.Debugf("待解析节数: %s, 解析后: %d-%d", Time, startCourse, endCourse)
 
 		// // 提取第几大节课***
 		// // todo 观望一下, 没问题就可以删了
