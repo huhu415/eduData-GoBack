@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"eduData/api/middleware"
 	"eduData/domain"
@@ -43,6 +44,7 @@ func (lc *SigninController) LogIn(c *gin.Context) {
 		"school":   s.SchoolName(),
 		"username": s.StuID(),
 		"stutype":  s.StuType(),
+		"iat":      time.Now().Unix(),
 	})
 	if err != nil {
 		le.Errorf("can not jwt createToken %v", err)

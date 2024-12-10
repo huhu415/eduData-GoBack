@@ -62,7 +62,7 @@ func CreatSchoolObject() gin.HandlerFunc {
 		if err := c.ShouldBind(&loginForm); err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, domain.Response{
 				Status: domain.FAIL,
-				Msg:    "表单格式错误,重新登陆后重新提交",
+				Msg:    "表单格式错误, 请重新登陆 (游客模式请忽略)",
 			})
 			return
 		}
