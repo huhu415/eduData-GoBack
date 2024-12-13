@@ -58,7 +58,7 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 
 		if schedule.KEY == "bz" {
 			// 官方备注信息, 意思是显示在官方网页中
-			pattern := `(?P<CourseName>.+?) \[(?P<Weeks>\d+-\d+周)\] (?P<Teacher>\S+) 备注:(?P<Remark>.*)`
+			pattern := `(?P<CourseName>.+?) \[(?P<Weeks>.*周)\] (?P<Teacher>\S+) 备注:(?P<Remark>.*)`
 			re := regexp.MustCompile(pattern)
 			match := re.FindStringSubmatch(information)
 			if match == nil {
