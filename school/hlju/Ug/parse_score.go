@@ -105,8 +105,8 @@ func ParseScore(b *[]byte) ([]repository.CourseGrades, error) {
 		if course.Zzcj != "" {
 			gradeNum, err = strconv.ParseFloat(course.Zzcj, 64)
 			if err != nil {
-				logrus.Error(err)
-				return nil, err
+				// 解析不了的话就是-1
+				gradeNum = -1
 			}
 		}
 		lenXnxq := len(course.Xnxq)
