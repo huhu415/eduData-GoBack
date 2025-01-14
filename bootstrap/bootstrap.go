@@ -34,6 +34,9 @@ type Config struct {
 	ListenPort string `mapstructure:"listen_port"`
 	UserAgent  string `mapstructure:"user_agent"`
 	GrpcAddr   string `mapstructure:"grpc_address"`
+
+	KuaidailiUserName string `mapstructure:"kuaidaili_username"`
+	KuaidailiPassWord string `mapstructure:"kuaidaili_password"`
 }
 
 var C Config

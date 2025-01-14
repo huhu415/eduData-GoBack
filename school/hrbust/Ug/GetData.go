@@ -22,9 +22,17 @@ func GetData(cookieJar *cookiejar.Jar, moduleId string) (*[]byte, error) {
 	// 从setting中获取UserAgent
 	userAgent := bootstrap.C.UserAgent
 
+	username := bootstrap.C.KuaidailiUserName
+	password := bootstrap.C.KuaidailiPassWord
+
+	proxy_raw := "v303.kdltps.com:15818"
+	proxy_str := fmt.Sprintf("http://%s:%s@%s", username, password, proxy_raw)
+	proxy, err := url.Parse(proxy_str)
+
 	// 新建一个客户端
 	client := &http.Client{
-		Jar: cookieJar,
+		Jar:       cookieJar,
+		Transport: &http.Transport{Proxy: http.ProxyURL(proxy)},
 	}
 	defer client.CloseIdleConnections()
 
@@ -75,9 +83,17 @@ func GetCourseByTime(cookieJar *cookiejar.Jar, year, term string) (*[]byte, erro
 	// 从setting中获取UserAgent
 	userAgent := bootstrap.C.UserAgent
 
+	username := bootstrap.C.KuaidailiUserName
+	password := bootstrap.C.KuaidailiPassWord
+
+	proxy_raw := "v303.kdltps.com:15818"
+	proxy_str := fmt.Sprintf("http://%s:%s@%s", username, password, proxy_raw)
+	proxy, err := url.Parse(proxy_str)
+
 	// 新建一个客户端
 	client := &http.Client{
-		Jar: cookieJar,
+		Jar:       cookieJar,
+		Transport: &http.Transport{Proxy: http.ProxyURL(proxy)},
 	}
 	defer client.CloseIdleConnections()
 
@@ -122,9 +138,17 @@ func GetCourseByTime(cookieJar *cookiejar.Jar, year, term string) (*[]byte, erro
 // GetDataScore 获取原始的本学期html成绩表(个人成绩查询), year, term为当前年和学期, 要自己去html中查看
 // term: 1是春, 2是秋
 func GetDataScore(cookieJar *cookiejar.Jar, year, term string) (*[]byte, error) {
+	username := bootstrap.C.KuaidailiUserName
+	password := bootstrap.C.KuaidailiPassWord
+
+	proxy_raw := "v303.kdltps.com:15818"
+	proxy_str := fmt.Sprintf("http://%s:%s@%s", username, password, proxy_raw)
+	proxy, err := url.Parse(proxy_str)
+
 	// 新建一个客户端
 	client := &http.Client{
-		Jar: cookieJar,
+		Jar:       cookieJar,
+		Transport: &http.Transport{Proxy: http.ProxyURL(proxy)},
 	}
 	defer client.CloseIdleConnections()
 

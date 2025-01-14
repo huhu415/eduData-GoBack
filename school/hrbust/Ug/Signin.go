@@ -38,6 +38,15 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 	// 从setting中获取UserAgent
 	userAgent := bootstrap.C.UserAgent
 
+	username := bootstrap.C.KuaidailiUserName
+	password := bootstrap.C.KuaidailiPassWord
+	logrus.Debugf("username: %v, password: %v", username, password)
+
+	// 隧道服务器
+	proxy_raw := "v303.kdltps.com:15818"
+	proxy_str := fmt.Sprintf("http://%s:%s@%s", username, password, proxy_raw)
+	proxy, err := url.Parse(proxy_str)
+
 	// 新建一个cookieJar
 	cookieJar, err := cookiejar.New(nil)
 	if err != nil {
@@ -49,7 +58,8 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
 		},
-		Jar: cookieJar,
+		Jar:       cookieJar,
+		Transport: &http.Transport{Proxy: http.ProxyURL(proxy)},
 	}
 	defer client.CloseIdleConnections()
 
@@ -65,6 +75,7 @@ func Signin(USERNAME, PASSWORD string) (*cookiejar.Jar, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
+	fmt.Println("status code:", resp.StatusCode) // 获取状态码
 
 	var OrcCodeSuccess string
 	// 重试检查验证码 4 次
