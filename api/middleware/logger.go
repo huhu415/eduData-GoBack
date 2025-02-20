@@ -10,6 +10,7 @@ import (
 	"eduData/school"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -59,7 +60,7 @@ func Logger() gin.HandlerFunc {
 func CreatSchoolObject() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var loginForm domain.LoginForm
-		if err := c.ShouldBind(&loginForm); err != nil {
+		if err := c.ShouldBindBodyWith(&loginForm, binding.JSON); err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, domain.Response{
 				Status: domain.FAIL,
 				Msg:    "表单格式错误, 请重新登陆 (游客模式请忽略)",

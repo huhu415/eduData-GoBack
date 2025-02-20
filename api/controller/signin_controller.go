@@ -11,6 +11,7 @@ import (
 	"eduData/usecase"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/sirupsen/logrus"
 )
@@ -241,6 +242,14 @@ func (lc *SigninController) AddCourse(c *gin.Context) {
 	}
 
 	var data domain.AddcouresStruct
+	if err := c.ShouldBindBodyWith(&data, binding.JSON); err != nil {
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Status: domain.FAIL,
+			Msg:    "无效的请求数据",
+		})
+		return
+	}
+
 	if err = lc.LoginUsecase.AddCourse(pub.ParseAddCrouse(&data), s); err != nil {
 		c.JSON(http.StatusInternalServerError, domain.Response{
 			Status: domain.FAIL,
