@@ -184,7 +184,19 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 
 		// 提取课程节数
 		startCourse, endCourse := 0, 0
-		if Time != "" {
+		if Time == "" {
+			// // 提取第几大节课***
+			// todo 观望一下, 没问题就可以删了
+			var bigCourse int
+			reBigCourse := regexp.MustCompile(`jc(\d+)`)
+			matchbigCourse := reBigCourse.FindStringSubmatch(schedule.KEY)
+			if len(matchbigCourse) > 1 {
+				bigCourse, _ = strconv.Atoi(matchbigCourse[1])
+				logrus.Debugf("jc 后面的数字是: %s, conv: %d\n", matchbigCourse[1], bigCourse*2-1)
+				startCourse = bigCourse*2 - 1
+				endCourse = bigCourse * 2
+			}
+		} else {
 			courseRange, err := gorange.ExtractRange(Time)
 			if err != nil {
 				logrus.Errorf("解析课程节数失败: %s", err)
@@ -193,19 +205,6 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 			startCourse, endCourse = courseRange[0], courseRange[len(courseRange)-1]
 			logrus.Debugf("待解析节数: %s, 解析后: %d-%d", Time, startCourse, endCourse)
 		}
-
-		// // 提取第几大节课***
-		// // todo 观望一下, 没问题就可以删了
-		// var bigCourse int
-		// reBigCourse := regexp.MustCompile(`jc(\d+)`)
-		// matchbigCourse := reBigCourse.FindStringSubmatch(schedule.KEY)
-		// if len(matchbigCourse) > 1 {
-		// 	bigCourse, _ = strconv.Atoi(matchbigCourse[1])
-		// 	logrus.Debugf("jc 后面的数字是: %s, conv: %d\n", matchbigCourse[1], bigCourse*2-1)
-		// 	if bigCourse*2-1 != startCourse {
-		// 		logrus.Warnf("jc 后面的数字和课程节数不匹配, bigCourse:%d, startCourse:%d", bigCourse, startCourse)
-		// 	}
-		// }
 
 		// 提取星期几***
 		var weekDay int
@@ -216,6 +215,26 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 			logrus.Debugf("schedule.KEY: %s, 提取出来的是星期:%d\n", schedule.KEY, weekDay)
 		} else {
 			logrus.Warn("没找到xq后面的数字, 也就是说没有星期几")
+		}
+
+		if weekDay == 0 || (endCourse == 0 && startCourse == 0) || startCourse == 0 {
+			beginWeek, endWeek := arryMaxMin(weekRange)
+
+			course := repository.Course{
+				School:                "hlju",
+				CourseContent:         className,
+				TeacherName:           teacherName,
+				CourseLocation:        location,
+				NumberOfLessons:       startCourse,
+				NumberOfLessonsLength: endCourse - startCourse + 1,
+				BeginWeek:             beginWeek,
+				EndWeek:               endWeek,
+				Week:                  0,
+				WeekDay:               weekDay,
+			}
+			resCoures = append(resCoures, course)
+
+			continue
 		}
 
 		// 如果和上一次的XB不一样, 那么就从队列中取出新的颜色
@@ -243,4 +262,18 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 
 	}
 	return resCoures, nil
+}
+
+func arryMaxMin(arr []int) (int, int) {
+	if len(arr) == 0 {
+		return 0, 0
+	}
+
+	// 创建副本以免修改原数组
+	sorted := make([]int, len(arr))
+	copy(sorted, arr)
+
+	sort.Ints(sorted)
+
+	return sorted[0], sorted[len(sorted)-1]
 }
