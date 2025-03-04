@@ -125,10 +125,11 @@ func getLT(resp *http.Response) (string, error) {
 }
 
 // GET http://xsxk.hlju.edu.cn/cas for get course 'queryKbjg'
-func GetCas(client *http.Client) {
+func GetCas(client *http.Client) error {
 	req, err := http.NewRequest(http.MethodGet, CAS, nil)
 	if err != nil {
 		logrus.Error(err)
+		return err
 	}
 	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7")
 	req.Header.Set("Accept-Language", "zh,en;q=0.9")
@@ -145,6 +146,8 @@ func GetCas(client *http.Client) {
 	resp, err := client.Do(req)
 	if err != nil {
 		logrus.Error(err)
+		return err
 	}
 	defer resp.Body.Close()
+	return nil
 }
