@@ -109,7 +109,7 @@ func main() {
 
 	lis, err := net.Listen("tcp", bootstrap.C.GrpcAddr)
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		log.Fatalf("Fatal!! failed to listen: %v", err)
 	}
 
 	s := grpc.NewServer()
@@ -117,6 +117,6 @@ func main() {
 
 	log.Printf("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		log.Fatalf("Fatal!! failed to serve: %v", err)
 	}
 }

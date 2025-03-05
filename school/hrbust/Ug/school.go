@@ -3,7 +3,6 @@ package hrbustUg
 import (
 	"context"
 	"errors"
-	"log"
 	"net/http/cookiejar"
 	"strconv"
 	"sync"
@@ -78,7 +77,7 @@ func (h *HrbustUg) Cookie() *cookiejar.Jar {
 func (h *HrbustUg) Signin() error {
 	conn, err := grpc.NewClient(bootstrap.C.GrpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		return err
 	}
 	defer conn.Close()
 
@@ -109,7 +108,7 @@ func (h *HrbustUg) GetCourse() ([]repository.Course, error) {
 
 	conn, err := grpc.NewClient(bootstrap.C.GrpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		return nil, err
 	}
 	defer conn.Close()
 
@@ -147,7 +146,7 @@ func (h *HrbustUg) GetGrade() ([]repository.CourseGrades, error) {
 
 	conn, err := grpc.NewClient(bootstrap.C.GrpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		return nil, err
 	}
 	defer conn.Close()
 	pc := pb.NewAuthServiceClient(conn)

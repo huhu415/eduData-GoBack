@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -33,7 +32,7 @@ func GetData(cookie *cookiejar.Jar, xn int, xq int) (*[]byte, error) {
 	// var data = strings.NewReader(`xn=2024-2025&xq=1&pylx=1`)
 	req, err := http.NewRequest(http.MethodPost, queryxszykbzong, data)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	req.Header.Set("Accept", "*/*")
@@ -50,13 +49,13 @@ func GetData(cookie *cookiejar.Jar, xn int, xq int) (*[]byte, error) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	bodyText, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	return &bodyText, nil
 }
@@ -84,11 +83,11 @@ func GetScore(cookie *cookiejar.Jar) (*[]byte, error) {
 	}
 	jsonC, err := json.Marshal(c)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	req, err := http.NewRequest(http.MethodPost, "http://xsxk.hlju.edu.cn/cjgl/grcjcx/grcjcx", bytes.NewReader(jsonC))
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	req.Header.Set("Accept", "application/json, text/javascript, */*; q=0.01")
@@ -106,13 +105,13 @@ func GetScore(cookie *cookiejar.Jar) (*[]byte, error) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	bodyText, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	return &bodyText, nil
