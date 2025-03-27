@@ -80,25 +80,21 @@ func ExtractWeekRange(text string) (startWeek, endWeek, evenOrOdd int, err error
 // NewColorList 初始化颜色队列, 用于给课程上色, 一共19个, 应该用不完
 func NewColorList() *list.List {
 	queue := list.New()
-	queue.PushBack("#2e1f54")
-	queue.PushBack("#52057f")
-	queue.PushBack("#bf033b")
-	queue.PushBack("#f00a36")
-	queue.PushBack("#ff6908")
-	queue.PushBack("#ffc719")
-	queue.PushBack("#598c14")
-	queue.PushBack("#335238")
-	queue.PushBack("#4a8594")
-	queue.PushBack("#051736")
-	queue.PushBack("#706357")
-	queue.PushBack("#b0a696")
-	queue.PushBack("#004eaf")
-	queue.PushBack("#444444")
-	queue.PushBack("#c1d1e0")
-	queue.PushBack("#c1d1e0")
-	queue.PushBack("#faa918")
-	queue.PushBack("#8f1010")
-	queue.PushBack("#d2ea32")
+	queue.PushBack("#5382B0") // 物理
+	queue.PushBack("#CD77D0") // 高数
+	queue.PushBack("#F3A581") // 离散数学
+	queue.PushBack("#53AFAA") // 数电
+	queue.PushBack("#6C95E5") // 英语
+	queue.PushBack("#EC8677") // 线代
+	queue.PushBack("#FAD749") // 习黄色
+	queue.PushBack("#6CDFF0") // 浅蓝
+	queue.PushBack("#abdada") // 淡黄绿
+	queue.PushBack("#babee0") // 棕红色
+	queue.PushBack("#b5d3b2") // 浅蓝灰
+	queue.PushBack("#f4b0a8") // 橄榄绿
+	queue.PushBack("#cce8ed") // 红粉色
+	queue.PushBack("#f3dc99") // 深蓝灰
+	queue.PushBack("#f6e9e7") // 浅蓝灰
 	return queue
 }
 
