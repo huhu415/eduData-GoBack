@@ -95,6 +95,13 @@ func NewColorList() *list.List {
 	queue.PushBack("#cce8ed") // 红粉色
 	queue.PushBack("#f3dc99") // 深蓝灰
 	queue.PushBack("#f6e9e7") // 浅蓝灰
+	queue.PushBack("#f2d6c0") // 浅蓝灰
+	queue.PushBack("#D4E6B5") // 柔和的青草绿
+	queue.PushBack("#E8D0D9") // 淡粉紫
+	queue.PushBack("#B8D0EB") // 温和的天蓝
+	queue.PushBack("#D8B4A0") // 柔和的赭石色
+	queue.PushBack("#C7CEAA") // 淡橄榄绿
+	queue.PushBack("#E6D1D4") // 淡玫瑰灰
 	return queue
 }
 
