@@ -128,3 +128,46 @@ func ChineseToNumber(chinese rune) (int, error) {
 		return 0, fmt.Errorf("不支持的汉字数字: %s", string(chinese))
 	}
 }
+
+// 全角转半角 https://www.fushengwushi.com/1456/%E5%85%A8%E8%A7%92%E5%8D%8A%E8%A7%92%E8%BD%AC%E6%8D%A2/
+// 全角 https://www.unicode.org/charts/PDF/UFF00.pdf
+// 半角 https://tool.ip138.com/ascii_code/
+func FullWidthToHalfWidth(s string) string {
+	var strLst []string
+	for _, i := range s {
+		insideCode := i
+
+		// 特殊处理【符号（Unicode 0x301a）转换为 [
+		// https://www.ifreesite.com/unicode/character.htm
+		if insideCode == 0x3010 {
+			strLst = append(strLst, "[")
+			continue
+		}
+
+		// 特殊处理】符号（Unicode 0x301b）转换为 ]
+		if insideCode == 0x3011 {
+			strLst = append(strLst, "]")
+			continue
+		}
+
+		if insideCode == 0x201c || insideCode == 0x201d {
+			strLst = append(strLst, "\"")
+			continue
+		}
+
+		if insideCode == 12288 {
+			insideCode = 32
+		} else {
+			insideCode -= 65248
+		}
+
+		if insideCode >= 32 && insideCode <= 126 {
+			strLst = append(strLst, string(insideCode))
+			continue
+		}
+
+		strLst = append(strLst, string(i))
+	}
+
+	return strings.Join(strLst, "")
+}

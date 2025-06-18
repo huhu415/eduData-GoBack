@@ -259,7 +259,11 @@ func ParseCoruse(data *[]byte) ([]repository.Course, error) {
 			}
 			resCoures = append(resCoures, course)
 		}
+	}
 
+	for i := range resCoures {
+		resCoures[i].CourseContent = strings.TrimSpace(resCoures[i].CourseContent)
+		resCoures[i].CourseContent = pub.FullWidthToHalfWidth(resCoures[i].CourseContent)
 	}
 	return resCoures, nil
 }
