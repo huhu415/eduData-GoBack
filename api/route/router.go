@@ -16,6 +16,7 @@ import (
 	"eduData/bootstrap"
 
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
@@ -45,7 +46,9 @@ func SetupAndRun(db *gorm.DB) {
 			"status": "active",
 		})
 	})
-	r.Use(middleware.Logger(), gin.Recovery(), middleware.CreatSchoolObject())
+	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
+
+	r.Use(middleware.Logger(), gin.Recovery(), middleware.CreatSchoolObject(), middleware.PrometheusLogger())
 
 	NewUpDataRouter(db, r.Group(""))
 
