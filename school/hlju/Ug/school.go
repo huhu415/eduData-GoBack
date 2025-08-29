@@ -86,9 +86,9 @@ func (h *HljuUg) getYearTerm() (int, int) {
 	xn, xq := 0, 0
 
 	// 判断学期和学年
-	if nowMonth >= 9 { // 9 月到 12 月为第一学期
+	if nowMonth >= 8 { // 8 月到 12 月为第一学期
 		xn, xq = nowYear, 1
-	} else if nowMonth >= 2 { // 2 月到 8 月为第二学期
+	} else if nowMonth >= 2 { // 2 月到 7 月为第二学期
 		xn, xq = nowYear-1, 2
 	} else { // 1 月到 2 月仍在上一学年的第一学期
 		xn, xq = nowYear-1, 1
