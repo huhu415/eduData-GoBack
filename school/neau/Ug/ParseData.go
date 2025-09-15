@@ -106,7 +106,12 @@ func ParseData(jsonInfo *[]byte) ([]repository.Course, error) {
 
 			startWeek, endWeek, _, err := pub.ExtractWeekRange(v.Skzcs)
 			if err != nil {
-				return nil, err
+				numbers, err := gorange.ExtractRange(v.Skzcs, gorange.DefaultProcessRange)
+				if err != nil {
+					return nil, err
+				}
+				startWeek = numbers[0]
+				endWeek = numbers[len(numbers)-1]
 			}
 			course.BeginWeek, course.EndWeek = startWeek, endWeek
 
