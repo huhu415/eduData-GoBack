@@ -3,6 +3,7 @@ package repository
 import (
 	"eduData/school/pub"
 
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -11,7 +12,8 @@ type Course struct {
 	ID                    uint           `gorm:"primarykey"`
 	StuID                 string         `gorm:"index:idx_stuid_school_week_stype; not null"`                   // 学号
 	School                pub.SchoolName `gorm:"index:idx_stuid_school_week_stype; not null; default:'hrbust'"` // 学校
-	Week                  int            `gorm:"index:idx_stuid_school_week_stype; not null"`                   // 周几 没有的话就设置为0
+	Week                  int            `gorm:"index:idx_stuid_school_week_stype; not null"`                   // 第几周 没有的话就设置为0
+	Weeks                 pq.Int64Array  `gorm:"column:weeks;type:integer[]"`                                   // 一个课程哪周有
 	StuType               pub.StuType    `gorm:"index:idx_stuid_school_week_stype; not null"`                   // 本科生还是研究生
 	WeekDay               int            `gorm:"not null"`                                                      // 星期几 没有的话就设置为0
 	NumberOfLessons       int            `gorm:"not null"`                                                      // 第几节课
@@ -19,6 +21,7 @@ type Course struct {
 	CourseContent         string         `gorm:"not null"`                                                      // 课程名称或内容
 	Color                 string         `gorm:"not null; default:'#c1d1e0'"`                                   // 课程颜色
 	CourseLocation        string
+	CourseLocations       pq.StringArray `gorm:"column:course_locations;type:text[]"` // 课程地点
 	TeacherName           string
 	BeginWeek             int
 	EndWeek               int
@@ -51,4 +54,44 @@ func (r *Repository) DeleteAndCreateCourse(course []Course) error {
 		}
 		return tx.Create(&course).Error
 	})
+}
+
+func (r *Repository) CourseByGroup(username string, school pub.SchoolName, stuType pub.StuType) ([]Course, error) {
+	/*
+			SELECT  week_day,  number_of_lessons, number_of_lessons_length, course_content, course_location, teacher_name, begin_week, end_week, school,count(*)
+		from courses
+		where stu_id = 'A05250061'
+		group by  week_day,  number_of_lessons, number_of_lessons_length, course_content, course_location, teacher_name, begin_week, end_week, school
+
+	*/
+
+	allCourse := "stu_id, school, stu_type, course_content, teacher_name"
+
+	selectCols := allCourse + ", array_agg(week ORDER BY week) AS weeks, array_agg(distinct course_location ORDER BY course_location) AS course_locations"
+
+	var course []Course
+	err := r.database.
+		Model(&Course{}).
+		Where("stu_id = ? AND school = ? AND stu_type = ?", username, school, stuType).
+		Select(selectCols).
+		Group(allCourse).
+		Find(&course).Error
+	return course, err
+}
+
+func (r *Repository) CourseByCourseTeacher(username string, school pub.SchoolName, stuType pub.StuType, courseName string, teacher string) ([]Course, error) {
+	r.database.Debug()
+
+	allCourse := "stu_id, school, stu_type, course_content, teacher_name, course_location, week_day, begin_week, end_week"
+	selectCols := allCourse + ", array_agg(week ORDER BY week) AS weeks"
+
+	var course []Course
+	err := r.database.
+		Model(&Course{}).
+		Where("stu_id = ? AND school = ? AND stu_type = ? AND course_content = ? AND teacher_name = ?",
+			username, school, stuType, courseName, teacher).
+		Select(selectCols).
+		Group(allCourse).
+		Find(&course).Error
+	return course, err
 }

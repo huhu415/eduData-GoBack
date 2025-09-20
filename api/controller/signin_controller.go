@@ -183,6 +183,45 @@ func (lc *SigninController) GetWeekCourse(c *gin.Context) {
 	c.JSON(http.StatusOK, courseByWeekUsername)
 }
 
+// GetSingleCourseTeacher 获取单个课程老师所有课程
+func (lc *SigninController) GetSingleCourseTeacher(c *gin.Context) {
+	s, _, err := pub.GetSchoolAndLogrus(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.Response{
+			Status: domain.FAIL,
+			Msg:    c.Error(err).Error(),
+		})
+		return
+	}
+
+	type CourseTeacher struct {
+		CourseContent string
+		TeacherName   string
+	}
+
+	var courseTeacher CourseTeacher
+	if err := c.ShouldBindBodyWith(&courseTeacher, binding.JSON); err != nil {
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Status: domain.FAIL,
+			Msg:    c.Error(err).Error(),
+		})
+		return
+	}
+
+	fmt.Printf("%+v\n", courseTeacher)
+
+	course, err := lc.LoginUsecase.GetSingleCourseTeacher(s, courseTeacher.CourseContent, courseTeacher.TeacherName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.Response{
+			Status: domain.FAIL,
+			Msg:    c.Error(err).Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, course)
+}
+
 // GetGrade 获取成绩
 func (lc *SigninController) GetGrade(c *gin.Context) {
 	s, _, err := pub.GetSchoolAndLogrus(c)
