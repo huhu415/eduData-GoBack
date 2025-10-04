@@ -107,7 +107,7 @@ func (s *server) GetGrades(ctx context.Context, req *pb.GetDataRequest) (*pb.Get
 func main() {
 	bootstrap.Loadconfig()
 
-	lis, err := net.Listen("tcp", bootstrap.C.GrpcAddr)
+	lis, err := net.Listen("tcp", "localhost:50055")
 	if err != nil {
 		log.Fatalf("Fatal!! failed to listen: %v", err)
 	}

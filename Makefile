@@ -34,4 +34,7 @@ check:
 	gofumpt -l -w .
 	golangci-lint run
 
-.PHONY: build cbuild check
+edit_frpc_config:
+	vim /opt/homebrew/etc/frp/frpc.toml
+
+.PHONY: build cbuild check goto_frpc_config

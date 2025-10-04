@@ -20,7 +20,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func (h *HrbustUg) getYearTerm() (year, term string) {
+func (h *HrbustUgGrpc) getYearTerm() (year, term string) {
 	now := time.Now()
 	nowYear, nowMonth := now.Year(), now.Month()
 	if nowMonth >= 2 && nowMonth <= 7 {
@@ -33,14 +33,14 @@ func (h *HrbustUg) getYearTerm() (year, term string) {
 	return
 }
 
-type HrbustUg struct {
+type HrbustUgGrpc struct {
 	stuID  string
 	passWd string
 	cookie *cookiejar.Jar
 }
 
-func NewHrbustUg(stuID, passWd string, c ...*cookiejar.Jar) school.School {
-	h := HrbustUg{
+func NewHrbustUgGrpc(stuID, passWd string, c ...*cookiejar.Jar) school.School {
+	h := HrbustUgGrpc{
 		stuID:  stuID,
 		passWd: passWd,
 	}
@@ -50,31 +50,31 @@ func NewHrbustUg(stuID, passWd string, c ...*cookiejar.Jar) school.School {
 	return &h
 }
 
-func (h *HrbustUg) SetCookie(c *cookiejar.Jar) {
+func (h *HrbustUgGrpc) SetCookie(c *cookiejar.Jar) {
 	h.cookie = c
 }
 
-func (h *HrbustUg) SchoolName() pub.SchoolName {
+func (h *HrbustUgGrpc) SchoolName() pub.SchoolName {
 	return pub.HRBUST
 }
 
-func (h *HrbustUg) StuType() pub.StuType {
+func (h *HrbustUgGrpc) StuType() pub.StuType {
 	return pub.UG
 }
 
-func (h *HrbustUg) StuID() string {
+func (h *HrbustUgGrpc) StuID() string {
 	return h.stuID
 }
 
-func (h *HrbustUg) PassWd() string {
+func (h *HrbustUgGrpc) PassWd() string {
 	return h.passWd
 }
 
-func (h *HrbustUg) Cookie() *cookiejar.Jar {
+func (h *HrbustUgGrpc) Cookie() *cookiejar.Jar {
 	return h.cookie
 }
 
-func (h *HrbustUg) Signin() error {
+func (h *HrbustUgGrpc) Signin() error {
 	conn, err := grpc.NewClient(bootstrap.C.GrpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return err
@@ -103,7 +103,7 @@ func (h *HrbustUg) Signin() error {
 	return nil
 }
 
-func (h *HrbustUg) GetCourse() ([]repository.Course, error) {
+func (h *HrbustUgGrpc) GetCourse() ([]repository.Course, error) {
 	y, t := h.getYearTerm()
 
 	conn, err := grpc.NewClient(bootstrap.C.GrpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -139,7 +139,7 @@ type yearSemester struct {
 	Semester string // 1是春季-下学期, 2是秋季-上学期
 }
 
-func (h *HrbustUg) GetGrade() ([]repository.CourseGrades, error) {
+func (h *HrbustUgGrpc) GetGrade() ([]repository.CourseGrades, error) {
 	if h.cookie == nil {
 		return nil, errors.New("not found the cookie")
 	}
