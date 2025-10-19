@@ -5,6 +5,7 @@ import (
 
 	"eduData/bootstrap"
 	"eduData/repository"
+	"eduData/school/pub"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -22,25 +23,14 @@ func TestDatabase(t *testing.T) {
 	})
 
 	t.Run("查询课程", func(t *testing.T) {
-		courses, err := ur.CourseByWeekUsername(1, "1234567", "hrbust")
+		_, err := ur.CourseByWeekUsername("1234567", pub.HRBUST, 1)
 		assert.Nil(t, err, "查询课程失败")
 	})
 
 	t.Run("查询成绩", func(t *testing.T) {
-		gpa1, gpa2, err := ur.WeightedAverage("2204010417", "hrbust", 1)
+		gpa1, gpa2 := ur.WeightedAverage("2204010417", pub.HRBUST, pub.UG)
 		assert.Nil(t, err, "查询成绩失败")
 		t.Log(gpa1, gpa2)
-	})
-
-	t.Run("更新/添加个人信息", func(t *testing.T) {
-		stu := &repository.StuInfo{
-			StuID:   "2306070112",
-			School:  "hrbust",
-			StuType: 1,
-		}
-		err := stu.CreateAndUpdateStuInfo()
-		assert.Nil(t, err, "更新个人信息失败")
-		t.Log(stu)
 	})
 
 	t.Run("添加时间表", func(t *testing.T) {
@@ -53,7 +43,7 @@ func TestDatabase(t *testing.T) {
 				EndTime:   v.endTime,
 			})
 		}
-		assert.Nil(t, AddTimeTable(&times), "添加时间表失败")
+		assert.Nil(t, ur.AddTimeTable(&times), "添加时间表失败")
 	})
 }
 
@@ -66,13 +56,56 @@ type course struct {
 var courses = []course{
 	{"08:00", "08:45"},
 	{"08:50", "09:35"},
+
 	{"10:00", "10:45"},
 	{"10:50", "11:35"},
+
 	{"13:30", "14:15"},
 	{"14:20", "15:05"},
+
 	{"15:30", "16:15"},
 	{"16:20", "17:05"},
+
 	{"18:30", "19:15"},
 	{"19:20", "20:05"},
+
 	{"20:10", "20:55"},
+	{"21:00", "21:45"},
 }
+
+// neau时间表
+var coursesNeau = []course{
+	{"08:10", "08:55"},
+	{"09:00", "09:45"},
+
+	{"10:05", "10:50"},
+	{"10:55", "11:40"},
+
+	{"13:30", "14:15"},
+	{"14:20", "15:05"},
+
+	{"15:35", "16:20"},
+	{"16:25", "17:10"},
+
+	{"18:30", "19:15"},
+	{"19:20", "20:05"},
+
+	{"20:10", "20:55"},
+	{"21:00", "21:45"},
+}
+
+/*
+INSERT INTO time_tables (school, sort, start_time, end_time) VALUES
+('neau', 1, '08:10', '08:55'),
+('neau', 2, '09:00', '09:45'),
+('neau', 3, '10:05', '10:50'),
+('neau', 4, '10:55', '11:40'),
+('neau', 5, '13:30', '14:15'),
+('neau', 6, '14:20', '15:05'),
+('neau', 7, '15:35', '16:20'),
+('neau', 8, '16:25', '17:10'),
+('neau', 9, '18:30', '19:15'),
+('neau', 10, '19:20', '20:05'),
+('neau', 11, '20:10', '20:55'),
+('neau', 12, '21:00', '21:45');
+*/

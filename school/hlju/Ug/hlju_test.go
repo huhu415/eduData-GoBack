@@ -18,7 +18,8 @@ func TestSignin(t *testing.T) {
 	cookie, err := Signin(USERNAME, PASSWORD)
 	if assert.Nil(err, "登陆失败") {
 		t.Run("GetData-ThisTerm", func(t *testing.T) {
-			CourseTable, err := GetData(cookie)
+			// 意思为2024-2025年 1学期
+			CourseTable, err := GetData(cookie, 2024, 1)
 			if assert.Nil(err, "获取课表失败") {
 				t.Log(string(*CourseTable))
 			}
@@ -33,7 +34,7 @@ func TestParseDataCoures(t *testing.T) {
 
 	table, err := os.ReadFile("html/ug.html")
 	if assert.Nil(err, "读取文件失败") {
-		parseTable, err := ParseData(&table)
+		parseTable, err := ParseCoruse(&table)
 		if assert.Nil(err, "解析课表失败") {
 			for _, v := range parseTable {
 				t.Log(v)

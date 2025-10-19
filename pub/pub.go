@@ -10,6 +10,7 @@ import (
 	hljuUg "eduData/school/hlju/Ug"
 	hrbustUg "eduData/school/hrbust/Ug"
 	neauUg "eduData/school/neau/Ug"
+	schoolpub "eduData/school/pub"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -17,30 +18,30 @@ import (
 
 func NewSchoolSwitch(d domain.LoginForm) (school.School, error) {
 	var s school.School
-	switch d.School {
+	switch schoolpub.SchoolName(d.School) {
 	// 哈理工
-	case "hrbust":
+	case schoolpub.HRBUST:
 		switch d.StudentType {
 		case 1:
-			s = hrbustUg.NewHrbustUg(d.Username, d.Password)
+			s = hrbustUg.NewHrbustUgGrpc(d.Username, d.Password)
 		case 2:
-			return nil, errors.New(d.School + "研究生登陆功能还未开发")
+			return nil, errors.New(string(d.School) + "研究生登陆功能还未开发")
 		}
 	// 东北农业大学
-	case "neau":
+	case schoolpub.NEAU:
 		switch d.StudentType {
 		case 1:
 			s = neauUg.NewNeauUg(d.Username, d.Password)
 		case 2:
-			return nil, errors.New(d.School + "研究生登陆功能还未开发")
+			return nil, errors.New(string(d.School) + "研究生登陆功能还未开发")
 		}
 	// 黑龙江大学
-	case "hlju":
+	case schoolpub.HLJU:
 		switch d.StudentType {
 		case 1:
 			s = hljuUg.NewHljuUg(d.Username, d.Password)
 		case 2:
-			return nil, errors.New(d.School + "研究生登陆功能还未开发")
+			return nil, errors.New(string(d.School) + "研究生登陆功能还未开发")
 		}
 	// 其他没有适配的学校
 	default:

@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"eduData/api/middleware"
 	"eduData/domain"
@@ -10,6 +11,7 @@ import (
 	"eduData/usecase"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/sirupsen/logrus"
 )
@@ -43,6 +45,7 @@ func (lc *SigninController) LogIn(c *gin.Context) {
 		"school":   s.SchoolName(),
 		"username": s.StuID(),
 		"stutype":  s.StuType(),
+		"iat":      time.Now().Unix(),
 	})
 	if err != nil {
 		le.Errorf("can not jwt createToken %v", err)
@@ -180,6 +183,45 @@ func (lc *SigninController) GetWeekCourse(c *gin.Context) {
 	c.JSON(http.StatusOK, courseByWeekUsername)
 }
 
+// GetSingleCourseTeacher 获取单个课程老师所有课程
+func (lc *SigninController) GetSingleCourseTeacher(c *gin.Context) {
+	s, _, err := pub.GetSchoolAndLogrus(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.Response{
+			Status: domain.FAIL,
+			Msg:    c.Error(err).Error(),
+		})
+		return
+	}
+
+	type CourseTeacher struct {
+		CourseContent string
+		TeacherName   string
+	}
+
+	var courseTeacher CourseTeacher
+	if err := c.ShouldBindBodyWith(&courseTeacher, binding.JSON); err != nil {
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Status: domain.FAIL,
+			Msg:    c.Error(err).Error(),
+		})
+		return
+	}
+
+	fmt.Printf("%+v\n", courseTeacher)
+
+	course, err := lc.LoginUsecase.GetSingleCourseTeacher(s, courseTeacher.CourseContent, courseTeacher.TeacherName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.Response{
+			Status: domain.FAIL,
+			Msg:    c.Error(err).Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, course)
+}
+
 // GetGrade 获取成绩
 func (lc *SigninController) GetGrade(c *gin.Context) {
 	s, _, err := pub.GetSchoolAndLogrus(c)
@@ -239,6 +281,14 @@ func (lc *SigninController) AddCourse(c *gin.Context) {
 	}
 
 	var data domain.AddcouresStruct
+	if err := c.ShouldBindBodyWith(&data, binding.JSON); err != nil {
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Status: domain.FAIL,
+			Msg:    "无效的请求数据",
+		})
+		return
+	}
+
 	if err = lc.LoginUsecase.AddCourse(pub.ParseAddCrouse(&data), s); err != nil {
 		c.JSON(http.StatusInternalServerError, domain.Response{
 			Status: domain.FAIL,

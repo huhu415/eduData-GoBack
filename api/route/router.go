@@ -16,6 +16,7 @@ import (
 	"eduData/bootstrap"
 
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
@@ -32,7 +33,7 @@ func SetupAndRun(db *gorm.DB) {
 	gin.ForceConsoleColor()
 	f, err := os.OpenFile("eduData.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0o644)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Fatal!! OpenFile failed: ", err)
 	}
 	defer f.Close()
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
@@ -45,7 +46,9 @@ func SetupAndRun(db *gorm.DB) {
 			"status": "active",
 		})
 	})
-	r.Use(middleware.Logger(), gin.Recovery(), middleware.CreatSchoolObject())
+	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
+
+	r.Use(middleware.Logger(), gin.Recovery(), middleware.CreatSchoolObject(), middleware.PrometheusLogger())
 
 	NewUpDataRouter(db, r.Group(""))
 
@@ -59,8 +62,8 @@ func runServer(srv *http.Server) {
 	go func() {
 		logrus.Infof("\u001B[1;32m Server start listening at%s! \u001B[0m", srv.Addr)
 		logrus.SetReportCaller(true)
-		if err := srv.ListenAndServe(); err != nil || errors.Is(http.ErrServerClosed, err) {
-			logrus.Fatalf("listen: %s\n", err)
+		if err := srv.ListenAndServe(); err != nil || errors.Is(err, http.ErrServerClosed) {
+			logrus.Fatalf("Fatal!! listen: %s\n", err)
 		}
 	}()
 
@@ -79,7 +82,7 @@ func runServer(srv *http.Server) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		logrus.Fatal("Server forced to shutdown: ", err)
+		logrus.Fatal("Fatal!! Server forced to shutdown: ", err)
 	}
 
 	logrus.Infof("Server already shutdown")

@@ -1,5 +1,5 @@
 # 第一阶段：构建阶段
-FROM golang:1.23.0-alpine3.19 AS builder
+FROM registry.cn-wulanchabu.aliyuncs.com/zzyan/golang:1.23.0-alpine3.19 AS builder
 
 # 设置时区
 ENV TZ=Asia/Shanghai
@@ -16,7 +16,7 @@ RUN apk add --no-cache git make
 RUN make build
 
 # 第二阶段：运行阶段
-FROM alpine
+FROM registry.cn-wulanchabu.aliyuncs.com/zzyan/alpine:latest
 
 # 设置时区
 ENV TZ=Asia/Shanghai

@@ -33,6 +33,7 @@ type Config struct {
 	JwtKey     string `mapstructure:"jwt_key"`
 	ListenPort string `mapstructure:"listen_port"`
 	UserAgent  string `mapstructure:"user_agent"`
+	GrpcAddr   string `mapstructure:"grpc_address"`
 }
 
 var C Config
@@ -89,7 +90,6 @@ func Loadconfig() {
 	}
 
 	log.Info("\033[1;34m*****************Init flag/env/config success!*****************\033[0m")
-	return
 }
 
 func parseFlag() {

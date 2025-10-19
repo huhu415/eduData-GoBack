@@ -17,7 +17,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const ROOT string = "https://authserver.hlju.edu.cn/authserver/login"
+const (
+	ROOT string = "https://authserver.hlju.edu.cn/authserver/login"
+	CAS  string = "http://xsxk.hlju.edu.cn/cas"
+)
 
 func Signin(userName, passWord string) (*cookiejar.Jar, error) {
 	userAgent := bootstrap.C.UserAgent
@@ -91,22 +94,10 @@ func Signin(userName, passWord string) (*cookiejar.Jar, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode == 302 && strings.Contains(resp.Header.Get("Location"), "index.do") {
-		time.Sleep(2 * time.Second)
-		req, err = http.NewRequest(http.MethodGet, "http://ssfw1.hlju.edu.cn/ssfw/j_spring_ids_security_check", nil)
-		if err != nil {
-			return nil, err
-		}
-		req.Header.Add("User-Agent", userAgent)
-		resp, err = client.Do(req)
-		if err != nil {
-			return nil, err
-		}
-		if resp.StatusCode == 302 && strings.Contains(resp.Header.Get("Location"), "success=true") {
-			logrus.Debug("success Signin")
-			return cookieJar, nil
-		} else {
-			return nil, errors.New("登陆失败")
-		}
+		// 到这里已经登录成功
+		time.Sleep(1 * time.Second)
+		GetCas(client)
+		return cookieJar, nil
 	} else if resp.StatusCode == 200 {
 		return nil, errors.New("您提供的用户名或者密码有误")
 	}
@@ -131,4 +122,32 @@ func getLT(resp *http.Response) (string, error) {
 	} else {
 		return "", errors.New("lt value not found")
 	}
+}
+
+// GET http://xsxk.hlju.edu.cn/cas for get course 'queryKbjg'
+func GetCas(client *http.Client) error {
+	req, err := http.NewRequest(http.MethodGet, CAS, nil)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7")
+	req.Header.Set("Accept-Language", "zh,en;q=0.9")
+	req.Header.Set("Cache-Control", "no-cache")
+	req.Header.Set("DNT", "1")
+	req.Header.Set("Pragma", "no-cache")
+	req.Header.Set("Proxy-Connection", "keep-alive")
+	req.Header.Set("Referer", "http://xsxk.hlju.edu.cn/")
+	req.Header.Set("Upgrade-Insecure-Requests", "1")
+	req.Header.Add("User-Agent", bootstrap.C.UserAgent)
+	// 允许重定向
+	client.CheckRedirect = nil
+
+	resp, err := client.Do(req)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+	defer resp.Body.Close()
+	return nil
 }

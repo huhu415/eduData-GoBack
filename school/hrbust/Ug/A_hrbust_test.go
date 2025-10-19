@@ -13,10 +13,10 @@ import (
 
 const (
 	// 本科生账号密码
-	USERNAME string = ""
-	PASSWORD        = ""
-	YEARTEST        = "43"
-	TERMTEST        = "2"
+	USERNAME = ""
+	PASSWORD = ""
+	YEARTEST = "43"
+	TERMTEST = "2"
 )
 
 func TestHrbustUg(t *testing.T) {
@@ -81,7 +81,6 @@ func TestParseTableUgAll(t *testing.T) {
 	for _, course := range allCoures {
 		fmt.Println(course)
 	}
-	return
 }
 
 // TestParseTableUgByWeek 给定一个学期的课表和某一周, 生成那周的课程信息切片, 解析本科生的
@@ -96,7 +95,6 @@ func TestParseTableUgByWeek(t *testing.T) {
 	for _, course := range allCoures {
 		fmt.Println(course)
 	}
-	return
 }
 
 // 解析哈理工本科成绩
@@ -111,5 +109,4 @@ func TestParseDataSore(t *testing.T) {
 	for _, course := range allCoures {
 		fmt.Println(course)
 	}
-	return
 }

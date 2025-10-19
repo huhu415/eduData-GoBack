@@ -13,7 +13,7 @@ func main() {
 
 	db, err := models.NewDatabase()
 	if err != nil {
-		logrus.Fatalf("database connect error: %v", err)
+		logrus.Fatalf("Fatal!! database connect error: %v", err)
 	}
 	defer models.CloseDatabase(db)
 

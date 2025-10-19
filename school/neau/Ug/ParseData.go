@@ -6,6 +6,8 @@ import (
 
 	"eduData/repository"
 	"eduData/school/pub"
+
+	"github.com/huhu415/gorange"
 )
 
 type TimeAndPlace struct {
@@ -104,7 +106,12 @@ func ParseData(jsonInfo *[]byte) ([]repository.Course, error) {
 
 			startWeek, endWeek, _, err := pub.ExtractWeekRange(v.Skzcs)
 			if err != nil {
-				return nil, err
+				numbers, err := gorange.ExtractRange(v.Skzcs, gorange.DefaultProcessRange)
+				if err != nil {
+					return nil, err
+				}
+				startWeek = numbers[0]
+				endWeek = numbers[len(numbers)-1]
 			}
 			course.BeginWeek, course.EndWeek = startWeek, endWeek
 
@@ -117,21 +124,13 @@ func ParseData(jsonInfo *[]byte) ([]repository.Course, error) {
 				course.NumberOfLessons = timeAndPlace.ClassSessions
 				course.NumberOfLessonsLength = timeAndPlace.ContinuingSession
 
-				// 匹配单双周和rangWeek
-				startWeek, endWeek, evenOrOdd, err := pub.ExtractWeekRange(timeAndPlace.WeekDescription)
+				weekRange, err := gorange.ExtractRange(timeAndPlace.WeekDescription, gorange.SingleDoubleWeekProcess)
 				if err != nil {
 					return nil, err
 				}
-
-				for i := startWeek; i <= endWeek; i++ {
-					// 如果是单双周, 则判断是否符合
-					if evenOrOdd == 5 {
-						course.Week = i
-						courses = append(courses, course)
-					} else if i%2 == evenOrOdd {
-						course.Week = i
-						courses = append(courses, course)
-					}
+				for _, v := range weekRange {
+					course.Week = v
+					courses = append(courses, course)
 				}
 			}
 		}

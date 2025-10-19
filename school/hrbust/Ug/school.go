@@ -89,12 +89,6 @@ func (h *HrbustUg) GetCourse() ([]repository.Course, error) {
 	return ParseDataCrouseAll(b)
 }
 
-// YearSemester 年与学期的结构体
-type yearSemester struct {
-	Year     string // 43是23年, 44是24年
-	Semester string // 1是春季-下学期, 2是秋季-上学期
-}
-
 func (h *HrbustUg) GetGrade() ([]repository.CourseGrades, error) {
 	if h.cookie == nil {
 		return nil, errors.New("not found the cookie")
@@ -114,9 +108,12 @@ func (h *HrbustUg) GetGrade() ([]repository.CourseGrades, error) {
 				if errUg != nil {
 					return errUg
 				}
+				// 从43变成2023这种形式
+				y, _ := strconv.Atoi(data.Year)
+				y = y - 20 + 2000
 
 				// 解析页面, 获得成绩
-				table, errUg := ParseDataSore(ugHTML, data.Year, data.Semester)
+				table, errUg := ParseDataSore(ugHTML, strconv.Itoa(y), data.Semester)
 				if errUg != nil {
 					return errUg
 				}

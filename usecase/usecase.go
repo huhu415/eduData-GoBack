@@ -82,6 +82,10 @@ func (u *Usecase) GetCourseByWeek(school school.School, week string) ([]reposito
 	return u.repository.CourseByWeekUsername(school.StuID(), school.SchoolName(), weekInt)
 }
 
+func (u *Usecase) GetSingleCourseTeacher(school school.School, course string, teacher string) ([]repository.Course, error) {
+	return u.repository.CourseByCourseTeacher(school.StuID(), school.SchoolName(), school.StuType(), course, teacher)
+}
+
 func (u *Usecase) GetGrade(school school.School) ([]repository.CourseGrades, []repository.CourseGrades, float64, float64) {
 	courseGrades, courseGradesPrompt := u.repository.CourseGradesByUsername(school.StuID(), school.StuType(), school.SchoolName())
 	WeightedAverage, AcademicCredits := u.repository.WeightedAverage(school.StuID(), school.SchoolName(), school.StuType())

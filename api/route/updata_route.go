@@ -26,9 +26,10 @@ func NewUpDataRouter(db *gorm.DB, group *gin.RouterGroup) {
 		// 课程相关路由
 		courseGroup := group.Group("/courses")
 		{
-			courseGroup.POST("/renew", lc.UpdateCourse)  // 更新课程
-			courseGroup.POST("/add", lc.AddCourse)       // 添加课程
-			courseGroup.POST("/:week", lc.GetWeekCourse) // 获取某一周的课程
+			courseGroup.POST("/renew", lc.UpdateCourse)                         // 更新课程
+			courseGroup.POST("/add", lc.AddCourse)                              // 添加课程
+			courseGroup.POST("/:week", lc.GetWeekCourse)                        // 获取某一周的课程
+			courseGroup.POST("/singleCourseTeacher", lc.GetSingleCourseTeacher) // 获取单个课程老师所有课程
 		}
 
 		// 成绩相关路由
