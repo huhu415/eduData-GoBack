@@ -23,7 +23,7 @@ func NewSchoolSwitch(d domain.LoginForm) (school.School, error) {
 	case schoolpub.HRBUST:
 		switch d.StudentType {
 		case 1:
-			s = hrbustUg.NewHrbustUgGrpc(d.Username, d.Password)
+			s = hrbustUg.NewHrbustUg(d.Username, d.Password)
 		case 2:
 			return nil, errors.New(string(d.School) + "研究生登陆功能还未开发")
 		}
