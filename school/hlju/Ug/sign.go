@@ -2,6 +2,7 @@ package hljuUg
 
 import (
 	"bytes"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	"eduData/bootstrap"
+	"eduData/identimage"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/sirupsen/logrus"
@@ -66,6 +68,28 @@ func Signin(userName, passWord string) (*cookiejar.Jar, error) {
 	}
 	logrus.Debugf("lt: %s", Lt)
 
+	// 1. 获取验证码图片
+	captchaURL := fmt.Sprintf("%s/authserver/captcha.html?ts=%d", "https://authserver.hlju.edu.cn", time.Now().UnixMilli())
+	captchaResp, err := client.Get(captchaURL)
+	if err != nil {
+		return nil, fmt.Errorf("获取验证码失败: %w", err)
+	}
+	defer captchaResp.Body.Close()
+
+	// 2. 读取验证码图片
+	captchaImage, err := io.ReadAll(captchaResp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("读取验证码图片失败: %w", err)
+	}
+	base64String := base64.StdEncoding.EncodeToString(captchaImage)
+
+	// 3. 识别验证码（使用项目中的identimage包）
+	yes := identimage.NewYescaptchaOcr(bootstrap.C.YescaptchaRequestUrl, bootstrap.C.YesCaptchaToken)
+	captchaText, err := yes.Identify(&base64String)
+	if err != nil {
+		return nil, err
+	}
+
 	// 请求体
 	data := url.Values{}
 	data.Set("username", userName)
@@ -76,6 +100,7 @@ func Signin(userName, passWord string) (*cookiejar.Jar, error) {
 	data.Set("execution", "e1s1")
 	data.Set("_eventId", "submit")
 	data.Set("rmShown", "1")
+	data.Set("captchaResponse", captchaText)
 	fullURL = fmt.Sprintf("%s;jsessionid=%s", ROOT, cookie)
 	request, err := http.NewRequest(http.MethodPost, fullURL, strings.NewReader(data.Encode()))
 	if err != nil {
@@ -99,6 +124,21 @@ func Signin(userName, passWord string) (*cookiejar.Jar, error) {
 		GetCas(client)
 		return cookieJar, nil
 	} else if resp.StatusCode == 200 {
+
+		// 读取响应体用于调试
+		bodyBytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("读取响应体失败: %w", err)
+		}
+
+		// 使用logrus记录详细信息
+		logrus.WithFields(logrus.Fields{
+			"status_code": resp.StatusCode,
+			"status":      resp.Status,
+			"headers":     resp.Header,
+			"body":        string(bodyBytes),
+		}).Error("登录返回200状态码，详细响应信息")
+
 		return nil, errors.New("您提供的用户名或者密码有误")
 	}
 

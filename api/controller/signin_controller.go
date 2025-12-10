@@ -30,7 +30,7 @@ func (lc *SigninController) LogIn(c *gin.Context) {
 		return
 	}
 
-	if err = lc.LoginUsecase.SigninAndSetCache(s); err != nil {
+	if err := lc.LoginUsecase.SigninAndSetCache(s); err != nil {
 		le.Errorf("登陆失败 %v", err)
 		c.JSON(http.StatusInternalServerError, domain.Response{
 			Status: domain.FAIL,
@@ -207,8 +207,6 @@ func (lc *SigninController) GetSingleCourseTeacher(c *gin.Context) {
 		})
 		return
 	}
-
-	fmt.Printf("%+v\n", courseTeacher)
 
 	course, err := lc.LoginUsecase.GetSingleCourseTeacher(s, courseTeacher.CourseContent, courseTeacher.TeacherName)
 	if err != nil {
